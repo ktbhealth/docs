@@ -27,6 +27,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ktbhealth/ui/components/tabs';
 import { CircleCheck, CircleX, Info, Lightbulb, TriangleAlert } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { productUrl, storybookUrl } from '@/lib/site-links';
 
 /* ------------------------------------------------------------------ */
 /* Callout → KTB Alert                                                 */
@@ -146,6 +147,32 @@ function Card({
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Env-aware external links (localhost in dev, deployed URL in prod)   */
+/* ------------------------------------------------------------------ */
+
+function ExternalSiteLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: ReactNode;
+}) {
+  return (
+    <a href={href} target="_blank" rel="noreferrer" className="text-fd-primary underline">
+      {children}
+    </a>
+  );
+}
+
+export function ProductLink({ children = 'KTB Health app' }: { children?: ReactNode }) {
+  return <ExternalSiteLink href={productUrl}>{children}</ExternalSiteLink>;
+}
+
+export function StorybookLink({ children = 'Storybook' }: { children?: ReactNode }) {
+  return <ExternalSiteLink href={storybookUrl}>{children}</ExternalSiteLink>;
+}
+
 /* Table intrinsics → KTB Table; Tabs / Accordion → KTB (Base UI)    */
 
 export function getMDXComponents(components?: MDXComponents) {
@@ -180,6 +207,8 @@ export function getMDXComponents(components?: MDXComponents) {
     AccordionItem,
     AccordionTrigger,
     AccordionContent,
+    ProductLink,
+    StorybookLink,
     ...components,
   } satisfies MDXComponents;
 }

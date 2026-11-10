@@ -2,6 +2,7 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { uiTranslations } from 'fumadocs-ui/i18n';
 import { appName, gitConfig } from './shared';
 import { i18n } from './i18n';
+import { productUrl } from './site-links';
 
 export const translations = i18n
   .translations()
@@ -53,6 +54,14 @@ export function baseOptions(locale: string = i18n.defaultLanguage): BaseLayoutPr
       // keep the home link inside the current locale (/en, /pt-BR)
       url: `/${locale}`,
     },
+    links: [
+      {
+        type: 'main',
+        text: 'Product',
+        url: productUrl,
+        external: true,
+      },
+    ],
     githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
   };
 }
