@@ -1,0 +1,50 @@
+---
+title: The consult flow
+description: How a consultation moves from recording to exported note.
+icon: ClipboardList
+---
+
+Every consultation follows the same pipeline. This page describes each stage
+and what you control at each one.
+
+## Pipeline overview
+
+| Stage | What happens | Your role |
+| ----- | ------------ | --------- |
+| Record | Audio is captured and transcribed live (browser-first, server fallback) | Speak naturally; confirm consent first |
+| Structure | A structured anamnesis draft is generated from the transcript | Review every field |
+| Review | You edit transcript and anamnesis until the note is accurate | Approve or keep editing |
+| Export | The finalized note is rendered to PDF | Download and file it |
+
+## Recording
+
+KTB supports several capture sources — in-browser recording, meeting-bot
+capture, dictation, and audio upload — all feeding the same transcript and
+anamnesis pipeline. Pick whichever fits the encounter.
+
+<Callout type="warn" title="Consent comes first">
+  Recording a patient encounter requires their consent. Declare it in the app
+  before you start — the timestamp is kept as part of the compliance trail.
+</Callout>
+
+## Review and approval
+
+The anamnesis is a **draft produced by machine extraction**. Treat it like a
+scribbled first pass: correct names, doses, dates, and anything the model
+paraphrased. Nothing becomes part of the official record until you approve it.
+
+When the transcript was re-processed server-side, the detail page shows both
+the raw transcription and the cleaned version side by side so you can compare.
+
+## Export
+
+Finalized consultations export to PDF. The export contains what you approved —
+it is a documentation artifact, not a clinical recommendation.
+
+## If something stalls
+
+Audio processing is asynchronous: after recording, the audio moves through
+stored → queued → processing → done (or failed). A badge or status on the
+consultation shows where it is; failures surface an error reason without ever
+exposing the audio itself. See
+[Troubleshooting](/en/docs/doctors/troubleshooting).

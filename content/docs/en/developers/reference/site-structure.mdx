@@ -1,0 +1,30 @@
+---
+title: Site structure
+description: Where things live in this repo.
+---
+
+```
+content/docs/<locale>/    MDX content per locale (en, pt-BR; audience tabs + meta.json)
+src/routes/$lang/         locale-scoped routes (home + docs)
+  $lang/index.tsx         audience picker home page
+  $lang/docs/$.tsx        docs layout + page renderer
+  $lang/docs/{$}.md.ts    per-page markdown endpoint
+  docs/$.tsx              redirect: legacy /docs/* → /<default-locale>/docs/*
+  api/search.ts           Orama search index endpoint
+  llms[.]txt.ts           llms.txt index
+  llms-full[.]txt.ts      llms-full.txt (full content)
+src/lib/i18n.ts           fumadocs i18n config (locales, dir parser)
+src/lib/source.ts         fumadocs source loader + llms helpers
+src/lib/shared.ts         routes, git config, markdown URL helpers
+src/lib/layout.shared.tsx layout options + UI translations
+messages/                 Paraglide UI strings (en, pt-BR)
+project.inlang/           Paraglide project settings
+src/paraglide/            generated Paraglide runtime (gitignored)
+src/styles/app.css        Tailwind v4 + fumadocs-ui presets
+alchemy.run.ts            Cloudflare Workers deploy (Alchemy)
+vite.config.ts            plugins + env-conditional nitro preset
+bunfig.toml               hoisted linker (required for nitro dev)
+```
+
+Build output (gitignored): `.output/server` is the nitro Worker bundle;
+`.output/public` is the prerendered site and static assets.

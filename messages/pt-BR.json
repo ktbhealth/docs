@@ -1,0 +1,15 @@
+{
+	"home_title": "Documentação",
+	"home_tagline": "A IA redige o registro; o médico decide. Escolha seu caminho abaixo.",
+	"audience_doctors_title": "Médicos",
+	"audience_doctors_desc": "Conduza consultas melhores — grave, transcreva, revise, aprove, exporte.",
+	"audience_patients_title": "Pacientes",
+	"audience_patients_desc": "O que esperar do seu cuidado e como seus dados são tratados.",
+	"audience_developers_title": "Desenvolvedores",
+	"audience_developers_desc": "Crie sobre o KTB — plugins, ports e adapters, deploy, contribua.",
+	"audience_business_title": "Negócios",
+	"audience_business_desc": "Parcerias com o KTB — posicionamento, segurança, opções de implantação.",
+	"badge_primary": "Principal",
+	"locale_en": "English",
+	"locale_pt_BR": "Português (Brasil)"
+}

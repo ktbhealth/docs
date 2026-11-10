@@ -1,0 +1,15 @@
+{
+	"home_title": "Documentation",
+	"home_tagline": "The AI drafts the record; the physician decides. Pick your path below.",
+	"audience_doctors_title": "Doctors",
+	"audience_doctors_desc": "Run better consults — record, transcribe, review, approve, export.",
+	"audience_patients_title": "Patients",
+	"audience_patients_desc": "What to expect from your care and how your data is handled.",
+	"audience_developers_title": "Developers",
+	"audience_developers_desc": "Build on KTB — plugins, ports & adapters, deploy, contribute.",
+	"audience_business_title": "Business",
+	"audience_business_desc": "Partner with KTB — positioning, security, deployment options.",
+	"badge_primary": "Primary",
+	"locale_en": "English",
+	"locale_pt_BR": "Português (Brasil)"
+}
