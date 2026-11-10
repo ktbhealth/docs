@@ -3,8 +3,10 @@ import { source } from '@/lib/source';
 import { createFromSource } from 'fumadocs-core/search/server';
 
 const server = createFromSource(source, {
-  // https://docs.orama.com/docs/orama-js/supported-languages
-  language: 'english',
+  // 'multilingual' (zbsearch default) tokenizes/stems en + pt-BR together
+  // in the single locale-filtered i18n index — 'english' would stem
+  // Portuguese queries wrong. Per-locale DBs via localeMap are deprecated.
+  language: 'multilingual',
 });
 
 export const Route = createFileRoute('/api/search')({
