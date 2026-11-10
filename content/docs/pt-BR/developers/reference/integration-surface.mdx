@@ -1,0 +1,77 @@
+---
+title: Superfície de integração
+description: A API e os endpoints de export que integradores podem usar — e o quanto o deploy é flexível.
+icon: Plug
+---
+
+Você não precisa ser contribuidor para construir em cima do KTB. Esta
+página descreve as superfícies que um integrador pode usar hoje.
+
+## Export de dados clínicos
+
+O ponto de integração mais importante: **export de prontuário em padrões
+abertos**.
+
+```
+GET /api/patients/:id/export?format=fhir-r4
+GET /api/patients/:id/export?format=openehr
+```
+
+- **Apenas owner** — requer sessão autenticada do clínico dono do registro.
+- Retorna dados demográficos do paciente, notas de consulta e conteúdo
+  clínico estruturado como FHIR R4 Bundle ou composição openEHR.
+- Os adapters são funções puras (`@ktb/interop`, `@ktb/interop-fhir`,
+  `@ktb/interop-openehr`) — mesma entrada, mesmo documento, totalmente
+  testável.
+
+Esse é o caminho para integração com EHR, apps de prontuário pessoal ou
+pipelines de pesquisa: puxe o registro do paciente em formato padrão em
+vez de fazer scraping da UI.
+
+## Outras rotas de API
+
+| Endpoint | Propósito |
+| -------- | --------- |
+| `GET /api/consultations/:id/pdf` | Download da nota finalizada em PDF |
+| `GET /api/consultations/:id/audio` | Stream do áudio da sessão (owner-only) |
+| `POST /api/transcribe` | Fallback de transcrição no servidor |
+| `GET /api/jobs` | Status da fila de jobs |
+| `GET /api/notifications` | Notificações in-app |
+
+Todas as rotas seguem a convenção de api-routes do sistema de plugins —
+são versionadas junto com o app, não uma API pública separada com SLA
+próprio.
+
+## Autenticação
+
+Auth por sessão via **better-auth**. Integradores autenticam como um
+usuário (clínico ou conta de serviço) — ainda não há superfície de API
+key. Para integrações headless, essa é a limitação atual a planejar.
+
+## Flexibilidade de deploy
+
+O KTB não está preso a SaaS. A arquitetura ports/adapters significa:
+
+- **SaaS** — hospedado em Cloudflare Workers hoje.
+- **On-prem / nuvem privada** — a mesma codebase roda em Node (`dev:node`
+  prova); existem adapters para D1/SQLite, R2/filesystem e a fila.
+- **Air-gapped** — possível em princípio; você precisaria de adapters
+  para seu provedor de identidade e storage. Fale conosco sobre o escopo.
+
+A fronteira é imposta por arch lint — código de domínio não pode tocar
+APIs de provider, então a portabilidade é estrutural, não aspiracional.
+
+## O que ainda não existe
+
+- **API REST/GraphQL pública** — integrações usam as rotas autenticadas
+  por sessão acima, não uma API pública documentada.
+- **API keys / OAuth apps** — sem programa de desenvolvedores ainda.
+- **Webhooks inbound para eventos clínicos** — as APIs de jobs e
+  notifications são pull-based.
+
+<Callout type="info" title="Quer integrar?">
+  Se você está construindo uma integração séria — conector de EHR,
+  pipeline de pesquisa, scribe embarcado — fale conosco via
+  [Contato](/pt-BR/docs/business/contact). Preferimos escopar com você a
+  ter você fazendo engenharia reversa nas rotas.
+</Callout>

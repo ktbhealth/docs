@@ -1,0 +1,75 @@
+---
+title: Integration surface
+description: The API and export endpoints integrators can build on — and how flexible deployment is.
+icon: Plug
+---
+
+You don't have to be a contributor to build on KTB. This page describes
+the surfaces an integrator can use today.
+
+## Clinical data export
+
+The most important integration point: **standards-based record export**.
+
+```
+GET /api/patients/:id/export?format=fhir-r4
+GET /api/patients/:id/export?format=openehr
+```
+
+- **Owner-only** — requires an authenticated session belonging to the
+  clinician who owns the patient record.
+- Returns the patient's demographics, visit notes, and structured clinical
+  content as a FHIR R4 Bundle or openEHR composition.
+- Adapters are pure functions (`@ktb/interop`, `@ktb/interop-fhir`,
+  `@ktb/interop-openehr`) — same input, same document, fully testable.
+
+This is the path for EHR integration, personal health record apps, or
+research pipelines: pull a patient's record in a standard format rather
+than scraping the UI.
+
+## Other API routes
+
+| Endpoint | Purpose |
+| -------- | ------- |
+| `GET /api/consultations/:id/pdf` | Download the finalized note as PDF |
+| `GET /api/consultations/:id/audio` | Stream session audio (owner-only) |
+| `POST /api/transcribe` | Server-side transcription fallback |
+| `GET /api/jobs` | Job queue status |
+| `GET /api/notifications` | In-app notifications |
+
+All routes go through the plugin system's API-route convention — they are
+versioned with the app, not a separate public API with its own SLA.
+
+## Authentication
+
+Session-based auth via **better-auth**. Integrators authenticate as a
+user (clinician or service account) — there's no API-key surface yet.
+For headless integrations, that's the current limitation to plan around.
+
+## Deployment flexibility
+
+KTB is not locked to SaaS. The ports/adapters architecture means:
+
+- **SaaS** — hosted on Cloudflare Workers today.
+- **On-prem / private cloud** — the same codebase runs on Node (`dev:node`
+  proves it); adapters exist for D1/SQLite, R2/filesystem, and the queue.
+- **Air-gapped** — possible in principle; you'd need adapters for your
+  identity provider and storage. Talk to us about scope.
+
+The boundary is enforced by arch lint — domain code can't touch provider
+APIs, so portability is structural, not aspirational.
+
+## What doesn't exist yet
+
+- **Public REST/GraphQL API** — integrations go through the session-
+  authenticated routes above, not a documented public API.
+- **API keys / OAuth apps** — no developer program yet.
+- **Inbound webhooks for clinical events** — the jobs/notifications APIs
+  are pull-based.
+
+<Callout type="info" title="Want to integrate?">
+  If you're building a serious integration — EHR connector, research
+  pipeline, embedded scribe — reach out via
+  [Contact](/en/docs/business/contact). We'd rather scope it with you than
+  have you reverse-engineer the routes.
+</Callout>
