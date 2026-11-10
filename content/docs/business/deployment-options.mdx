@@ -1,0 +1,52 @@
+---
+title: Deployment options
+description: Cloudflare-first deployment, and why the architecture keeps the door open.
+icon: Server
+---
+
+KTB is deployed on Cloudflare today — and architected so that isn't a cage.
+
+## Recommended: Cloudflare
+
+Production runs as a **Cloudflare Worker** deployed via Alchemy:
+
+| Piece | Service |
+| ----- | ------- |
+| Compute | Workers (Nitro `cloudflare_module` build) |
+| Database | D1 (SQLite via Drizzle ORM) |
+| Audio storage | R2 |
+| Bot protection | Turnstile |
+
+This is the tested, supported path — managed infra, global edge, and no
+servers to operate.
+
+## The portability story
+
+KTB's codebase follows **ports and adapters** (see the
+[Developers section](/docs/developers/explanation/ports-and-adapters)):
+domain logic sits behind interfaces, and vendor specifics live in adapters at
+the edge. Concretely:
+
+- **Transcription** is a port with browser (Whisper worker / Web Speech) and
+  server engine adapters — not hardcoded to one vendor.
+- **Storage, calendar, notifications, captcha** are all ports with
+  Cloudflare-flavored adapters today.
+- **Arch lint** forbids provider literals (`@cf/*` model ids, endpoints) in
+  domain code — portability isn't aspirational, it's enforced.
+
+Swapping Cloudflare D1 for Postgres, or R2 for S3, means writing an adapter —
+not rewriting features.
+
+## What we'd need to support your environment
+
+- A port adapter for your database/storage providers.
+- Deployment pipeline for your platform (Alchemy supports multiple targets;
+  the Nitro build can target Node as well).
+- Your compliance requirements mapped onto the controls in
+  [Security and compliance](/docs/business/security-and-compliance).
+
+<Callout type="info">
+  Self-hosting and private-cloud deployments are available for partners —
+  scope and timeline depend on which ports need new adapters. See
+  [Contact](/docs/business/contact).
+</Callout>

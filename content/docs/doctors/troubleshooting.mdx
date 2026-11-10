@@ -1,0 +1,49 @@
+---
+title: Troubleshooting
+description: Common problems during recording, transcription, and export — and how to fix them.
+icon: Wrench
+---
+
+Task-oriented fixes for the issues clinicians hit most.
+
+## Recording won't start
+
+- **Microphone permission denied** — the browser blocked mic access. Click the
+  site settings icon in the address bar, allow the microphone, and reload.
+- **No input device** — check the OS sound settings; some laptops need the
+  correct input selected in the browser's device picker.
+- **Consent not declared** — recording is gated on consent. Declare patient
+  consent first; the app will not start capture without it.
+
+## Transcript is empty or garbled
+
+- **Too quiet / too far** — move closer to the mic; the silence gate drops
+  non-speech audio, which is correct behavior but yields little transcript.
+- **Heavy accent or crosstalk** — expect lower accuracy. Speak turn-by-turn
+  when possible; speaker labels improve when people don't overlap.
+- **Browser transcription failed** — this is what the server fallback is for.
+  Finish the session normally; KTB re-transcribes server-side when browser
+  confidence is low.
+
+## Audio processing stuck or failed
+
+The pipeline moves `stored → queued → processing → done`. If it shows `failed`:
+
+1. Open the consultation detail — the error reason is displayed (never the
+   audio itself).
+2. Retry from the consultation page if a retry action is offered, or contact
+   your administrator with the consultation id.
+3. The browser transcript is still usable — you can review and finalize the
+   note without the server pass.
+
+## Export problems
+
+- **PDF won't download** — check popup/download blockers; allow downloads for
+  the app domain.
+- **Wrong content in the PDF** — the export renders your approved note. Go
+  back, fix the anamnesis fields, re-approve, and export again.
+
+## Still stuck?
+
+Collect the consultation id and the error text shown, then reach your KTB
+administrator or the support channel your clinic uses.

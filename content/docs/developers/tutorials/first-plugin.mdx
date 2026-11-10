@@ -1,0 +1,55 @@
+---
+title: Your first plugin
+description: Add a feature plugin to the product monorepo, end to end.
+icon: Puzzle
+---
+
+This tutorial adds a minimal plugin to the `product` repo. Plugins are the
+unit of feature composition — routes, services, tables, and UI slots all hang
+off a `Plugin` object.
+
+## Prerequisites
+
+- The [dev environment](/docs/developers/how-to/dev-environment) set up.
+- Read [Product architecture](/docs/developers/explanation/product-architecture)
+  first if the monorepo layout is new to you.
+
+## Steps
+
+1. **Create the package.** Add `plugins/<name>/` with a `package.json`
+   (`@ktb/<name>`, `workspace:*` deps) mirroring an existing small plugin such
+   as `plugins/notifications`.
+
+2. **Define the plugin object.** In `src/index.ts`, export plugin objects via
+   `definePlugin` from `@ktb/kernel`:
+
+   ```ts
+   export const myFeaturePlugin = definePlugin({
+     id: "my-feature",
+     requiredDeps: [],
+     // routes, services, tables, panel slots…
+   });
+   ```
+
+   Registration is **by convention** — `packages/app-host` discovers every
+   `plugins/*/src/index.ts` that exports `plugins`. No central registry edit.
+
+3. **Add cross-plugin surface (optional).** If other plugins need your data,
+   export CQRS groups from `src/api.ts` (`Query.group`/`Command` from
+   `@effect-server-utils/cqrs`) — never expose raw table reads.
+
+4. **Add UI.** Routes are TanStack file routes under `src/routes/`; nav and
+   panel contributions go through the plugin's extension points
+   (`panel.headerActions`, etc.).
+
+5. **Verify.** `bun run check` at the root, then `bun run test` scoped to your
+   package (`cd plugins/<name> && bunx vitest run`).
+
+## Rules that will bite you
+
+- Plugins **cannot import from `apps/`** — composition happens in
+  `apps/web/src/routes/` via injected `api` objects. See
+  [Arch rules](/docs/developers/reference/arch-rules).
+- No `node:*`/`Bun`/`process`/provider literals in plugin code.
+- Generated files (`routeTree.gen.ts`, paraglide output, drizzle migrations)
+  are regenerated, never hand-edited.

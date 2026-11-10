@@ -1,0 +1,37 @@
+---
+title: Client vs server split
+description: Where code runs in the product app, and why the boundary matters.
+icon: Split
+---
+
+The product is a TanStack Start app: React SSR on Cloudflare Workers. Code is
+deliberately split into three zones, and the arch lint enforces which zone a
+file belongs to.
+
+## The three zones
+
+| Zone | Examples | Rules |
+| ---- | -------- | ----- |
+| **Client** | React views, transcription adapters running in-browser (Whisper worker, Web Speech) | No secrets, no server-only APIs; heavy compute is opt-in |
+| **Server / domain** | Effect services, CQRS handlers, ports, plugins | Pure domain logic — no vendor imports, no platform globals |
+| **Edge adapters** | `infra/cloudflare`, transcription engines, captcha providers | The only place provider literals and platform APIs are allowed |
+
+## Why the split exists
+
+- **Latency** — transcription runs in the browser first because round-tripping
+  audio is slow; the server is the fallback, not the default.
+- **Trust** — secrets and privileged APIs live server-side; the client bundle
+  is public.
+- **Portability** — the same domain services run under workerd (prod/dev) and
+  Node (`dev:node`) because they never touch platform APIs directly.
+
+## Practical rules
+
+- Server functions validate wire input with `effect/Schema` — tolerate
+  null/undefined/string coercions (see `normalizePatientId` in
+  `apps/web/src/lib/fns.ts`).
+- Anything that needs a binding (D1, R2, env secrets) is resolved in the
+  composition root and injected — never `process.env` or `Bun.env` in domain
+  code.
+- Client-side driver registries pick adapters (e.g. which `Transcriber`
+  implementation) without the domain knowing the choice.

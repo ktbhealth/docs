@@ -1,23 +1,35 @@
 ---
 title: KTB Health documentation
-description: Guides, how-tos, reference, and explanations for the ktbhealth org.
+description: Documentation for every audience — clinicians, patients, developers, and partners.
 icon: BookOpen
 ---
 
-Welcome to the KTB Health documentation site. It covers the `ktbhealth` GitHub
-organization — primarily the [product](https://github.com/ktbhealth/product)
-monorepo, which powers the KTB Health clinical documentation app.
-
-The docs follow the [Diátaxis](https://diataxis.fr/) framework:
-
-- **Tutorials** — learning-oriented, step-by-step walkthroughs for newcomers.
-- **How-to guides** — task-oriented recipes for specific goals.
-- **Reference** — factual descriptions of commands, structure, and configuration.
-- **Explanation** — understanding-oriented discussion of architecture and
-  decisions.
+KTB Health is a clinical documentation platform: it records the consultation,
+transcribes it, and structures a draft note — while the physician decides and
+owns the record. Pick the section that matches you.
 
 <Cards>
-  <Card title="Get started" href="/docs/tutorials/getting-started" />
-  <Card title="Product architecture" href="/docs/explanation/ports-and-adapters" />
-  <Card title="Command reference" href="/docs/reference/commands" />
+  <Card
+    title="Doctors"
+    description="Record consults, review transcripts, export notes — the clinical workflow."
+    href="/docs/doctors/getting-started"
+  />
+  <Card
+    title="Patients"
+    description="What to expect when your clinician uses KTB, and how your data is handled."
+    href="/docs/patients/what-to-expect"
+  />
+  <Card
+    title="Developers"
+    description="Tutorials, how-tos, reference, and architecture explanations for the product monorepo."
+    href="/docs/developers/tutorials/getting-started"
+  />
+  <Card
+    title="Business"
+    description="Positioning, security posture, deployment options, and contact."
+    href="/docs/business/positioning"
+  />
 </Cards>
+
+Once inside a section, the tabs along the top switch between audiences — you
+can change your mind at any time.

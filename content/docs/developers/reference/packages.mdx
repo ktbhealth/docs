@@ -1,0 +1,43 @@
+---
+title: Package map
+description: What each workspace package in the product monorepo does.
+icon: Boxes
+---
+
+The `product` repo is a bun workspace. Quick orientation:
+
+## Apps
+
+| Path | What |
+| ---- | ---- |
+| `apps/web` | TanStack Start app — the whole product UI + server. Deploys to Cloudflare Workers via Alchemy. |
+
+## Packages
+
+| Package | Role |
+| ------- | ---- |
+| `packages/kernel` | Plugin primitives (`definePlugin`) |
+| `packages/app-host` | Composition root — discovers plugins, wires layers, CQRS buses |
+| `packages/db`, `packages/db-sqlite` | Drizzle schema + D1/SQLite access |
+| `packages/auth`, `packages/auth-better` | Authentication (better-auth) |
+| `packages/authz` | Authorization primitives (`Forbidden`, guards) |
+| `packages/server-fns` | Server function plumbing |
+| `packages/anamnesis`, `packages/anamnesis-llm` | Structured note schema + LLM extraction/cleanup |
+| `packages/transcription` | `Transcriber` port + fallback heuristics |
+| `packages/transcription-whisper`, `-webspeech` | Browser transcription adapters |
+| `packages/export-pdf` | Consultation → PDF rendering |
+| `packages/interop`, `-fhir`, `-openehr` | EHR interoperability (in progress) |
+| `packages/bot`, `packages/bot-recall` | Meeting-bot capture source |
+| `packages/captcha*` | Bot protection ports/adapters |
+| `packages/driver-framework` | Client driver registry (adapter selection) |
+
+## Plugins (`plugins/`)
+
+Feature slices — `consultations`, `patients`, `dashboard`, `groups`,
+`notifications`, `jobs`, `users`, `platform*` — each a single-concern package
+with routes, services, schema, and views.
+
+## Infra (`infra/`)
+
+Provider adapters implementing infra ports (e.g. `infra/cloudflare`) plus the
+Alchemy deploy definitions.

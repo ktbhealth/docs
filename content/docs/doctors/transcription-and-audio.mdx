@@ -1,0 +1,67 @@
+---
+title: Transcription and audio
+description: Languages, accuracy, fallback behavior, and what happens to your audio.
+icon: AudioLines
+---
+
+Reference for how KTB turns a consultation into text — and what it does with
+the audio afterwards.
+
+## Languages
+
+Transcription is tuned for **Portuguese (pt-BR)** consults. Speaker turns are
+labeled automatically so the transcript reads as a conversation, not a wall of
+text.
+
+<Callout type="info">
+  Working in another language? Transcription quality is best in Portuguese —
+  test a short session before relying on it for a full consult.
+</Callout>
+
+## How transcription works
+
+KTB uses a **client-first** strategy:
+
+1. **Browser transcription** runs in the browser as you speak — fast and
+   private-by-default.
+2. **Confidence check.** After the session, KTB measures how much actual speech
+   was captured versus transcript output.
+3. **Server fallback.** If confidence is suspiciously low (very little speech
+   detected, or almost no transcript text), the recorded audio is sent for
+   server-side re-transcription with a larger speech model.
+
+You never have to choose — the fallback is automatic. When it triggers, the
+consultation keeps both versions: the raw server transcript and an
+LLM-cleaned transcript, clearly labeled as machine output pending your review.
+
+## Accuracy
+
+- Expect a good first draft, not a perfect one — names, medications, and
+  numbers are exactly what you should proofread.
+- The silence/noise gate prevents the model from inventing phrases during
+  quiet moments.
+- Speaker labels can be wrong in overlapping speech; fix them in review.
+
+## What happens to the audio
+
+- Session audio is stored encrypted-at-rest in Cloudflare R2, keyed to the
+  consultation, so the server pipeline can re-transcribe when needed.
+- Audio is **never shown** in error messages — pipeline failures report a
+  reason, not the recording.
+- The cleaned transcript is explicitly marked as machine-corrected and **not**
+  physician-approved until you say so.
+
+## FAQ
+
+**Does transcription work offline?** Browser transcription needs network for
+model assets on first use; the server fallback requires connectivity. Plan for
+online consults.
+
+**Can I delete the audio?** Audio retention follows your clinic's data
+practices — see [Privacy and consent](/docs/doctors/privacy-and-consent) and
+ask your administrator about retention policy.
+
+**Why does the transcript look different after processing?** You are seeing
+the server-side re-transcription plus an LLM cleanup pass. Compare it with the
+browser transcript on the detail page and keep whichever reading is accurate —
+or edit directly.

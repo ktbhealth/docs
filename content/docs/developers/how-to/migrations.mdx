@@ -1,0 +1,46 @@
+---
+title: Database migrations
+description: Generate, apply, and deploy Drizzle migrations for Cloudflare D1.
+icon: Database
+---
+
+Schema lives in `packages/db` (Drizzle ORM on D1/SQLite). Migrations are
+generated files — never hand-edit them.
+
+## Generate
+
+After changing schema in `packages/db/src`:
+
+```bash
+bun run db:generate    # → packages/db/drizzle/*.sql + meta
+```
+
+Commit the generated migration alongside the schema change.
+
+## Apply locally
+
+```bash
+cd apps/web
+bun run db:migrate:local   # wrangler d1 migrations apply ktb --local
+```
+
+## Apply to production
+
+```bash
+cd apps/web
+bun run db:migrate         # wrangler d1 migrations apply ktb --remote
+```
+
+## Deploy-time sync
+
+`bun run infra:deploy` runs `sync-alchemy-migrations.mjs` first — it mirrors
+Drizzle migrations into `packages/db/alchemy-migrations` so Alchemy-managed
+environments stay in sync. If you see drift between the two directories, rerun
+the sync script rather than editing files by hand.
+
+## Rules
+
+- Migrations are append-only in effect: once applied to prod, fix forward with
+  a new migration — don't edit applied SQL.
+- The same schema must work on D1 (prod/local) and the Node dev path — avoid
+  SQLite-isms that only work on one.

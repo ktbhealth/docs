@@ -1,0 +1,47 @@
+---
+title: Run e2e tests
+description: Playwright suite for the product app — install, run, debug.
+icon: FlaskConical
+---
+
+The product repo has a Playwright suite under `apps/web/tests/e2e/` covering
+smoke flows, auth, and the consultation audio pipeline.
+
+## Install browsers (once)
+
+```bash
+cd apps/web
+bunx playwright install
+```
+
+## Run
+
+```bash
+cd apps/web
+bun run test:e2e          # whole suite
+bunx playwright test tests/e2e/smoke.spec.ts   # one spec
+bunx playwright test --ui # interactive runner
+```
+
+Specs of note:
+
+| Spec | Covers |
+| ---- | ------ |
+| `smoke.spec.ts` | App boots, key routes render |
+| `auth.spec.ts` | Sign-in flow |
+| `consultation-audio.spec.ts` | Record → transcribe → review pipeline |
+| `display-media-audio.spec.ts` | Meeting-bot / display-audio capture path |
+
+## Debugging
+
+- `--debug` opens Playwright Inspector; `--headed` shows the browser.
+- Traces/screenshots on failure land in `apps/web/test-results/` (gitignored).
+- Audio-related specs need a working fake/media device — check the spec's
+  fixtures before assuming a product bug.
+
+## CI
+
+E2E runs are heavier than unit tests — keep them scoped to real user flows.
+Unit and component coverage lives in colocated `*.test.ts(x)` files run by
+`vp test`; the repo-wide coverage gate is 100%, so scope local runs per
+package (`cd <pkg> && bunx vitest run`).

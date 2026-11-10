@@ -1,0 +1,38 @@
+---
+title: Run on Node (dev:node)
+description: Develop the product app outside workerd with KTB_DEV_NODE=1.
+icon: SquareTerminal
+---
+
+The default dev server runs the app on Cloudflare's workerd runtime (via
+Alchemy/Vite). For faster iteration or debugging Node-specific issues, run it
+on plain Node instead.
+
+## Run
+
+```bash
+cd apps/web
+bun run dev:node   # KTB_DEV_NODE=1 vp dev --port 3000
+```
+
+The app is served at `http://localhost:3000` either way — `dev:node` only
+changes the runtime underneath.
+
+## When to use it
+
+- Quicker startup and debugging when the failure is in app code, not the
+  Workers runtime.
+- Testing code paths that behave differently under Node vs workerd.
+
+## Caveats
+
+- Bindings that only exist on Cloudflare (D1, R2, KV) need local equivalents —
+  check `infra/` for how bindings are provided in dev.
+- `dev:secrets` (`cuora run`) is still needed for secrets-backed features.
+- Anything runtime-specific (streams, `node:sqlite` vs D1 client) should be
+  verified on **both** runtimes before shipping.
+
+## Verify
+
+- `bun run dev:node` boots without workerd errors.
+- The feature you're touching works identically under `bun run dev`.

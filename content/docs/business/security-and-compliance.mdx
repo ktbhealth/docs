@@ -1,0 +1,42 @@
+---
+title: Security and compliance
+description: How KTB handles data today — infrastructure, controls, and honest gaps.
+icon: FileLock
+---
+
+A factual account of the current security posture. Where we don't claim
+something, we say so.
+
+## Infrastructure
+
+KTB runs on **Cloudflare**: Workers for compute, D1 (SQLite) for application
+data, and R2 for session audio. Cloudflare provides the underlying platform
+security — encryption at rest and in transit, DDoS protection, and regional
+redundancy.
+
+## Application controls
+
+- **Authentication** via better-auth; bot protection via Cloudflare Turnstile.
+- **Authorization** is enforced per-plugin through a dedicated authz package —
+  cross-plugin reads go through guarded CQRS handlers, not raw table access.
+- **Consent trail** — patient consent declarations are timestamped (LGPD).
+- **Secrets** are managed through the org's secrets tooling (cuora), not
+  committed to the repo.
+- **Arch lint** mechanically prevents plugins from importing provider
+  adapters or platform APIs — the ports/adapters boundary is a security
+  boundary too.
+
+## Compliance posture — honest version
+
+- Built for **LGPD** (Brazil) workflows: consent gating before recording,
+  auditable consent timestamps, clinician-as-controller model.
+- We do **not** currently claim SOC 2, ISO 27001, or HIPAA certification.
+  If your procurement requires a formal attestation, talk to us — roadmap
+  items are tracked in the org ledger.
+- Data residency follows Cloudflare's platform; for strict residency
+  requirements, see [Deployment options](/docs/business/deployment-options).
+
+## Responsible disclosure
+
+Found a security issue? Reach us through the contact channel on the
+[Contact](/docs/business/contact) page rather than opening a public issue.

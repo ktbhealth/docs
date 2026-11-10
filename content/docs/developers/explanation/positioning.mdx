@@ -1,0 +1,38 @@
+---
+title: Positioning (engineering view)
+description: How the documentation-only rule shapes the codebase.
+icon: Target
+---
+
+The product's positioning — *the physician decides, KTB records* — is usually
+discussed as copy policy. In the codebase it's an architectural constraint,
+and it shows up in surprising places.
+
+## Where it lands in code
+
+- **AI output is always a draft.** The anamnesis extractor produces a
+  structured draft the clinician edits; `correctedTranscript` is explicitly
+  labeled machine-corrected, *not* physician-approved. Schema fields and UI
+  copy both carry this.
+- **No recommendation-shaped APIs.** There are no endpoints that return
+  "suggested diagnosis" or "next steps" — not because they're unimplemented,
+  but because the domain doesn't have those concepts.
+- **Consent is a first-class gate.** Recording can't start without a declared
+  consent timestamp — the constraint is enforced in the flow, not just
+  documented.
+- **Copy review is a lint-level concern.** "Recommendation-shaped" language in
+  UI strings is treated as a bug (T-021), same severity as a type error.
+
+## Why engineers should care
+
+When you design a feature, ask: *does this move a decision from the clinician
+to the software?* If yes, redesign it — the decision stays with the physician,
+the software records it. This rule has killed more feature proposals than any
+performance budget.
+
+## Related
+
+- Business-facing version:
+  [Positioning](/docs/business/positioning)
+- Patient-facing explanation:
+  [Privacy and consent](/docs/doctors/privacy-and-consent)
