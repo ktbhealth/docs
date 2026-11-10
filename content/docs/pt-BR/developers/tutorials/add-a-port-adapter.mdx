@@ -1,0 +1,48 @@
+---
+title: Adicionar um adapter de port
+description: Implemente um novo provider atrás de um port existente.
+icon: Cable
+---
+
+Ports-and-adapters é a arquitetura central do produto (veja
+[Ports e adapters](/pt-BR/docs/developers/explanation/ports-and-adapters)). Este
+tutorial adiciona um adapter para uma capacidade que já tem port — ex.: uma nova
+engine de transcrição ou backend de storage.
+
+## Pré-requisitos
+
+- Entenda a interface do port que você vai implementar — ela vive num pacote
+  `packages/<domain>` (ex.: `packages/transcription` define `Transcriber`).
+- O [ambiente de desenvolvimento](/pt-BR/docs/developers/how-to/dev-environment)
+  configurado.
+
+## Passos
+
+1. **Leia o port.** Encontre a interface no pacote de domínio. Note o que o port
+   promete (eventos, capacidades como `supported`, hooks opcionais como
+   `sessionStats()`/`recording()`).
+
+2. **Crie o pacote do adapter.** Siga a convenção dos irmãos — ex.:
+   `packages/transcription-whisper` e `packages/transcription-webspeech` são
+   dois adapters para o mesmo port `Transcriber`. Crie
+   `packages/<capability>-<vendor>/`.
+
+3. **Implemente a interface exatamente.** Adapters vivem na borda: eles *podem*
+   usar `node:*`, SDKs de vendors e literais de provider — esse é o trabalho
+   deles. Mantenha os tipos de domínio do port; não vaze shapes de vendor para
+   cima.
+
+4. **Ligue a seleção na composition root.** Qual adapter roda é decidido onde o
+   app é montado (composição de rotas em `apps/web` / registries de drivers),
+   nunca dentro de plugins. Veja como o registry de drivers de transcrição
+   seleciona `whisper` vs `webspeech`.
+
+5. **Teste o adapter isolado.** Unit-teste contra o contrato do port; o
+   [arch lint](/pt-BR/docs/developers/reference/arch-rules) vai falhar o build se
+   código de adapter vazar para ports/plugins.
+
+## Verifique
+
+- `bun run check` e `bunx vitest run` com escopo no pacote passam.
+- A feature funciona de ponta a ponta com seu adapter selecionado, e continua
+  funcionando com o adapter anterior — esse é o ponto do port.

@@ -1,0 +1,39 @@
+---
+title: Rodar em Node (dev:node)
+description: Desenvolva o app do produto fora do workerd com KTB_DEV_NODE=1.
+icon: SquareTerminal
+---
+
+O dev server default roda o app no runtime workerd da Cloudflare (via
+Alchemy/Vite). Para iteração mais rápida ou para debugar problemas específicos
+de Node, rode em Node puro.
+
+## Executar
+
+```bash
+cd apps/web
+bun run dev:node   # KTB_DEV_NODE=1 vp dev --port 3000
+```
+
+O app é servido em `http://localhost:3000` de qualquer forma — `dev:node` só
+muda o runtime por baixo.
+
+## Quando usar
+
+- Startup e debugging mais rápidos quando a falha está no código do app, não no
+  runtime Workers.
+- Testar caminhos de código que se comportam diferente em Node vs workerd.
+
+## Ressalvas
+
+- Bindings que só existem na Cloudflare (D1, R2, KV) precisam de equivalentes
+  locais — verifique `infra/` para como bindings são providos em dev.
+- `dev:secrets` (`cuora run`) ainda é necessário para features que dependem de
+  secrets.
+- Qualquer coisa específica de runtime (streams, `node:sqlite` vs client D1)
+  deve ser verificada em **ambos** os runtimes antes de subir.
+
+## Verifique
+
+- `bun run dev:node` sobe sem erros de workerd.
+- A feature que você está tocando funciona identicamente sob `bun run dev`.

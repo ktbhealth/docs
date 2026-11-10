@@ -1,0 +1,46 @@
+---
+title: Escrevendo conteúdo
+description: Como funcionam páginas MDX, frontmatter e metadados de pasta.
+---
+
+Toda página sob `content/docs/<locale>/` (`en`, `pt-BR`) é um arquivo `.mdx`
+com frontmatter YAML.
+
+## Frontmatter
+
+```mdx
+---
+title: Título da página
+description: Resumo de uma linha exibido em listagens e tags de SEO.
+icon: BookOpen # opcional, nome de um ícone lucide
+---
+```
+
+`title` e `description` são obrigatórios por convenção — o fumadocs os usa para
+a árvore de páginas, o índice de busca e o output do `llms.txt`.
+
+## Metadados de pasta
+
+Cada pasta de seção tem um `meta.json` que controla seu título e a ordem das
+páginas:
+
+```json
+{ "title": "Guias práticos", "pages": ["dev-environment", "deploy-to-cloudflare"] }
+```
+
+Páginas não listadas em `pages` são anexadas depois das listadas.
+
+## Abas de público
+
+Pastas de público de nível superior (`doctors`, `patients`, `developers`,
+`business`) carregam `"root": true` no seu `meta.json` — essa flag transforma a
+pasta numa **aba** de layout do fumadocs: a barra de abas alterna entre públicos
+e a sidebar mostra apenas a árvore do público ativo. O `meta.json` raiz controla
+a ordem das abas via seu array `pages`.
+
+## Endpoints úteis
+
+- `/<locale>/docs/<path>.md` — a página como markdown bruto (content negotiation
+  com `Accept: text/markdown` também redireciona para cá).
+- `/llms.txt` e `/llms-full.txt` — índices amigáveis a LLMs de todas as páginas.
+- `/api/search` — busca full-text via Orama que alimenta a UI de docs.

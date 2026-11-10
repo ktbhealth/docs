@@ -1,0 +1,43 @@
+---
+title: Mapa de pacotes
+description: O que cada pacote de workspace do monorepo do produto faz.
+icon: Boxes
+---
+
+O repo `product` é um bun workspace. Orientação rápida:
+
+## Apps
+
+| Caminho | O quê |
+| ------- | ----- |
+| `apps/web` | App TanStack Start — toda a UI + servidor do produto. Deploy no Cloudflare Workers via Alchemy. |
+
+## Packages
+
+| Pacote | Papel |
+| ------ | ----- |
+| `packages/kernel` | Primitivos de plugin (`definePlugin`) |
+| `packages/app-host` | Composition root — descobre plugins, liga layers, buses CQRS |
+| `packages/db`, `packages/db-sqlite` | Schema Drizzle + acesso D1/SQLite |
+| `packages/auth`, `packages/auth-better` | Autenticação (better-auth) |
+| `packages/authz` | Primitivos de autorização (`Forbidden`, guards) |
+| `packages/server-fns` | Infra de server functions |
+| `packages/anamnesis`, `packages/anamnesis-llm` | Schema de nota estruturada + extração/limpeza por LLM |
+| `packages/transcription` | Port `Transcriber` + heurísticas de fallback |
+| `packages/transcription-whisper`, `-webspeech` | Adapters de transcrição no navegador |
+| `packages/export-pdf` | Renderização consulta → PDF |
+| `packages/interop`, `-fhir`, `-openehr` | Interoperabilidade com EHR (em andamento) |
+| `packages/bot`, `packages/bot-recall` | Fonte de captura por meeting-bot |
+| `packages/captcha*` | Ports/adapters de proteção contra bots |
+| `packages/driver-framework` | Registry de drivers no cliente (seleção de adapter) |
+
+## Plugins (`plugins/`)
+
+Fatias de feature — `consultations`, `patients`, `dashboard`, `groups`,
+`notifications`, `jobs`, `users`, `platform*` — cada uma um pacote de
+responsabilidade única com rotas, serviços, schema e views.
+
+## Infra (`infra/`)
+
+Adapters de providers implementando ports de infra (ex.: `infra/cloudflare`)
+mais as definições de deploy do Alchemy.

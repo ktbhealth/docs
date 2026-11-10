@@ -1,0 +1,33 @@
+---
+title: Ports e adapters
+description: Por que o código do produto é moldado da forma que é.
+---
+
+O repo `product` segue uma arquitetura ports-and-adapters (hexagonal), conforme
+a ADR-0001 no repo `project`.
+
+## A ideia
+
+A lógica de domínio vive em serviços Effect atrás de **ports** — interfaces que
+descrevem capacidades (fontes de transcrição, calendário, notificações) sem
+nomear um provider. **Adapters** na borda implementam esses ports para um
+fornecedor específico: uma API de transcrição, um provedor de calendário,
+serviços da Cloudflare.
+
+## Por que importa
+
+- Trocar um provider significa escrever um novo adapter, não reescrever código
+  de domínio.
+- Testes rodam contra implementações de port em memória — sem rede, sem mocks
+  de SDKs de fornecedores.
+- A fronteira é aplicada mecanicamente: uma política de arch-lint
+  (`tools/arch-policy.mjs` no `product`) proíbe que plugins e ports importem
+  adapters ou toquem APIs de plataforma (`node:*`, `Bun`, `process`, literais
+  de provider como model ids `@cf/*`).
+
+## Onde isso aparece
+
+- `plugins/` — plugins de feature que não podem importar de `apps/`; a
+  composição acontece em `apps/web/src/routes/` via objetos `api` injetados.
+- `infra/` — adapters de providers (ex.: `infra/cloudflare`) implementando as
+  interfaces de `@ktb/infra-ports`, selecionados na borda.

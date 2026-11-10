@@ -1,0 +1,46 @@
+---
+title: Migrações de banco de dados
+description: Gerar, aplicar e fazer deploy de migrações Drizzle para Cloudflare D1.
+icon: Database
+---
+
+O schema vive em `packages/db` (Drizzle ORM sobre D1/SQLite). Migrações são
+arquivos gerados — nunca edite à mão.
+
+## Gerar
+
+Após mudar o schema em `packages/db/src`:
+
+```bash
+bun run db:generate    # → packages/db/drizzle/*.sql + meta
+```
+
+Commite a migração gerada junto com a mudança de schema.
+
+## Aplicar localmente
+
+```bash
+cd apps/web
+bun run db:migrate:local   # wrangler d1 migrations apply ktb --local
+```
+
+## Aplicar em produção
+
+```bash
+cd apps/web
+bun run db:migrate         # wrangler d1 migrations apply ktb --remote
+```
+
+## Sincronização no deploy
+
+`bun run infra:deploy` roda `sync-alchemy-migrations.mjs` primeiro — ele espelha
+as migrações Drizzle em `packages/db/alchemy-migrations` para que ambientes
+gerenciados pelo Alchemy fiquem em sync. Se você vir drift entre os dois
+diretórios, rode o script de sync de novo em vez de editar arquivos à mão.
+
+## Regras
+
+- Migrações são append-only na prática: depois de aplicadas em prod, corrija
+  para frente com uma nova migração — não edite SQL já aplicado.
+- O mesmo schema precisa funcionar em D1 (prod/local) e no caminho de dev Node —
+  evite SQLite-ismos que só funcionam em um deles.

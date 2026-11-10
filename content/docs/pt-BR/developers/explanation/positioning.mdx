@@ -1,0 +1,39 @@
+---
+title: Posicionamento (visão de engenharia)
+description: Como a regra de somente-documentação molda o codebase.
+icon: Target
+---
+
+O posicionamento do produto — *o médico decide, o KTB registra* — costuma ser
+discutido como política de copy. No codebase, é uma restrição arquitetural, e
+aparece em lugares surpreendentes.
+
+## Onde isso aparece no código
+
+- **Saída de IA é sempre um rascunho.** O extrator de anamnese produz um
+  rascunho estruturado que o clínico edita; `correctedTranscript` é explicitamente
+  rotulado como corrigido por máquina, *não* aprovado pelo médico. Campos de
+  schema e copy de UI carregam isso.
+- **Sem APIs com cara de recomendação.** Não existem endpoints que retornem
+  "diagnóstico sugerido" ou "próximos passos" — não porque estão
+  desimplementados, mas porque o domínio não tem esses conceitos.
+- **Consentimento é um portão de primeira classe.** A gravação não pode começar
+  sem um timestamp de consentimento declarado — a restrição é aplicada no fluxo,
+  não apenas documentada.
+- **Revisão de copy é preocupação de lint.** Linguagem com "cara de
+  recomendação" em strings de UI é tratada como bug (T-021), mesma severidade de
+  um erro de tipo.
+
+## Por que engenheiros devem se importar
+
+Ao projetar um recurso, pergunte: *isso move uma decisão do clínico para o
+software?* Se sim, reprojete — a decisão fica com o médico, o software a
+registra. Essa regra matou mais propostas de features do que qualquer budget de
+performance.
+
+## Relacionados
+
+- Versão voltada a negócios:
+  [Posicionamento](/pt-BR/docs/business/positioning)
+- Explicação voltada a pacientes:
+  [Privacidade e consentimento](/pt-BR/docs/doctors/privacy-and-consent)

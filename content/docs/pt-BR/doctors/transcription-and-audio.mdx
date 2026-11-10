@@ -1,0 +1,69 @@
+---
+title: Transcrição e áudio
+description: Idiomas, precisão, comportamento de fallback e o que acontece com seu áudio.
+icon: AudioLines
+---
+
+Referência de como o KTB transforma uma consulta em texto — e o que faz com o
+áudio depois.
+
+## Idiomas
+
+A transcrição é otimizada para consultas em **português (pt-BR)**. As falas são
+rotuladas automaticamente para que a transcrição leia como uma conversa, não
+como um bloco de texto.
+
+<Callout type="info">
+  Trabalhando em outro idioma? A qualidade da transcrição é melhor em português —
+  teste uma sessão curta antes de confiar nela para uma consulta completa.
+</Callout>
+
+## Como funciona a transcrição
+
+O KTB usa uma estratégia **client-first**:
+
+1. **Transcrição no navegador** roda no browser enquanto você fala — rápida e
+   privada por padrão.
+2. **Verificação de confiança.** Ao fim da sessão, o KTB mede quanto fala real
+   foi capturada em relação à saída da transcrição.
+3. **Fallback no servidor.** Se a confiança estiver suspeitamente baixa (pouca
+   fala detectada, ou quase nenhum texto transcrito), o áudio gravado é enviado
+   para retranscrição no servidor com um modelo de fala maior.
+
+Você nunca precisa escolher — o fallback é automático. Quando ele dispara, a
+consulta mantém as duas versões: a transcrição bruta do servidor e uma
+transcrição limpa por LLM, claramente rotuladas como saída de máquina pendente
+da sua revisão.
+
+## Precisão
+
+- Espere um bom primeiro rascunho, não um perfeito — nomes, medicamentos e
+  números são exatamente o que você deve revisar.
+- O portão de silêncio/ruído impede que o modelo invente frases durante momentos
+  de quietude.
+- Os rótulos de falante podem errar em fala sobreposta; corrija-os na revisão.
+
+## O que acontece com o áudio
+
+- O áudio da sessão é armazenado criptografado em repouso no Cloudflare R2,
+  vinculado à consulta, para que o pipeline do servidor possa retranscrever
+  quando necessário.
+- O áudio **nunca é exibido** em mensagens de erro — falhas do pipeline reportam
+  um motivo, não a gravação.
+- A transcrição limpa é explicitamente marcada como corrigida por máquina e
+  **não** aprovada pelo médico até você dizer que sim.
+
+## Perguntas frequentes
+
+**A transcrição funciona offline?** A transcrição no navegador precisa de rede
+para baixar os assets do modelo no primeiro uso; o fallback do servidor exige
+conectividade. Planeje para consultas online.
+
+**Posso apagar o áudio?** A retenção de áudio segue as práticas de dados da sua
+clínica — veja [Privacidade e consentimento](/pt-BR/docs/doctors/privacy-and-consent)
+e pergunte ao administrador sobre a política de retenção.
+
+**Por que a transcrição ficou diferente depois do processamento?** Você está
+vendo a retranscrição no servidor mais uma passada de limpeza por LLM. Compare
+com a transcrição do navegador na página de detalhes e mantenha a leitura que
+estiver correta — ou edite diretamente.

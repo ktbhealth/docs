@@ -1,0 +1,37 @@
+---
+title: Divisão cliente vs. servidor
+description: Onde o código roda no app do produto, e por que a fronteira importa.
+icon: Split
+---
+
+O produto é um app TanStack Start: SSR React no Cloudflare Workers. O código é
+deliberadamente dividido em três zonas, e o arch lint aplica a qual zona cada
+arquivo pertence.
+
+## As três zonas
+
+| Zona | Exemplos | Regras |
+| ---- | -------- | ------ |
+| **Cliente** | Views React, adapters de transcrição rodando no navegador (Whisper worker, Web Speech) | Sem secrets, sem APIs server-only; compute pesado é opt-in |
+| **Servidor / domínio** | Serviços Effect, handlers CQRS, ports, plugins | Lógica de domínio pura — sem imports de vendors, sem globais de plataforma |
+| **Adapters de borda** | `infra/cloudflare`, engines de transcrição, providers de captcha | Único lugar onde literais de provider e APIs de plataforma são permitidos |
+
+## Por que a divisão existe
+
+- **Latência** — a transcrição roda primeiro no navegador porque fazer round-trip
+  do áudio é lento; o servidor é o fallback, não o padrão.
+- **Confiança** — secrets e APIs privilegiadas vivem no servidor; o bundle do
+  cliente é público.
+- **Portabilidade** — os mesmos serviços de domínio rodam em workerd (prod/dev)
+  e em Node (`dev:node`) porque nunca tocam APIs de plataforma diretamente.
+
+## Regras práticas
+
+- Server functions validam input de wire com `effect/Schema` — toleram
+  coerções de null/undefined/string (veja `normalizePatientId` em
+  `apps/web/src/lib/fns.ts`).
+- Qualquer coisa que precise de um binding (D1, R2, secrets de env) é resolvida
+  na composition root e injetada — nunca `process.env` ou `Bun.env` em código
+  de domínio.
+- Registries de drivers no cliente escolhem adapters (ex.: qual implementação
+  de `Transcriber`) sem que o domínio conheça a escolha.

@@ -1,0 +1,53 @@
+---
+title: Solução de problemas
+description: Problemas comuns durante gravação, transcrição e exportação — e como resolvê-los.
+icon: Wrench
+---
+
+Soluções orientadas a tarefas para os problemas que clínicos mais enfrentam.
+
+## A gravação não inicia
+
+- **Permissão de microfone negada** — o navegador bloqueou o acesso ao microfone.
+  Clique no ícone de configurações do site na barra de endereço, permita o
+  microfone e recarregue a página.
+- **Nenhum dispositivo de entrada** — verifique as configurações de som do
+  sistema operacional; alguns notebooks exigem selecionar a entrada correta no
+  seletor de dispositivos do navegador.
+- **Consentimento não declarado** — a gravação depende do consentimento. Declare
+  o consentimento do paciente primeiro; o app não inicia a captura sem ele.
+
+## Transcrição vazia ou ilegível
+
+- **Volume baixo / distância grande** — aproxime-se do microfone; o portão de
+  silêncio descarta áudio que não é fala, o que é o comportamento correto, mas
+  resulta em pouca transcrição.
+- **Sotaque forte ou fala sobreposta** — espere precisão menor. Fale em turnos
+  sempre que possível; os rótulos de falante melhoram quando as pessoas não se
+  sobrepõem.
+- **A transcrição do navegador falhou** — é para isso que serve o fallback do
+  servidor. Conclua a sessão normalmente; o KTB retranscreve no servidor quando
+  a confiança do navegador é baixa.
+
+## Processamento de áudio travado ou com falha
+
+O pipeline segue `stored → queued → processing → done`. Se aparecer `failed`:
+
+1. Abra os detalhes da consulta — o motivo do erro é exibido (nunca o áudio em
+   si).
+2. Tente novamente na página da consulta, se houver uma ação de retry, ou
+   contate seu administrador com o id da consulta.
+3. A transcrição do navegador continua utilizável — você pode revisar e
+   finalizar a nota sem a passada do servidor.
+
+## Problemas de exportação
+
+- **O PDF não baixa** — verifique bloqueadores de pop-up/download; permita
+  downloads para o domínio do app.
+- **Conteúdo errado no PDF** — a exportação renderiza a nota que você aprovou.
+  Volte, corrija os campos da anamnese, aprove novamente e exporte de novo.
+
+## Ainda com problemas?
+
+Reúna o id da consulta e o texto do erro exibido, e procure o administrador do
+KTB ou o canal de suporte usado pela sua clínica.

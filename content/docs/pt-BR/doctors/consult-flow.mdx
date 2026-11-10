@@ -1,0 +1,49 @@
+---
+title: O fluxo da consulta
+description: Como uma consulta passa da gravação à nota exportada.
+icon: ClipboardList
+---
+
+Toda consulta segue o mesmo pipeline. Esta página descreve cada etapa e o que
+você controla em cada uma.
+
+## Visão geral do pipeline
+
+| Etapa | O que acontece | Seu papel |
+| ----- | -------------- | --------- |
+| Gravar | O áudio é capturado e transcrito em tempo real (navegador primeiro, fallback no servidor) | Fale naturalmente; confirme o consentimento antes |
+| Estruturar | Um rascunho de anamnese estruturada é gerado a partir da transcrição | Revise cada campo |
+| Revisar | Você edita transcrição e anamnese até a nota estar correta | Aprove ou continue editando |
+| Exportar | A nota finalizada é renderizada em PDF | Baixe e arquive |
+
+## Gravação
+
+O KTB aceita várias fontes de captura — gravação no navegador, captura por
+meeting-bot, ditado e upload de áudio — todas alimentando o mesmo pipeline de
+transcrição e anamnese. Escolha a que melhor se encaixa no atendimento.
+
+<Callout type="warn" title="O consentimento vem primeiro">
+  Gravar um atendimento exige o consentimento do paciente. Declare-o no app
+  antes de começar — o timestamp é mantido como parte da trilha de conformidade.
+</Callout>
+
+## Revisão e aprovação
+
+A anamnese é um **rascunho produzido por extração automática**. Trate-a como um
+primeiro rascunho apressado: corrija nomes, doses, datas e qualquer coisa que o
+modelo tenha parafraseado. Nada entra no registro oficial até você aprovar.
+
+Quando a transcrição foi reprocessada no servidor, a página de detalhes mostra
+a transcrição bruta e a versão limpa lado a lado, para você comparar.
+
+## Exportação
+
+Consultas finalizadas são exportadas em PDF. A exportação contém o que você
+aprovou — é um artefato de documentação, não uma recomendação clínica.
+
+## Se algo travar
+
+O processamento de áudio é assíncrono: depois da gravação, o áudio passa por
+stored → queued → processing → done (ou failed). Um badge ou status na consulta
+mostra em que ponto ele está; falhas exibem o motivo do erro sem nunca expor o
+áudio em si. Veja [Solução de problemas](/pt-BR/docs/doctors/troubleshooting).

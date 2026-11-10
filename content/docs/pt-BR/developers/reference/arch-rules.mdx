@@ -1,0 +1,36 @@
+---
+title: Regras de arquitetura
+description: A política de fronteira aplicada no código do produto.
+icon: ShieldAlert
+---
+
+As regras de arquitetura do repo do produto não são convenções — são aplicadas
+por `tools/arch-policy.mjs`, a fonte única para overrides do oxlint e regras
+`ktb-arch/*`.
+
+## A fronteira
+
+| Camada | Pode importar | NÃO pode |
+| ------ | ------------- | -------- |
+| Ports / plugins / pacotes de domínio | entre si, `effect`, kernel compartilhado | adapters, `apps/`, `node:*`/`bun:*`/`deno:*`/`cloudflare:*`/`workerd:*`, `process`/`Bun`/`Deno`, literais de provider (`@cf/*`, endpoints) |
+| Adapters, `apps/*`, `infra/*`, `@ktb/app-host` | qualquer coisa (a borda isenta) | — |
+| Testes | código de domínio | imports de adapters continuam proibidos; regras de plataforma/provider isentas |
+
+## Consequências
+
+- **Plugins nunca importam de `apps/`** — injete dependências via composição de
+  rotas (objetos `api` em `apps/web/src/routes/`).
+- **Literais de provider vivem só em adapters** — model ids `@cf/`, endpoints
+  de vendors, coisas de `wrangler`.
+- **Composição é explícita** — descoberta de plugins é por convenção
+  (`import.meta.glob` em `packages/app-host`), a fiação fica no app host.
+
+## Arquivos gerados
+
+Nunca edite à mão: output do Paraglide (`src/paraglide/`), `routeTree.gen.ts`,
+migrações drizzle. Eles são regenerados por `vp build`/`check` e `db:generate`.
+
+## Se o lint falhar
+
+O erro nomeia a regra (`ktb-arch/*`). A correção quase sempre é: mover o import
+para trás de um port, ou mover o arquivo para a camada de borda que o possui.

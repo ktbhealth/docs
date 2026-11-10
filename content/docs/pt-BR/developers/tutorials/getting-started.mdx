@@ -1,0 +1,41 @@
+---
+title: Primeiros passos
+description: Configure o site de docs localmente e entenda o layout.
+---
+
+Este tutorial leva você de um clone limpo a um site de docs rodando.
+
+## Pré-requisitos
+
+- [Bun](https://bun.sh/) (o gerenciador de pacotes do repo)
+- Git
+
+## Passos
+
+1. Clone o repositório e instale as dependências:
+
+   ```bash
+   git clone https://github.com/ktbhealth/docs.git
+   cd docs
+   bun install
+   ```
+
+   O `bunfig.toml` define `linker = "hoisted"` — mantenha. O linker isolado
+default do Bun quebra o dev server do nitro.
+
+2. Inicie o dev server:
+
+   ```bash
+   bun run dev
+   ```
+
+   O site é servido em `http://localhost:3000`. Páginas de documentação ficam
+   sob `/<locale>/docs` (ex.: `/en/docs`).
+
+3. Abra `content/docs/en/index.mdx` e edite-o. O dev server faz hot-reload do
+   conteúdo MDX.
+
+## Verifique
+
+- Visite `http://localhost:3000/en/docs` e confirme que sua edição aparece.
+- Rode `bun run types:check` para typecheck sem emitir.

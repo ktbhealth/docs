@@ -1,0 +1,49 @@
+---
+title: Contribuir
+description: Como propor mudanças, da issue ao PR mergeado.
+icon: GitPullRequest
+---
+
+O repo do produto é público no GitHub. Esta página descreve o caminho prático
+da ideia à mudança mergeada.
+
+## Antes de escrever código
+
+- **Verifique o ledger.** Propostas cross-repo, ADRs e tasks vivem no repo
+  `project` (myco). Se sua mudança toca arquitetura ou posicionamento, provavelmente
+  pertence lá primeiro.
+- **Leia as regras.** O `AGENTS.md` de cada repo é o contrato — inglês em tudo,
+  fronteiras ports/adapters, arquivos gerados nunca editados à mão.
+
+## O loop
+
+1. **Fork e branch** a partir de `main`.
+2. **Instale** com `bun install` — mantenha `linker = "hoisted"` no
+   `bunfig.toml` (veja [Ambiente de desenvolvimento](/pt-BR/docs/developers/how-to/dev-environment)).
+3. **Mude código, não arquivos gerados.** Output do Paraglide, `routeTree.gen.ts`
+   e migrações drizzle são regenerados pelo toolchain.
+4. **Verifique localmente:**
+
+   ```bash
+   bun run check     # fmt + lint + typecheck
+   bun run test      # vitest (escopo por pacote para velocidade)
+   ```
+
+5. **Abra um PR** descrevendo o quê e o porquê. PRs pequenos e de
+   responsabilidade única mergeiam mais rápido — plugins são de responsabilidade
+   única por design.
+
+## Convenções de contribuição
+
+- Lógica de domínio vai em serviços Effect atrás de ports; adapters ficam na
+  borda. Nova capacidade externa? Isso é um novo port + adapter, não um import
+  de vendor dentro de um plugin.
+- UI vem do `@ktbhealth/ui` — nunca copie componentes para apps. Componente
+  faltando? Ele é adicionado no repo `ui` e consumido via dep de git-tag.
+- Copy segue a regra de posicionamento: o médico decide, o KTB registra. Sem
+  linguagem de diagnóstico/tratamento/recomendação.
+
+## Mudanças na documentação
+
+Este site vive no repo `docs` — conteúdo é MDX sob `content/docs/<locale>/`,
+organizado por abas de público. Veja [Escrevendo conteúdo](/pt-BR/docs/developers/tutorials/writing-content).

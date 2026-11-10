@@ -1,0 +1,20 @@
+---
+title: Comandos
+description: Scripts npm e o que fazem.
+---
+
+| Comando                  | Descrição                                                            |
+| ------------------------ | -------------------------------------------------------------------- |
+| `bun run dev`            | Dev server Vite em :3000 (preset nitro `vercel`)                     |
+| `bun run build`          | Build de produção com o preset `vercel`                              |
+| `bun run build:cf`       | Build com `CLOUDFLARE_DEPLOY=1` → nitro `cloudflare_module`          |
+| `bun run preview`        | Preview local do último build                                        |
+| `bun run types:check`    | `tsc --noEmit`                                                        |
+| `bun run deploy`         | `build:cf` + `alchemy deploy`                                        |
+| `bun run deploy:wrangler` | `build:cf` + `wrangler deploy` contra a config gerada pelo nitro    |
+
+Variáveis de ambiente:
+
+- `CLOUDFLARE_DEPLOY=1` — seleciona o preset nitro `cloudflare_module`.
+- `NITRO_PRESET` — override explícito de preset nitro (vence
+  `CLOUDFLARE_DEPLOY`).

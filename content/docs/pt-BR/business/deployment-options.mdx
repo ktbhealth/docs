@@ -1,0 +1,53 @@
+---
+title: Opções de implantação
+description: Implantação Cloudflare-first, e por que a arquitetura mantém a porta aberta.
+icon: Server
+---
+
+O KTB é implantado na Cloudflare hoje — e arquitetado para que isso não seja uma
+gaiola.
+
+## Recomendado: Cloudflare
+
+Produção roda como um **Cloudflare Worker** implantado via Alchemy:
+
+| Componente | Serviço |
+| ---------- | ------- |
+| Compute | Workers (build Nitro `cloudflare_module`) |
+| Banco de dados | D1 (SQLite via Drizzle ORM) |
+| Armazenamento de áudio | R2 |
+| Proteção contra bots | Turnstile |
+
+Este é o caminho testado e suportado — infra gerenciada, edge global e nenhum
+servidor para operar.
+
+## A história de portabilidade
+
+O código do KTB segue **ports e adapters** (veja a
+[seção de Desenvolvedores](/pt-BR/docs/developers/explanation/ports-and-adapters)):
+a lógica de domínio fica atrás de interfaces, e os detalhes de cada fornecedor
+vivem em adapters na borda. Concretamente:
+
+- **Transcrição** é um port com adapters de navegador (Whisper worker / Web
+  Speech) e de engine no servidor — não está acoplada a um único fornecedor.
+- **Storage, calendário, notificações, captcha** são todos ports com adapters
+  com sabor Cloudflare hoje.
+- **Arch lint** proíbe literais de provider (`@cf/*` model ids, endpoints) no
+  código de domínio — a portabilidade não é aspiracional, é enforced.
+
+Trocar Cloudflare D1 por Postgres, ou R2 por S3, significa escrever um adapter —
+não reescrever features.
+
+## O que precisaríamos para suportar seu ambiente
+
+- Um adapter de port para seus providers de banco/armazenamento.
+- Pipeline de deploy para sua plataforma (o Alchemy suporta múltiplos alvos; o
+  build Nitro também pode ter Node como target).
+- Seus requisitos de conformidade mapeados para os controles em
+  [Segurança e conformidade](/pt-BR/docs/business/security-and-compliance).
+
+<Callout type="info">
+  Implantação self-hosted e em nuvem privada estão disponíveis para parceiros —
+  escopo e prazo dependem de quais ports precisam de novos adapters. Veja
+  [Contato](/pt-BR/docs/business/contact).
+</Callout>

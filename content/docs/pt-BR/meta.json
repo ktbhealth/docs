@@ -1,3 +1,1 @@
-{
-	"title": "Documentação"
-}
+{ "title": "Documentação KTB Health", "pages": ["index", "doctors", "patients", "developers", "business"] }

@@ -1,0 +1,47 @@
+---
+title: Rodar testes e2e
+description: Suite Playwright do app do produto — instalar, rodar, debugar.
+icon: FlaskConical
+---
+
+O repo do produto tem uma suite Playwright em `apps/web/tests/e2e/` cobrindo
+fluxos de smoke, auth e o pipeline de áudio de consulta.
+
+## Instalar browsers (uma vez)
+
+```bash
+cd apps/web
+bunx playwright install
+```
+
+## Rodar
+
+```bash
+cd apps/web
+bun run test:e2e          # suite inteira
+bunx playwright test tests/e2e/smoke.spec.ts   # um spec
+bunx playwright test --ui # runner interativo
+```
+
+Specs relevantes:
+
+| Spec | Cobre |
+| ---- | ----- |
+| `smoke.spec.ts` | App sobe, rotas-chave renderizam |
+| `auth.spec.ts` | Fluxo de sign-in |
+| `consultation-audio.spec.ts` | Pipeline gravar → transcrever → revisar |
+| `display-media-audio.spec.ts` | Caminho de captura por meeting-bot / display-audio |
+
+## Debugging
+
+- `--debug` abre o Playwright Inspector; `--headed` mostra o navegador.
+- Traces/screenshots de falha ficam em `apps/web/test-results/` (gitignored).
+- Specs de áudio precisam de um dispositivo de mídia/fake funcionando — verifique
+  os fixtures do spec antes de assumir bug de produto.
+
+## CI
+
+Runs de e2e são mais pesados que testes unitários — mantenha-os com escopo em
+fluxos reais de usuário. Cobertura unitária e de componentes vive em arquivos
+`*.test.ts(x)` colocalizados, rodados por `vp test`; o coverage gate do repo é
+100%, então rode local com escopo por pacote (`cd <pkg> && bunx vitest run`).

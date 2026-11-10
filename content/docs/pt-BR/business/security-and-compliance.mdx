@@ -1,0 +1,46 @@
+---
+title: Segurança e conformidade
+description: Como o KTB trata dados hoje — infraestrutura, controles e lacunas honestas.
+icon: FileLock
+---
+
+Um relato factual da postura de segurança atual. Onde não reivindicamos algo,
+dizemos isso.
+
+## Infraestrutura
+
+O KTB roda na **Cloudflare**: Workers para compute, D1 (SQLite) para dados da
+aplicação e R2 para áudio de sessão. A Cloudflare fornece a segurança da
+plataforma subjacente — criptografia em repouso e em trânsito, proteção contra
+DDoS e redundância regional.
+
+## Controles da aplicação
+
+- **Autenticação** via better-auth; proteção contra bots via Cloudflare
+  Turnstile.
+- **Autorização** é aplicada por plugin por meio de um pacote dedicado de
+  authz — leituras entre plugins passam por handlers CQRS com guardas, não por
+  acesso direto a tabelas.
+- **Trilha de consentimento** — declarações de consentimento do paciente são
+  registradas com timestamp (LGPD).
+- **Segredos** são gerenciados pela ferramenta de secrets da org (cuora), não
+  commitados no repositório.
+- **Arch lint** impede mecanicamente que plugins importem adapters de providers
+  ou APIs de plataforma — a fronteira ports/adapters também é uma fronteira de
+  segurança.
+
+## Postura de conformidade — versão honesta
+
+- Construído para fluxos de **LGPD** (Brasil): portão de consentimento antes da
+  gravação, timestamps de consentimento auditáveis, modelo de clínico como
+  controlador.
+- Atualmente **não** reivindicamos certificação SOC 2, ISO 27001 ou HIPAA. Se
+  seu procurement exige uma atestação formal, fale conosco — itens de roadmap
+  são rastreados no ledger da org.
+- A residência de dados segue a plataforma da Cloudflare; para requisitos
+  estritos de residência, veja [Opções de implantação](/pt-BR/docs/business/deployment-options).
+
+## Divulgação responsável
+
+Encontrou um problema de segurança? Fale conosco pelo canal de contato na página
+[Contato](/pt-BR/docs/business/contact) em vez de abrir uma issue pública.
