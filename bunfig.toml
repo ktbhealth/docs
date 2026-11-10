@@ -1,0 +1,4 @@
+# Bun's isolated linker breaks nitro's dev server (module resolution for the
+# nitro vite plugin). Hoisted linking keeps `bun run dev` working.
+[install]
+linker = "hoisted"

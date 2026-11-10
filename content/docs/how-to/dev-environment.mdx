@@ -1,0 +1,29 @@
+---
+title: Set up a dev environment
+description: Get `bun run dev` working, including the linker gotcha.
+---
+
+## Install
+
+```bash
+bun install
+```
+
+`bunfig.toml` must keep `linker = "hoisted"`. With Bun's default isolated
+linker, the nitro Vite plugin fails to resolve modules in dev. If you
+regenerated `bunfig.toml`, restore the `[install]` section.
+
+## Run
+
+```bash
+bun run dev   # http://localhost:3000
+bun run types:check
+```
+
+## If dev breaks
+
+- **Dual React copies** — you are probably building with the
+  `cloudflare_module` preset. Dev must use the default `vercel` preset; only
+  `build:cf` / `CLOUDFLARE_DEPLOY=1` selects Cloudflare.
+- **Stale route tree** — delete `src/routeTree.gen.ts` and restart; it is
+  generated, never hand-edit it.

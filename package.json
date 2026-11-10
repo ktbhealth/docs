@@ -1,0 +1,45 @@
+{
+  "name": "@ktbhealth/docs",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "build:cf": "CLOUDFLARE_DEPLOY=1 vite build",
+    "start": "vite preview",
+    "preview": "vite preview",
+    "types:check": "tsc --noEmit",
+    "deploy": "bun run build:cf && alchemy deploy",
+    "deploy:wrangler": "bun run build:cf && wrangler deploy --config .output/server/wrangler.json"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "1.170.46",
+    "@tanstack/react-router-devtools": "1.167.2",
+    "@tanstack/react-start": "1.169.4",
+    "cn": "^0.5.2",
+    "fumadocs-core": "16.18.4",
+    "fumadocs-mdx": "15.5.3",
+    "fumadocs-ui": "npm:@fumadocs/base-ui@16.18.4",
+    "lucide-react": "^1.70.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@alchemy.run/cloudflare": "2.0.0-beta.85",
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/mdx": "^2.0.14",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "alchemy": "2.0.0-beta.85",
+    "effect": "4.1.2",
+    "miniflare": "^4",
+    "nitro": "3.0.261103-rc",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6",
+    "wrangler": "4.158.0"
+  }
+}

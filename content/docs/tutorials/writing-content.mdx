@@ -1,0 +1,36 @@
+---
+title: Writing content
+description: How MDX pages, frontmatter, and folder metadata work.
+---
+
+Every page under `content/docs/` is an `.mdx` file with YAML frontmatter.
+
+## Frontmatter
+
+```mdx
+---
+title: Page title
+description: One-line summary shown in listings and SEO tags.
+icon: BookOpen # optional, a lucide icon name
+---
+```
+
+`title` and `description` are required by convention — fumadocs uses them for
+the page tree, search index, and `llms.txt` output.
+
+## Folder metadata
+
+Each section folder has a `meta.json` that controls its title and page order:
+
+```json
+{ "title": "Tutorials", "pages": ["getting-started", "writing-content"] }
+```
+
+Pages not listed in `pages` are appended after the listed ones.
+
+## Useful endpoints
+
+- `/docs/<path>.md` — the page as raw markdown (content negotiation on
+  `Accept: text/markdown` redirects here too).
+- `/llms.txt` and `/llms-full.txt` — LLM-friendly indexes of all pages.
+- `/api/search` — Orama-powered full-text search backing the docs UI.

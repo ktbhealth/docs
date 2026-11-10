@@ -1,0 +1,42 @@
+---
+title: First deploy
+description: Build for Cloudflare Workers and deploy with Alchemy.
+---
+
+This tutorial deploys the docs site to Cloudflare Workers.
+
+## Prerequisites
+
+- Cloudflare credentials configured for [Alchemy](https://alchemy.run)
+  (same setup as the `product` repo's `infra:deploy`).
+
+## Steps
+
+1. Build the Worker bundle and prerendered assets:
+
+   ```bash
+   bun run build:cf
+   ```
+
+   This sets `CLOUDFLARE_DEPLOY=1`, which selects nitro's
+   `cloudflare_module` preset and writes `.output/server/index.mjs` plus the
+   static assets in `.output/public`.
+
+2. Deploy:
+
+   ```bash
+   bun run deploy
+   ```
+
+   `alchemy.run.ts` uploads the nitro server bundle (`bundle: false`) and
+   serves `.output/public` through the Worker assets binding.
+
+## Fallback
+
+If Alchemy is unavailable, nitro also emits a wrangler config:
+
+```bash
+bun run deploy:wrangler
+```
+
+which runs `wrangler deploy --config .output/server/wrangler.json`.

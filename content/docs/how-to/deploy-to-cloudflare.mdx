@@ -1,0 +1,35 @@
+---
+title: Deploy to Cloudflare
+description: Production deploy via Alchemy, with a wrangler fallback.
+---
+
+## Preferred: Alchemy
+
+```bash
+bun run deploy
+```
+
+This builds with `CLOUDFLARE_DEPLOY=1` (nitro `cloudflare_module` preset) and
+runs `alchemy deploy`. The stack in `alchemy.run.ts` is a single
+`Cloudflare.Workers.Worker`:
+
+- `main: .output/server/index.mjs` with `bundle: false` — nitro's output is
+  already a Worker-ready ESM bundle with sibling chunks.
+- `assets: { directory: .output/public }` — prerendered HTML and hashed
+  client assets, bound as `ASSETS`.
+- `nodejs_compat` compatibility flag — nitro's runtime polyfills `node:*`
+  imports.
+
+## Fallback: wrangler
+
+```bash
+bun run deploy:wrangler
+```
+
+Nitro writes `.output/server/wrangler.json` during the Cloudflare build; this
+just deploys it.
+
+## Verify
+
+After deploy, check that a prerendered page, `/api/search`, and a `.md` page
+URL all respond correctly.
