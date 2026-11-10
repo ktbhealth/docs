@@ -1,0 +1,96 @@
+---
+title: Design-system components
+description: MDX pages can use @ktbhealth/ui components — see how they render.
+---
+
+The docs site maps common MDX elements onto components from
+[`@ktbhealth/ui`](https://github.com/ktbhealth/ui), the org design system.
+Use them in any `.mdx` file — they are provided globally, no imports needed.
+
+## Badge
+
+Status labels use the KTB `Badge`:
+
+<Badge>default</Badge>{" "}
+<Badge variant="secondary">secondary</Badge>{" "}
+<Badge variant="outline">outline</Badge>{" "}
+<Badge variant="destructive">destructive</Badge>
+
+## Cards
+
+`<Cards>` lays out `<Card>` entries in a responsive grid:
+
+<Cards>
+  <Card title="Product repo" description="The KTB Health app monorepo" href="https://github.com/ktbhealth/product" />
+  <Card title="UI repo" description="The @ktbhealth/ui design system" href="https://github.com/ktbhealth/ui" />
+</Cards>
+
+## Callouts
+
+`<Callout>` renders as a KTB `Alert`. Types: `info`, `warn`, `error`,
+`success`, `idea`.
+
+<Callout type="info" title="Information">
+  Callouts keep the same `type`/`title` API as fumadocs.
+</Callout>
+
+<Callout type="warn">
+  Warnings map to the default alert style.
+</Callout>
+
+<Callout type="error" title="Errors">
+  Error callouts use the destructive variant.
+</Callout>
+
+## Tabs
+
+KTB `Tabs` are built on Base UI — set `defaultValue` on `Tabs` and `value`
+on each trigger/panel:
+
+<Tabs defaultValue="bun">
+  <TabsList>
+    <TabsTrigger value="bun">Bun</TabsTrigger>
+    <TabsTrigger value="npm">npm</TabsTrigger>
+  </TabsList>
+  <TabsContent value="bun">
+
+  ```bash
+  bun install
+  bun run dev
+  ```
+
+  </TabsContent>
+  <TabsContent value="npm">
+
+  ```bash
+  npm install
+  npm run dev
+  ```
+
+  </TabsContent>
+</Tabs>
+
+## Accordion
+
+KTB `Accordion` items take a `value`; the root accepts `multiple`:
+
+<Accordion multiple>
+  <AccordionItem value="a">
+    <AccordionTrigger>What is KTB Health?</AccordionTrigger>
+    <AccordionContent>KTB Health builds clinical documentation tooling for physicians.</AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="b">
+    <AccordionTrigger>Where do components come from?</AccordionTrigger>
+    <AccordionContent>The <code>@ktbhealth/ui</code> repo — Tailwind v4 tokens plus React and Vue component libraries.</AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+## Tables
+
+Markdown tables render with the KTB `Table` components automatically:
+
+| Repo | Purpose |
+| ---- | ------- |
+| `product` | KTB Health app monorepo |
+| `ui` | Design system (`@ktbhealth/ui`) |
+| `docs` | This documentation site |
