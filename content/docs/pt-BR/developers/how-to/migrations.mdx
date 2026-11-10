@@ -33,7 +33,8 @@ bun run db:migrate         # wrangler d1 migrations apply ktb --remote
 
 ## Sincronização no deploy
 
-`bun run infra:deploy` roda `sync-alchemy-migrations.mjs` primeiro — ele espelha
+`bun run deploy` (raiz) → `infra:deploy` em `apps/web` roda
+`sync-alchemy-migrations.mjs` primeiro — ele espelha
 as migrações Drizzle em `packages/db/alchemy-migrations` para que ambientes
 gerenciados pelo Alchemy fiquem em sync. Se você vir drift entre os dois
 diretórios, rode o script de sync de novo em vez de editar arquivos à mão.

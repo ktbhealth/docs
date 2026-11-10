@@ -36,6 +36,13 @@ pendem de um objeto `Plugin`.
    `plugins/*/src/index.ts` que exporta `plugins`. Nenhuma edição em registry
    central.
 
+   Se o plugin contribui UI (itens de nav, slots de painel), adicione também
+   `src/client.ts` exportando um array `plugins` com objetos de plugin
+   **seguros para o cliente** — ele não pode importar código de servidor
+   (nada de services Effect, db ou internals do `index.ts`).
+   `@ktb/app-host/client` o descobre via `import.meta.glob`; a paridade entre
+   `index.ts` e `client.ts` é verificada por `apps/web/src/plugins.test.ts`.
+
 3. **Adicione superfície cross-plugin (opcional).** Se outros plugins
    precisarem dos seus dados, exporte grupos CQRS de `src/api.ts`
    (`Query.group`/`Command` de `@effect-server-utils/cqrs`) — nunca exponha

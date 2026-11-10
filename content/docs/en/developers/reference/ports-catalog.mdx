@@ -11,7 +11,7 @@ Adapters at the edge implement them. This is the current catalog.
 | ---- | -------- | ---------- | ---------------- |
 | `Transcriber` | `packages/transcription` | Client-side speech-to-text (partial/final events, confidence stats, audio capture) | `@ktb/transcription-whisper` (in-browser Whisper worker), `@ktb/transcription-webspeech` (Web Speech API) |
 | Transcription engine | `packages/transcription` (engine port) | Server-side ASR backend | whisper-large-v3-turbo via Workers AI (`@cf/*` — adapter-only literal) |
-| `Db` | `packages/db` | Database access (Drizzle) | Cloudflare D1 |
+| `Db` | `packages/db` | Database access (Drizzle) | Cloudflare D1 (prod/dev), `@ktb/db-sqlite` better-sqlite3 (`dev:node`) |
 | Audio storage | consultations pipeline | Session audio blob storage | Cloudflare R2 (`audioKey`) |
 | Captcha | `packages/captcha*` | Bot protection | Turnstile (`captcha-turnstile`), local stub (`captcha-stub`) |
 | Auth | `packages/auth*` | Sessions/identity | better-auth (`auth-better`) |

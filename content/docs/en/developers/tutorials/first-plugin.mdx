@@ -34,6 +34,13 @@ off a `Plugin` object.
    Registration is **by convention** — `packages/app-host` discovers every
    `plugins/*/src/index.ts` that exports `plugins`. No central registry edit.
 
+   If the plugin contributes UI (nav items, panel slots), also add
+   `src/client.ts` exporting a `plugins` array with **client-safe** plugin
+   objects — it must not import server code (no Effect services, db, or
+   `index.ts` internals). `@ktb/app-host/client` discovers it via
+   `import.meta.glob`; parity between `index.ts` and `client.ts` is asserted
+   by `apps/web/src/plugins.test.ts`.
+
 3. **Add cross-plugin surface (optional).** If other plugins need your data,
    export CQRS groups from `src/api.ts` (`Query.group`/`Command` from
    `@effect-server-utils/cqrs`) — never expose raw table reads.

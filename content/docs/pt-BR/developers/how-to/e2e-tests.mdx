@@ -41,7 +41,9 @@ Specs relevantes:
 
 ## CI
 
-Runs de e2e são mais pesados que testes unitários — mantenha-os com escopo em
+A suite **não** faz parte do CI — rode localmente antes de mergear mudanças em
+auth ou no pipeline de áudio. Runs de e2e são mais pesados que testes unitários
+— mantenha-os com escopo em
 fluxos reais de usuário. Cobertura unitária e de componentes vive em arquivos
 `*.test.ts(x)` colocalizados, rodados por `vp test`; o coverage gate do repo é
 100%, então rode local com escopo por pacote (`cd <pkg> && bunx vitest run`).

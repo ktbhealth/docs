@@ -26,8 +26,10 @@ changes the runtime underneath.
 
 ## Caveats
 
-- Bindings that only exist on Cloudflare (D1, R2, KV) need local equivalents —
-  check `infra/` for how bindings are provided in dev.
+- Bindings that only exist on Cloudflare (D1, R2, KV) have local
+  equivalents under `apps/web/src/lib/node-*.ts` — SQLite via
+  `@ktb/db-sqlite`, filesystem audio bucket, and a SQLite-backed queue
+  (`data/queue.db`) that survives restarts.
 - `dev:secrets` (`cuora run`) is still needed for secrets-backed features.
 - Anything runtime-specific (streams, `node:sqlite` vs D1 client) should be
   verified on **both** runtimes before shipping.

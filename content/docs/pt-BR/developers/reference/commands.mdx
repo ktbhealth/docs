@@ -1,7 +1,9 @@
 ---
 title: Comandos
-description: Scripts npm e o que fazem.
+description: Scripts npm do site de docs e do repo do produto.
 ---
+
+## Site de docs (este repo)
 
 | Comando                  | Descrição                                                            |
 | ------------------------ | -------------------------------------------------------------------- |
@@ -18,3 +20,26 @@ Variáveis de ambiente:
 - `CLOUDFLARE_DEPLOY=1` — seleciona o preset nitro `cloudflare_module`.
 - `NITRO_PRESET` — override explícito de preset nitro (vence
   `CLOUDFLARE_DEPLOY`).
+
+## Repo do produto
+
+Execute a partir da raiz do repo `product`, salvo indicação.
+
+| Comando                    | Descrição                                                        |
+| -------------------------- | ------------------------------------------------------------------ |
+| `bun run dev`              | Dev server workerd em :3000 (fidelidade ao runtime de produção)    |
+| `bun run dev:node`         | Dev em Node puro (`KTB_DEV_NODE=1`, SQLite em vez de D1)           |
+| `bun run dev:secrets`      | Sincroniza secrets do cofre cuora para `.dev.vars`                |
+| `bun run check`            | fmt + lint + typecheck                                             |
+| `bun run test`             | vitest por pacote (rode com escopo por pacote)                     |
+| `bun run build`            | Build de produção                                                  |
+| `bun run deploy`           | Build + deploy Alchemy para Cloudflare prod                        |
+| `bun run db:generate`      | Gera migrations Drizzle                                            |
+| `bun run db:migrate`       | Aplica migrations no D1 remoto                                     |
+| `bun run db:migrate:local` | Aplica migrations no D1 local                                      |
+| `bun run knip`             | Verificação de exports/dependências não usadas                     |
+| `bun run check:arch`       | Verifica se as regras de arch-lint ainda disparam                  |
+| `bun run gen:route-types`  | Regenera tipos de rotas dos plugins (gerado, nunca editar à mão)   |
+
+Em `apps/web`: `bun run test:e2e` (Playwright — veja
+[Rodar testes e2e](/pt-BR/docs/developers/how-to/e2e-tests)).

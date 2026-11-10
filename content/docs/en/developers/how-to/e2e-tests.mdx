@@ -41,7 +41,9 @@ Specs of note:
 
 ## CI
 
-E2E runs are heavier than unit tests — keep them scoped to real user flows.
+The suite is **not** part of CI — run it locally before merging changes to
+auth or the audio pipeline. E2E runs are heavier than unit tests; keep them
+scoped to real user flows.
 Unit and component coverage lives in colocated `*.test.ts(x)` files run by
 `vp test`; the repo-wide coverage gate is 100%, so scope local runs per
 package (`cd <pkg> && bunx vitest run`).

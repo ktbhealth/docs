@@ -11,7 +11,7 @@ por fornecedor. Adapters na borda os implementam. Este é o catálogo atual.
 | ---- | ------- | ---------- | --------------- |
 | `Transcriber` | `packages/transcription` | Speech-to-text no cliente (eventos partial/final, estatísticas de confiança, captura de áudio) | `@ktb/transcription-whisper` (Whisper worker no navegador), `@ktb/transcription-webspeech` (Web Speech API) |
 | Engine de transcrição | `packages/transcription` (port de engine) | Backend ASR no servidor | whisper-large-v3-turbo via Workers AI (`@cf/*` — literal apenas em adapter) |
-| `Db` | `packages/db` | Acesso a banco de dados (Drizzle) | Cloudflare D1 |
+| `Db` | `packages/db` | Acesso a banco de dados (Drizzle) | Cloudflare D1 (prod/dev), `@ktb/db-sqlite` better-sqlite3 (`dev:node`) |
 | Armazenamento de áudio | pipeline de consultations | Blob storage de áudio de sessão | Cloudflare R2 (`audioKey`) |
 | Captcha | `packages/captcha*` | Proteção contra bots | Turnstile (`captcha-turnstile`), stub local (`captcha-stub`) |
 | Auth | `packages/auth*` | Sessões/identidade | better-auth (`auth-better`) |
