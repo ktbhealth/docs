@@ -9,7 +9,8 @@
     "build:cf": "CLOUDFLARE_DEPLOY=1 vite build",
     "start": "vite preview",
     "preview": "vite preview",
-    "types:check": "tsc --noEmit",
+    "paraglide:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide --strategy cookie baseLocale --emit-ts-declarations --silent",
+    "types:check": "bun run paraglide:compile && tsc --noEmit",
     "deploy": "bun run build:cf && alchemy deploy",
     "deploy:wrangler": "bun run build:cf && wrangler deploy --config .output/server/wrangler.json"
   },
