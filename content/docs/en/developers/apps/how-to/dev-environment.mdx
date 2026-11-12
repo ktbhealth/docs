@@ -1,0 +1,35 @@
+---
+title: Set up a dev environment
+description: Get the docs site running locally, including the linker gotcha.
+---
+
+This page covers **this repo** (the docs site). For the product app, see
+[Run on Node](/en/docs/developers/apps/how-to/dev-node) and the product README.
+
+## Install
+
+```bash
+bun install
+```
+
+`bunfig.toml` must keep `linker = "hoisted"`. With Bun's default isolated
+linker, the nitro Vite plugin fails to resolve modules in dev. If you
+regenerated `bunfig.toml`, restore the `[install]` section.
+
+## Run
+
+```bash
+bun run dev   # http://localhost:3000
+bun run types:check
+```
+
+Open `http://localhost:3000` — docs content lives under `/en/docs` and
+`/pt-BR/docs`.
+
+## If dev breaks
+
+- **Dual React copies** — you are probably building with the
+  `cloudflare_module` preset. Dev must use the default `vercel` preset; only
+  `build:cf` / `CLOUDFLARE_DEPLOY=1` selects Cloudflare.
+- **Stale route tree** — delete `src/routeTree.gen.ts` and restart; it is
+  generated, never hand-edit it.

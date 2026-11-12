@@ -1,0 +1,46 @@
+---
+title: Commands
+description: npm scripts for the docs site and the product repo.
+---
+
+## Docs site (this repo)
+
+| Command                 | Description                                                          |
+| ----------------------- | -------------------------------------------------------------------- |
+| `bun run dev`           | Vite dev server on :3000 (nitro `vercel` preset)                     |
+| `bun run build`         | Production build with the `vercel` preset                            |
+| `bun run build:cf`      | Build with `CLOUDFLARE_DEPLOY=1` → nitro `cloudflare_module`         |
+| `bun run preview`       | Preview the last build locally                                       |
+| `bun run types:check`   | `tsc --noEmit`                                                        |
+| `bun run deploy`        | `build:cf` + `alchemy deploy`                                        |
+| `bun run deploy:wrangler` | `build:cf` + `wrangler deploy` against nitro's generated config    |
+
+Environment variables:
+
+- `CLOUDFLARE_DEPLOY=1` — select the `cloudflare_module` nitro preset.
+- `NITRO_PRESET` — explicit nitro preset override (wins over
+  `CLOUDFLARE_DEPLOY`).
+
+## Product repo
+
+Run from the `product` repo root unless noted.
+
+| Command                    | Description                                                        |
+| -------------------------- | ------------------------------------------------------------------ |
+| `bun run dev`              | workerd dev server on :3000 (production-runtime fidelity)          |
+| `bun run dev:node`         | Plain Node dev (`KTB_DEV_NODE=1`, SQLite instead of D1)            |
+| `bun run dev:secrets`      | Sync secrets from the cuora vault into `.dev.vars`                |
+| `bun run check`            | fmt + lint + typecheck                                             |
+| `bun run test`             | vitest per package (scope runs per package)                        |
+| `bun run build`            | Production build                                                   |
+| `bun run deploy`           | Build + Alchemy deploy to Cloudflare prod                          |
+| `bun run db:generate`      | Generate Drizzle migrations                                        |
+| `bun run db:migrate`       | Apply migrations to remote D1                                      |
+| `bun run db:migrate:local` | Apply migrations to local D1                                       |
+| `bun run db:erd`           | Regenerate the ERD docs into this repo (needs `tbls`)              |
+| `bun run knip`             | Unused exports/dependencies check                                  |
+| `bun run check:arch`       | Verify arch-lint rules still fire                                  |
+| `bun run gen:route-types`  | Regenerate plugin route types (generated, never hand-edit)         |
+
+In `apps/web`: `bun run test:e2e` (Playwright — see
+[Run e2e tests](/en/docs/developers/apps/how-to/e2e-tests)).

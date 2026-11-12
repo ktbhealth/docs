@@ -1,0 +1,29 @@
+---
+title: Visão geral da arquitetura do produto
+description: O panorama do monorepo do app KTB Health.
+---
+
+O repo `product` é um monorepo bun contendo o app de documentação clínica do
+KTB Health.
+
+## Stack
+
+- App SSR **TanStack Start** (React) em `apps/web`, implantado no Cloudflare
+  Workers via **Alchemy** (`alchemy.run.ts` + `infra/cloudflare`).
+- **Effect** para serviços de domínio e efeitos estruturados; ports/adapters
+  para capacidades externas.
+- **Drizzle ORM** sobre Cloudflare D1 (`packages/db`), com migrações sincronizadas
+  para deploys via Alchemy.
+- **better-auth** para autenticação; Turnstile para proteção contra bots.
+- i18n com **Paraglide** (output gerado em `src/paraglide/` — nunca editar à
+  mão).
+- **Tailwind v4** e o design system `@ktbhealth/ui`, consumidos como deps de
+  git-tag (`github:ktbhealth/ui#vX.Y.Z@react`).
+
+## Quality gates
+
+- `bun run check` — formatação + lint + typecheck.
+- `bun run test` — vitest por pacote; o coverage gate do repo inteiro é 100%
+  (rode com escopo por pacote).
+- Arch lint aplica a fronteira ports/adapters descrita em
+  [Ports e adapters](/pt-BR/docs/developers/plugins/explanation/ports-and-adapters).

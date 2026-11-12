@@ -1,1 +1,1 @@
-{ "title": "Desenvolvedores", "root": true, "pages": ["tutorials", "how-to", "reference", "explanation"] }
+{"title": "Desenvolvedores", "root": true, "pages": ["kernel", "plugins", "apps"]}

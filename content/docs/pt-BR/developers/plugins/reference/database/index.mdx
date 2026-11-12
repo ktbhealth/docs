@@ -1,0 +1,43 @@
+---
+title: Schema do banco de dados
+description: ERD e referência de tabelas gerados do schema Drizzle, organizados por plugin.
+icon: Database
+---
+
+Esta seção é **gerada** a partir das migrations Drizzle no repositório
+`product` (`packages/db/drizzle/*.sql`). Não edite estes arquivos
+manualmente — regenere-os.
+
+## Regenerar
+
+A partir da raiz do repositório `product`:
+
+```bash
+bun run db:erd        # regenera
+bun run db:erd:check  # drift check de CI (sai 1 se estiver desatualizado)
+```
+
+Requisito: `tbls` no `PATH` (ou `TBLS_BIN` definido). O script aplica todas
+as migrations num banco SQLite temporário e executa `tbls doc` +
+`tbls out`, gravando o resultado em
+`docs/content/docs/<locale>/developers/plugins/reference/database/` para os locales
+`en` e `pt-BR`.
+
+## Estrutura
+
+Cada seção corresponde ao plugin ou pacote dono das tabelas:
+
+- [Patients](./patients/) — `plugins/patients`
+- [Consultations](./consultations/) — `plugins/consultations`
+- [Groups](./groups/) — `plugins/groups`
+- [Notifications](./notifications/) — `plugins/notifications`
+- [Audit log](./audit/) — `plugins/audit`
+- [Custom pages](./pages/) — `plugins/pages`
+- [Auth](./auth/) — `packages/db/src/auth.ts` (better-auth)
+- [RBAC](./rbac/) — `packages/rbac` + `plugins/rbac`
+- [Platform](./platform/) — estado do kernel em `packages/db`
+
+A página inicial de cada seção embute seu diagrama ER como Mermaid
+renderizado, com o código-fonte `erDiagram` em `schema.mmd` ao lado. O
+schema completo está em [`schema.mmd`](./schema.mmd) — cole em qualquer
+renderizador Mermaid para outros formatos.
