@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from '@tanstack/react-router';
+import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { createServerFn } from '@tanstack/react-start';
 import { docs, source } from '@/lib/source';
@@ -16,7 +16,57 @@ import { useFumadocsLoader } from 'fumadocs-core/source/client';
 import { Suspense, use } from 'react';
 import { useMDXComponents } from '@/components/mdx';
 
+// Developers IA moved from flat quadrants to kernel/plugins/apps — keep the
+// old /developers/<quad>/<page> URLs working.
+const LEGACY_DEVELOPERS: Record<string, string> = {
+  'tutorials/getting-started': 'apps/tutorials/getting-started',
+  'tutorials/writing-content': 'apps/tutorials/writing-content',
+  'tutorials/first-deploy': 'apps/tutorials/first-deploy',
+  'tutorials/contribute': 'apps/tutorials/contribute',
+  'tutorials/first-plugin': 'plugins/tutorials/first-plugin',
+  'tutorials/add-a-port-adapter': 'kernel/tutorials/add-a-port-adapter',
+  'how-to/dev-environment': 'apps/how-to/dev-environment',
+  'how-to/dev-node': 'apps/how-to/dev-node',
+  'how-to/deploy-to-cloudflare': 'apps/how-to/deploy-to-cloudflare',
+  'how-to/e2e-tests': 'apps/how-to/e2e-tests',
+  'how-to/migrations': 'kernel/how-to/migrations',
+  'explanation/product-architecture': 'kernel/explanation/product-architecture',
+  'explanation/ports-and-adapters': 'plugins/explanation/ports-and-adapters',
+  'explanation/positioning': 'plugins/explanation/positioning',
+  'explanation/client-server-split': 'apps/explanation/client-server-split',
+  'reference/commands': 'apps/reference/commands',
+  'reference/site-structure': 'apps/reference/site-structure',
+  'reference/ui-components': 'apps/reference/ui-components',
+  'reference/integration-surface': 'apps/reference/integration-surface',
+  'reference/arch-rules': 'kernel/reference/arch-rules',
+  'reference/ports-catalog': 'kernel/reference/ports-catalog',
+  'reference/packages': 'kernel/reference/packages',
+};
+
+function legacyDevelopersPath(slugs: string[]): string | null {
+  if (slugs[0] !== 'developers' || slugs.length < 3) return null;
+  const rest = slugs.slice(1).join('/');
+  if (rest.startsWith('reference/database')) {
+    return `developers/plugins/${rest}`;
+  }
+  const page = slugs[2];
+  const mapped = LEGACY_DEVELOPERS[`${slugs[1]}/${page}`];
+  if (!mapped) return null;
+  const tail = slugs.slice(3).join('/');
+  return `developers/${mapped}${tail ? `/${tail}` : ''}`;
+}
+
 export const Route = createFileRoute('/$lang/docs/$')({
+  beforeLoad: ({ params }) => {
+    const slugs = params._splat?.split('/') ?? [];
+    const mapped = legacyDevelopersPath(slugs);
+    if (mapped) {
+      throw redirect({
+        to: '/$lang/docs/$',
+        params: { lang: params.lang, _splat: mapped },
+      });
+    }
+  },
   component: Page,
   loader: async ({ params }) => {
     const slugs = params._splat?.split('/') ?? [];
