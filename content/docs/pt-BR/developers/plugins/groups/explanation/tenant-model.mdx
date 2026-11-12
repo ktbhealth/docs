@@ -1,0 +1,47 @@
+---
+title: O modelo de tenancy
+description: Por que groups acumula o papel de primitivo de tenant, e como colunas tenant_id se compõem com escopo de owner pelo schema.
+icon: Network
+---
+
+A tenancy no KTB é deliberadamente mínima: uma tabela `groups`, uma tabela
+de membership polimórfica, e colunas `tenant_id` espalhadas pelas tabelas
+de domínio. Não existe entidade tenant separada — uma clínica *é* um
+grupo.
+
+## Por que groups
+
+`groups.kind` é livre (`"clinic"` hoje) justamente para que o mesmo
+primitivo sirva orgs, coortes e agrupamentos customizados sem mudanças de
+schema. `meta` carrega JSON específico do kind. Construir tenancy sobre
+isso em vez de uma tabela `tenants` dedicada faz toda feature futura de
+agrupamento ganhar semântica de tenant de graça.
+
+## Como tenant_id funciona
+
+- `tenant_id → groups.id`, `ON DELETE SET NULL` — deletar uma clínica
+  degrada suas linhas para escopo pessoal em vez de cascade delete.
+- Declarada **inline** em cada tabela (`integer("tenant_id")`) porque
+  `@ktb/tenant` depende de `@ktb/db` — importar seus helpers nos schemas
+  de plugin criaria ciclos de workspace (veja o comentário em
+  `plugins/patients/src/schema.ts`).
+- `NULL` significa escopo pessoal; um `groups.id` significa linha de
+  tenant.
+
+## Resolução
+
+`@ktb/tenant` computa o conjunto de tenants acessíveis do caller a partir
+de `group_members` (`accessibleTenantIds`). `tenantScopeCondition(table)`
+transforma esse conjunto num fragmento `WHERE` do Drizzle:
+`tenant_id IS NULL OR tenant_id IN (...)`. Services de domínio compõem
+isso com regras de ownership — veja
+[escopo de pacientes](/pt-BR/docs/developers/plugins/patients/explanation/scoping-model)
+para a cerca canônica de duas cláusulas.
+
+## O que tenancy NÃO faz
+
+- Não substitui authz — ser membro de um tenant prova visibilidade das
+  linhas do tenant, não permissão para mutá-las (isso é RBAC).
+- Não isola no nível do banco — o fencing é em nível de aplicação,
+  aplicado nos services. Uma query crua o contorna; é por isso que
+  consumidores passam pelas superfícies CQRS.

@@ -1,0 +1,44 @@
+---
+title: Adicione notificações a uma feature
+description: Walkthrough guiado — emita um evento, mapeie para notificação e veja no sino.
+icon: Bell
+---
+
+Este tutorial conecta o evento de domínio de uma feature ao pipeline de
+notificações de ponta a ponta: dispatch → projector → linha persistida →
+sino ao vivo.
+
+## O que você vai construir
+
+Quando sua feature emitir `FeatureCompleted`, o usuário que agiu recebe uma
+notificação no console — sem que sua feature saiba que notificações
+existem.
+
+## Passos
+
+1. **Emita o evento.** No service do seu plugin, despache no `EventBus`
+   após o commit da mutação — mesmo padrão de `PatientCreated` em
+   `plugins/patients/src/index.ts`.
+
+2. **Defina o evento** no `api.ts` do seu plugin com `Event.make(...)`,
+   se ainda não fizer parte de um grupo CQRS.
+
+3. **Mapeie.** Adicione uma entrada `mapEvent` ao `NOTIFICATION_MAP` em
+   `plugins/notifications/src/Notifications.ts` projetando o evento para
+   um `NotificationDraft` (`userId`, `kind`, `title`, `body`/`payload`
+   opcionais). Veja a entrada existente de `ConsultationCreated` para
+   tratamento de locale.
+
+4. **Verifique a entrega.** Dispare a ação e confira o sino do header — a
+   linha persiste mesmo se o stream a perdeu (merge de backlog,
+   `STREAM_BACKLOG = 50`).
+
+## Verifique
+
+```bash
+bun run check
+```
+
+Confirme: a notificação aparece só para o usuário certo,
+`unreadCount` incrementa, `markRead` limpa, e uma falha de projector loga
+mas nunca quebra o comando que a produziu.

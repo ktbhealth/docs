@@ -1,0 +1,44 @@
+---
+title: Construa uma feature com sessão
+description: Walkthrough guiado — resolva a sessão numa server fn e proteja sua feature com ela.
+icon: KeyRound
+---
+
+Este tutorial adiciona autenticação a uma feature do jeito suportado:
+através da port `Auth`, nunca lendo cookies ou importando better-auth.
+
+## O que você vai construir
+
+Uma server fn `accountOverviewFn` que retorna dados apenas para usuários
+logados — callers anônimos recebem a mesma resposta de não-visível dos
+erros.
+
+## Passos
+
+1. **Obtenha o usuário da sessão.** Use os helpers existentes em
+   `apps/web/src/lib/auth.ts` — `getSessionUser()` /
+   `ensureSessionUser()` — que envolvem o `getSession` da port `Auth`.
+   Eles retornam o `SessionUser` agnóstico de provider (`id`, `email`,
+   `name`).
+
+2. **Escreva a fn** no estilo `createServerFn({ method: "GET" })`:
+   chame o helper, retorne `null`/não-visível quando não houver sessão, e
+   rode `Effect.gen` com sua lógica de domínio.
+
+3. **Proteja a UI.** O cliente chama a fn; resultado null renderiza o
+   estado de deslogado. Para gates fixos, combine com route guards — veja
+   `platformAdminFn` para o padrão de gate booleano.
+
+4. **Nunca contorne.** Não leia headers `cookie` nem importe
+   `better-auth`/`@ktb/auth-better` em código de feature — as regras de
+   arquitetura e a fronteira da port existem para que o provider possa
+   mudar embaixo de você.
+
+## Verifique
+
+```bash
+bun run check
+```
+
+Deslogado → null; logado → dados; usuário banido → null (sessões são
+revogadas em `setUserBanned`).

@@ -1,0 +1,46 @@
+---
+title: Build on patient data
+description: Guided walkthrough — query patients, respect scoping, and surface them in your feature.
+icon: Users
+---
+
+This tutorial takes you from "I need patient data" to a working feature
+that respects ownership and tenancy. By the end you'll have a server fn
+that lists a user's patients.
+
+## What you'll build
+
+A server function `myPatientsFn` that returns the patients visible to the
+current session user — personal rows they own plus rows of tenants they
+belong to.
+
+## Steps
+
+1. **Read the scoping rule.** `patientScope(ownerId)` in
+   `plugins/patients/src/index.ts` is the fence: a row is visible when
+   `tenantScopeCondition` admits it AND (`owner_id` = caller OR
+   `tenant_id` is set). Never query `patients` without it.
+
+2. **Go through the CQRS surface.** Other plugins don't touch the table —
+   they dispatch `PatientsQueries` (`patients.ownerOf`, …) via
+   `Query.dispatcher`. Check `plugins/patients/src/api.ts` for the query
+   you need; if none fits, add one there (see
+   [query patients](/en/docs/developers/plugins/patients/how-to/extend-patient-record)).
+
+3. **Write the server fn.** In `apps/web/src/lib/fns.ts` style — validate
+   input with `Schema`, resolve the session via `getSessionUser`, run the
+   query inside `Effect.gen`, and translate `Forbidden` to a
+   not-visible response (see
+   [error handling](/en/docs/developers/kernel/explanation/error-handling)).
+
+4. **Render it.** Call the fn from a route component under your plugin's
+   `src/routes/` — mounted via `physical()` like consultations does.
+
+## Verify
+
+```bash
+bun run gen:route-types && bun run check
+```
+
+Test with two users: a patient created by user A must not appear for user
+B, and a tenant-owned patient must appear for tenant members only.

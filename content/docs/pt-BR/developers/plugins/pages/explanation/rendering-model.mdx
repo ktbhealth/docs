@@ -1,0 +1,45 @@
+---
+title: Como páginas customizadas renderizam
+description: O caminho do request da URL ao markdown — wildcard descriptor, lookup só-publicados e o renderer de subset de markdown.
+icon: Eye
+---
+
+Páginas customizadas são resolvidas como rotas de filesystem mas com fonte
+no banco — o design mantém o conteúdo dinâmico enquanto o caminho de
+render permanece monótono.
+
+## Fluxo do request
+
+1. O wildcard descriptor do router casa qualquer path não reconhecido e o
+   entrega ao guard/loader de pages.
+2. O path do request é normalizado pelo mesmo `normalizePagePath` usado
+   no input admin — já URL-decodado, trailing slashes tolerados.
+3. `publishedByPath` carrega a linha **somente se `published = true`** —
+   rascunhos e paths inexistentes produzem o mesmo resultado de
+   não-encontrado.
+4. `renderMarkdown` (`plugins/pages/src/markdown.tsx`) renderiza um
+   **subset de markdown**: headings, listas, links, formatação inline —
+   deliberadamente não markdown/MDX completo, para que conteúdo
+   armazenado não injete componentes ou scripts.
+
+## Por que um renderer de subset
+
+`content` é dado fornecido pelo usuário. Renderizá-lo pelo pipeline MDX
+do site de docs executaria componentes arbitrários; o renderer de subset
+produz React nodes puros — seguro por construção, sem passo de
+sanitização. Se você precisa de conteúdo mais rico, isso indica que a
+página deveria ser uma rota real, não uma custom page.
+
+## A reserva de /platform
+
+`normalizePagePath` rejeita o namespace `/platform` diretamente. Páginas
+de console pertencem a `panel.pages` — uma contribuição de app-context
+com seu próprio gate — então uma custom page nunca pode sobrepor a UI
+admin nem contornar a checagem `PlatformAdmin`.
+
+## Assimetria admin vs visitante
+
+Admins gerenciam via `panel.pages` + server fns (veja
+[fns.ts](https://github.com/ktbhealth/product)); visitantes só atingem o
+caminho de leitura publicado. Não existe URL de preview de rascunho — o
+preview é a própria lista admin.

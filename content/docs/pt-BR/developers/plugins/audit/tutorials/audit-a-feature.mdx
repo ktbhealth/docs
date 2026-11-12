@@ -1,0 +1,45 @@
+---
+title: Audite as mutações de uma feature
+description: Walkthrough guiado — registre entradas de auditoria no seu service e veja em /platform/audit.
+icon: ScrollText
+---
+
+Este tutorial adiciona cobertura de auditoria a uma mutação: resolva o
+service `Audit` opcionalmente, registre após o sucesso e verifique a
+entrada no console.
+
+## O que você vai construir
+
+Toda chamada de `updateSettings` no seu service escreve uma linha em
+`admin_audit` — sem que a auditoria possa quebrar a mutação.
+
+## Passos
+
+1. **Resolva o service opcionalmente.** Dentro do seu service
+   `Effect.gen`:
+
+   ```ts
+   const audit = yield* Effect.serviceOption(Audit); // de @ktb/audit
+   ```
+
+   Opcional de propósito — o plugin pode não estar registrado.
+
+2. **Registre após a escrita ter sucesso.** Chame
+   `audit.value.record({ action: "settings.update", targetType: "settings",
+   targetId: ..., detail: JSON.stringify({...}) })`. `record` nunca falha —
+   sem try/catch (veja
+   [registre entradas de auditoria](/pt-BR/docs/developers/plugins/audit/how-to/record-audit-entries)).
+
+3. **Confira o console.** Como admin da plataforma, abra
+   `/platform/audit` — newest-first, filtrável por action/ator.
+   Não-admins recebem 404 fixo.
+
+## Verifique
+
+```bash
+bun run check
+```
+
+Confirme que a linha aparece com o ator certo (via `Principal`, não seu
+input), e que forçar uma falha de insert na auditoria ainda deixa a
+mutação ter sucesso.

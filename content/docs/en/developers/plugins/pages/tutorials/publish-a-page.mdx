@@ -1,0 +1,38 @@
+---
+title: Publish your first custom page
+description: Guided walkthrough — create a page in the admin, publish it, and see it live at its path.
+icon: FileText
+---
+
+This tutorial takes a page from admin form to live URL: path, content,
+publish, nav.
+
+## What you'll build
+
+A published page at `/welcome` titled "Welcome", visible in the site nav.
+
+## Steps
+
+1. **Open the admin.** As a platform admin, go to `/platform/pages` — the
+   `panel.pages` contribution from `plugins/pages`.
+
+2. **Create the page.** Path `/welcome` (must start with `/`, no
+   `/platform` prefix — `normalizePagePath` rejects it), a title, and
+   markdown content. The renderer supports a markdown subset — headings,
+   lists, links, inline formatting (see `plugins/pages/src/markdown.tsx`).
+
+3. **Publish and feature.** Set `published` (required to render) and
+   `showInNav` + `sortOrder` to place it in navigation.
+
+4. **Visit `/welcome`.** The wildcard descriptor resolves the path,
+   loads the published row, and renders the markdown. Drafts 404.
+
+## Verify
+
+```bash
+bun run check
+```
+
+Confirm: unpublished page 404s, `/platform/*` paths can't be claimed,
+duplicate paths return `PathTaken`, and nav ordering follows
+`sortOrder`.

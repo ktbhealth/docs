@@ -1,0 +1,47 @@
+---
+title: Build on consultations
+description: Walkthrough guiado — leia dados de consulta, respeite ownership e adicione uma feature ciente de consultas.
+icon: Stethoscope
+---
+
+Este tutorial adiciona uma feature que lê dados de consulta do jeito
+certo: pela superfície CQRS, com ownership aplicado pelo service — nunca
+fazendo join de tabelas por conta própria.
+
+## O que você vai construir
+
+Uma server fn `patientConsultHistoryFn(patientId)` retornando as consultas
+de um paciente, visível apenas a usuários autorizados a ver aquele
+paciente.
+
+## Passos
+
+1. **Ache as queries.** `plugins/consultations/src/api.ts` expõe
+   `ConsultationsQueries` e `PatientRecordConsultationsQueries` (usada
+   para embeds no registro do paciente). Despache via
+   `Query.dispatcher(...)`, como o próprio plugin faz para
+   `patients.ownerOf` em `plugins/consultations/src/index.ts:798`.
+
+2. **Resolva ownership primeiro.** Antes de listar consultas, verifique se
+   o caller pode ver o paciente — `patients.ownerOf` retorna o id do
+   owner; compare com o usuário da sessão ou despache a checagem do lado
+   patients. O service de consultations já faz isso internamente para seus
+   endpoints; espelhe isso na sua fn.
+
+3. **Escreva a fn** no estilo de `apps/web/src/lib/fns.ts`:
+   Schema-valide `patientId` (tolere coerção de string — ids chegam como
+   strings do wire), `Effect.gen` no dispatch, `Forbidden` → resposta de
+   não-visível.
+
+4. **Exponha** numa rota do seu plugin em `src/routes/` (montada via
+   `physical()`), ou embuta na view de registro do paciente.
+
+## Verifique
+
+```bash
+bun run gen:route-types && bun run check
+```
+
+Confirme que uma consulta do paciente A é invisível para um usuário que
+não pode ver o paciente A — a cerca vive nos services, sua fn não pode
+contorná-la.

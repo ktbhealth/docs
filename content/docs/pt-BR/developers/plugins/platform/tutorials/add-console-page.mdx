@@ -1,0 +1,57 @@
+---
+title: Adicione uma página no console /platform
+description: Walkthrough guiado — contribua um descriptor panel.pages e entregue uma página admin.
+icon: LayoutDashboard
+---
+
+Este tutorial adiciona uma página ao console `/platform` usando a
+contribuição `panel.pages` — o mesmo mecanismo que audit, rbac, pages e a
+própria platform usam.
+
+## O que você vai construir
+
+Uma página `/platform/reports` listando dados do service do seu plugin,
+visível apenas para admins da plataforma.
+
+## Passos
+
+1. **Defina o componente da página.** Um componente React recebendo props
+   `{ data, ctx }` — `ctx` é `PanelPageContext` (registry de plugins +
+   locale). Mantenha-o apresentacional; os dados vêm do loader.
+
+2. **Declare o descriptor.** No `index.ts` do seu plugin:
+
+   ```ts
+   export const myPanelPlugin = definePlugin({
+     id: "my-feature.panel",
+     requiredDeps: [platformPanelPlugin.id, myServicesPlugin.id],
+     panel: {
+       pages: [{
+         id: "my-feature.reports",
+         path: "/platform/reports",
+         component: MyReportsPage,
+         guard: () => /* Effect → boolean; false = 404 fixo */,
+         loader: () => /* Effect → data, roda sob o principal da sessão */,
+       }],
+     },
+   });
+   ```
+
+   Modele em `auditPanelPlugin` em `plugins/audit/src/index.ts`.
+
+3. **Guard + loader.** `guard` roda server-side antes do `loader` sob o
+   principal da sessão — retorne `false` para não-admins (404 fixo).
+   `loader` roda a cada navegação e alimenta `data` do componente; chame
+   as queries do seu service dentro de `Effect.gen`.
+
+4. **Registre o plugin** no export `plugins` do seu pacote para que a
+   descoberta do host o encontre, depois `bun run gen:route-types`.
+
+## Verifique
+
+```bash
+bun run check
+```
+
+Admin → página renderiza com dados; não-admin → 404; erros de loader
+propagam como erros de rota, não estados vazios silenciosos.

@@ -1,0 +1,39 @@
+---
+title: Publique sua primeira página
+description: Walkthrough guiado — crie uma página no admin, publique e veja ao vivo no seu path.
+icon: FileText
+---
+
+Este tutorial leva uma página do formulário admin à URL ao vivo: path,
+conteúdo, publicação, nav.
+
+## O que você vai construir
+
+Uma página publicada em `/welcome` intitulada "Welcome", visível na nav do
+site.
+
+## Passos
+
+1. **Abra o admin.** Como admin da plataforma, vá em `/platform/pages` —
+   a contribuição `panel.pages` de `plugins/pages`.
+
+2. **Crie a página.** Path `/welcome` (deve começar com `/`, sem prefixo
+   `/platform` — `normalizePagePath` rejeita), um título e conteúdo
+   markdown. O renderer suporta um subset de markdown — headings, listas,
+   links, formatação inline (veja `plugins/pages/src/markdown.tsx`).
+
+3. **Publique e destaque.** Marque `published` (necessário para render)
+   e `showInNav` + `sortOrder` para posicionar na navegação.
+
+4. **Visite `/welcome`.** O wildcard descriptor resolve o path, carrega a
+   linha publicada e renderiza o markdown. Rascunhos dão 404.
+
+## Verifique
+
+```bash
+bun run check
+```
+
+Confirme: página não-publicada dá 404, paths `/platform/*` não podem ser
+reivindicados, paths duplicados retornam `PathTaken`, e a ordenação da nav
+segue `sortOrder`.

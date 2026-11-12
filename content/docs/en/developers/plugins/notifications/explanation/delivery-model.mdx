@@ -1,0 +1,43 @@
+---
+title: Notification delivery
+description: Why notifications subscribe after commit, isolate failures, and merge a live stream with a persisted backlog.
+icon: RadioTower
+---
+
+The notifications pipeline makes three deliberate trade-offs that explain
+most of its design: delivery is at-least-once-ish (persist first, stream
+second), producers never feel consumer failures, and live updates are a
+hint — the database is the source of truth.
+
+## After-commit subscription
+
+`events.subscribeAfterCommit` runs projectors only after the producing
+command's boundary commits. Consequences:
+
+- A notification write **cannot roll back** the mutation it describes.
+- The producing command **cannot be rolled back** by a notification
+  failure — `ingest` catches all causes and logs.
+- Ordering is "mutation committed, then notify" — never the reverse.
+
+## Persist, then fan out
+
+`ingest` inserts the row first, then publishes to the `PubSub` live
+stream. A client that misses the stream still sees the notification on
+next load — `listNotifications` reads the table, and the header merges
+stream items over a `STREAM_BACKLOG = 50` catch-up window. Live delivery
+is an optimization, not a guarantee.
+
+## Failure isolation everywhere
+
+Both `ingest` and `publishRows` wrap their bodies in
+`Effect.catchCause(Effect.logError)` — a bad projector, a DB hiccup, or a
+dead subscriber logs and moves on. This is the same philosophy as
+[audit's never-fails record](/en/docs/developers/plugins/audit/how-to/record-audit-entries):
+side-channel writes must not become failure modes of the primary flow.
+
+## Authz is per-operation
+
+Reads require `notification.read`, mutations `notification.update` —
+enforced inside `NotificationsLive` via `requirePrincipalUser`, not in
+the UI. The stream itself is user-scoped: `stream(userId)` only carries
+that user's rows.

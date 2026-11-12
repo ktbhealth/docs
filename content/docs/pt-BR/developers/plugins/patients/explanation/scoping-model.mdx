@@ -1,0 +1,52 @@
+---
+title: Escopo de pacientes — owner vs tenant
+description: Por que linhas de paciente carregam duas colunas de escopo e como a cerca de visibilidade as compõe.
+icon: GitBranch
+---
+
+`patients` tem duas colunas de escopo porque o produto serve dois modelos
+de compartilhamento ao mesmo tempo: um médico mantendo registros pessoais,
+e uma clínica compartilhando registros entre seus membros. Entender a
+cerca evita os dois bugs mais comuns — vazar linhas pessoais para um
+tenant, e esconder linhas de tenant dos membros.
+
+## As colunas
+
+| Coluna       | Significado                                           |
+| ------------ | ----------------------------------------------------- |
+| `owner_id`   | Atribuição de criador/owner — sempre setada           |
+| `tenant_id`  | `groups.id` quando da clínica; `NULL` = linha pessoal |
+
+`tenant_id` usa `ON DELETE SET NULL` — deletar um grupo de clínica
+degrada seus pacientes para linhas pessoais em vez de deletá-los.
+
+## A cerca
+
+`patientScope(ownerId)` faz AND de duas condições:
+
+1. `tenantScopeCondition(patients)` — o `tenant_id` da linha é `NULL` ou
+   está no conjunto de tenants acessíveis do caller (`@ktb/tenant`).
+2. `owner_id = caller OU tenant_id IS NOT NULL` — linhas pessoais são
+   só-do-owner; linhas de tenant são visíveis a qualquer membro que a
+   cerca admita.
+
+Em escopo pessoal (sem memberships de tenant) o conjunto acessível é
+vazio, então a cerca degrada para "apenas linhas pessoais próprias" — é por
+isso que a segunda cláusula existe: sem ela, a cláusula 1 sozinha já
+esconderia linhas de outros owners, mas linhas de tenant vazariam para
+qualquer um.
+
+## Onde é aplicada
+
+Dentro dos services de patients — list/get/mutações todos aplicam o
+escopo. Callers cross-plugin recebem a mesma garantia despachando
+`PatientsQueries`/`PatientsCommands` em vez de ler a tabela; o service
+aplica authz (`requireCanAs`) por cima.
+
+## Estendendo
+
+Novas tabelas adjacentes a paciente devem copiar o padrão: colunas
+`owner_id` + `tenant_id` declaradas inline (importar helpers de
+`@ktb/tenant` no `schema.ts` criaria um ciclo de workspace — veja o
+comentário em `plugins/patients/src/schema.ts`), cerca na camada de
+service, nunca no schema.

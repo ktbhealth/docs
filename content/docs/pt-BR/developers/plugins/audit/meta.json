@@ -2,7 +2,9 @@
 	"title": "Audit log",
 	"pages": [
 		"index",
-		"reference",
-		"how-to"
+		"tutorials",
+		"how-to",
+		"explanation",
+		"reference"
 	]
 }

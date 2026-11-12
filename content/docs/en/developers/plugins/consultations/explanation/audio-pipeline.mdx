@@ -1,0 +1,54 @@
+---
+title: The audio pipeline
+description: How consult audio flows from browser to transcript — R2, queue, Whisper, and LLM cleanup, with the state machine that tracks it.
+icon: AudioLines
+---
+
+Consultation audio is the most failure-prone path in the product: large
+files, async workers, two AI stages, and a consent requirement. The design
+keeps every stage observable through columns on the `consultations` row.
+
+## The flow
+
+```
+browser recording
+  → POST /api/consultations/:id/audio        (upload, owner-only)
+  → R2 object (audioKey, private bucket)
+  → AUDIO_QUEUE message
+  → queue consumer (same worker)
+  → Workers AI Whisper (serverTranscript — raw ASR evidence)
+  → LLM cleanup (correctedTranscript + enhancementEngine)
+```
+
+## State columns
+
+| Column                 | Role                                             |
+| ---------------------- | ------------------------------------------------ |
+| `audioKey`             | R2 object key — the stored audio                 |
+| `audioStatus`          | `none → stored → queued → processing → done/failed` |
+| `audioError`           | Last pipeline failure — shown to the doctor, never the audio |
+| `serverTranscript`     | Whisper output — raw ASR evidence                |
+| `correctedTranscript`  | LLM-cleaned PT-BR — machine-corrected, NOT physician-approved |
+| `enhancementEngine`    | Which engine produced the correction             |
+
+`transcript` remains the browser-side transcript; the server pipeline
+never overwrites it — the two coexist so the doctor can compare.
+
+## Invariants
+
+- **`MAX_AUDIO_BYTES` = 25 MB** is enforced twice on purpose: the upload
+  route and `apps/web/src/lib/audio-jobs.ts` (the queue path). Keep them
+  in sync.
+- **Payload shape**: whisper-class models take base64 audio, not `number[]`
+  — a 25 MB `number[]` would serialize to ~100 MB JSON.
+- **`consentAt`** is the LGPD consent trail — the pipeline must not run
+  without it.
+- **Failures are data**: `audioStatus = "failed"` + `audioError`, surfaced
+  in UI — the doctor retries, the system doesn't silently drop audio.
+
+## Where things live
+
+Upload/stream endpoints: `plugins/consultations/src/api-routes/`
+(`consultations.$id.audio.ts`, `transcribe.ts`). Queue consumer and job
+state: `apps/web/src/lib/audio-jobs.ts`. R2/queue bindings: declared in
+`apps/web/alchemy.run.ts`.

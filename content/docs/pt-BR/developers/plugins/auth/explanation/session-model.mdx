@@ -1,0 +1,41 @@
+---
+title: Sessões e identidades
+description: Como um request vira um SessionUser — better-auth atrás da port Auth, tabelas do host e o kill switch de suspensão.
+icon: Fingerprint
+---
+
+A autenticação responde a uma pergunta — "quem é esse request?" — e todo o
+design existe para manter essa resposta trocável de provider enquanto
+continua aplicável em todo service.
+
+## Request → Session
+
+1. O cliente envia o cookie de sessão do better-auth.
+2. `Auth.getSession(headers)` (a port `@ktb/auth`) delega ao adapter
+   `@ktb/auth-better`, que valida o token contra a tabela `session` e
+   resolve a linha de `user`.
+3. O resultado é uma `Session` carregando `SessionUser { id, email,
+   name }` — o único formato de identidade que plugins veem.
+
+## Por que tabelas do host
+
+`user`/`session`/`account`/`verification` vivem em
+`packages/db/src/auth.ts`, não num plugin. Isso quebra um ciclo de
+workspace (`@ktb/db` não pode depender de um plugin que depende dele) e
+sinaliza que identidade é infraestrutura, não feature.
+
+## Suspensão como estado de primeira classe
+
+`user.banned` + `setUserBanned` implementam suspensão em nível de
+plataforma: banir revoga todas as linhas de sessão, `getSession` retorna
+null enquanto a flag estiver setada, desbanir restaura acesso. É
+agnóstico de provider na port para que adapters mapeiem no próprio
+storage.
+
+## Sessão ≠ autorização
+
+Uma sessão válida prova apenas identidade. O que o usuário *pode* fazer é
+decidido por grants RBAC avaliados por request — veja
+[avaliação de grants](/pt-BR/docs/developers/plugins/rbac/explanation/grant-evaluation).
+Services compõem ambos: `requirePrincipalUser` para "logado",
+`requireCanAs` para "permitido".

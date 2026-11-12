@@ -1,0 +1,44 @@
+---
+title: Configure um tenant
+description: Walkthrough guiado — crie um grupo de clínica, adicione membros e torne linhas de paciente visíveis ao tenant.
+icon: UsersRound
+---
+
+Este tutorial provisiona uma clínica como tenant: uma linha em `groups`
+com `kind` `clinic`, memberships de usuários, e o momento em que um
+registro de paciente se torna visível para a clínica inteira.
+
+## O que você vai construir
+
+Um tenant "Clínica Exemplo" cujos membros veem pacientes do tenant — de
+ponta a ponta através dos services, não SQL cru.
+
+## Passos
+
+1. **Crie o grupo.** Insira uma linha em `groups`: `name`, `slug` único,
+   `kind: "clinic"`, `meta` JSON opcional. Faça pelo service de groups
+   (`GroupsLive` em `plugins/groups/src/index.ts`), não por drizzle cru —
+   services são donos da validação.
+
+2. **Adicione membros.** Linhas em `group_members` vinculam
+   `(groupId, "user", userId, role?)`. O membership é o que
+   `accessibleTenantIds` (`@ktb/tenant`) lê para computar o conjunto de
+   tenants do caller — sem ele, o tenant é invisível.
+
+3. **Crie um paciente do tenant.** Set `tenant_id` para o id do grupo
+   (mantendo `owner_id` como criador). A linha agora é visível a todo
+   membro que a cerca `patientScope` admite — veja
+   [escopo de pacientes](/pt-BR/docs/developers/plugins/patients/explanation/scoping-model).
+
+4. **Verifique o isolamento.** Um usuário fora do grupo não pode ver o
+   paciente; um membro pode. Linhas com `tenant_id NULL` continuam
+   pessoais.
+
+## Verifique
+
+```bash
+bun run check
+```
+
+Exercite via UI ou uma server fn despachando `PatientsQueries` — a cerca
+vive na camada de service.

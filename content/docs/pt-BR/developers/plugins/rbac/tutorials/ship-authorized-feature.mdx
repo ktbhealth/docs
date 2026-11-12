@@ -1,0 +1,42 @@
+---
+title: Entregue uma feature atrás de permissão
+description: Walkthrough guiado — adicione uma permissão ao catálogo, proteja um método de service e verifique deny-by-default.
+icon: KeySquare
+---
+
+Este tutorial protege um método de service com RBAC dinâmico: entrada no
+catálogo, grant de papel, checagem em runtime.
+
+## O que você vai construir
+
+`exportReports` exige a permissão `reports.export` — concedida a um papel,
+atribuída a um usuário, aplicada no service.
+
+## Passos
+
+1. **Adicione a permissão ao catálogo.** Em
+   `packages/rbac/src/vocabulary.ts`, adicione `"reports.export"` a
+   `PERMISSION_CATALOG` (ou ao grupo apropriado). Grants não conseguem
+   referenciar permissões fora do catálogo.
+
+2. **Proteja o método.** No seu service, use os helpers de authz —
+   `requireCanAs("reports.export")` ou `requireEntityAccess` para checks
+   com escopo de entidade (`packages/rbac/src/index.ts`). Negação lança
+   `Forbidden`, que server fns traduzem para não-visível.
+
+3. **Conceda.** Via `/platform` → admin RBAC (ou `RbacCommands`:
+   `rbac.createRole` → `rbac.setRolePermission` → `rbac.assignSubject`),
+   crie um papel com o grant e atribua a um usuário ou grupo de teste.
+
+4. **Verifique deny-by-default.** Usuários não atribuídos recebem
+   `Forbidden`; `permission_epoch` incrementa em mudanças de grant para
+   que snapshots velhos não persistam.
+
+## Verifique
+
+```bash
+bun run check
+```
+
+Teste os três estados: sem grant → negado, grant via papel → permitido,
+papel revogado → negado de novo (após invalidação de epoch).

@@ -1,0 +1,47 @@
+---
+title: Build on patient data
+description: Walkthrough guiado — consulte pacientes, respeite o escopo e exponha os dados na sua feature.
+icon: Users
+---
+
+Este tutorial leva você de "preciso de dados de pacientes" a uma feature
+funcionando que respeita ownership e tenancy. No final você terá uma
+server fn que lista os pacientes do usuário da sessão.
+
+## O que você vai construir
+
+Uma server function `myPatientsFn` que retorna os pacientes visíveis ao
+usuário da sessão atual — linhas pessoais que ele possui mais linhas dos
+tenants aos quais pertence.
+
+## Passos
+
+1. **Leia a regra de escopo.** `patientScope(ownerId)` em
+   `plugins/patients/src/index.ts` é a cerca: uma linha é visível quando
+   `tenantScopeCondition` a admite E (`owner_id` = caller OU
+   `tenant_id` está setado). Nunca consulte `patients` sem ela.
+
+2. **Passe pela superfície CQRS.** Outros plugins não tocam a tabela —
+   eles despacham `PatientsQueries` (`patients.ownerOf`, …) via
+   `Query.dispatcher`. Confira `plugins/patients/src/api.ts` para a query
+   necessária; se nenhuma servir, adicione uma lá (veja
+   [estenda o registro](/pt-BR/docs/developers/plugins/patients/how-to/extend-patient-record)).
+
+3. **Escreva a server fn.** No estilo de `apps/web/src/lib/fns.ts` —
+   valide input com `Schema`, resolva a sessão via `getSessionUser`, rode
+   a query dentro de `Effect.gen` e traduza `Forbidden` para resposta de
+   não-visível (veja
+   [tratamento de erros](/pt-BR/docs/developers/kernel/explanation/error-handling)).
+
+4. **Renderize.** Chame a fn num route component do seu plugin em
+   `src/routes/` — montada via `physical()` como consultations faz.
+
+## Verifique
+
+```bash
+bun run gen:route-types && bun run check
+```
+
+Teste com dois usuários: um paciente criado pelo usuário A não pode
+aparecer para o usuário B, e um paciente de tenant só pode aparecer para
+membros do tenant.

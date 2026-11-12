@@ -1,0 +1,44 @@
+---
+title: The tenancy model
+description: Why groups doubles as the tenant primitive, and how tenant_id columns compose with owner scoping across the schema.
+icon: Network
+---
+
+Tenancy in KTB is deliberately minimal: one `groups` table, one polymorphic
+membership table, and `tenant_id` columns scattered across domain tables.
+There is no separate tenant entity — a clinic *is* a group.
+
+## Why groups
+
+`groups.kind` is free-form (`"clinic"` today) precisely so the same
+primitive serves orgs, cohorts, and custom groupings without schema
+changes. `meta` carries kind-specific JSON. Building tenancy on this
+instead of a dedicated `tenants` table means every future grouping feature
+gets tenant semantics for free.
+
+## How tenant_id works
+
+- `tenant_id → groups.id`, `ON DELETE SET NULL` — deleting a clinic
+  degrades its rows to personal scope rather than cascading deletes.
+- Declared **inline** in each table (`integer("tenant_id")`) because
+  `@ktb/tenant` depends on `@ktb/db` — importing its helpers into plugin
+  schemas would create workspace cycles (see the comment in
+  `plugins/patients/src/schema.ts`).
+- `NULL` means personal scope; a `groups.id` means tenant-owned.
+
+## Resolution
+
+`@ktb/tenant` computes the caller's accessible tenant set from
+`group_members` (`accessibleTenantIds`). `tenantScopeCondition(table)`
+turns that set into a Drizzle `WHERE` fragment: `tenant_id IS NULL OR
+tenant_id IN (...)`. Domain services compose it with ownership rules —
+see [patient scoping](/en/docs/developers/plugins/patients/explanation/scoping-model)
+for the canonical two-clause fence.
+
+## What tenancy does NOT do
+
+- It doesn't replace authz — being a tenant member proves visibility into
+  the tenant's rows, not permission to mutate them (that's RBAC).
+- It doesn't isolate at the database level — fencing is application-level,
+  enforced in services. A raw query bypasses it; that's why consumers go
+  through CQRS surfaces.

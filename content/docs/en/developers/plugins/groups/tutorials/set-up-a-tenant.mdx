@@ -1,0 +1,43 @@
+---
+title: Set up a tenant
+description: Guided walkthrough — create a clinic group, add members, and make patient rows tenant-visible.
+icon: UsersRound
+---
+
+This tutorial provisions a clinic as a tenant: a `groups` row of kind
+`clinic`, user memberships, and the moment a patient record becomes
+visible to the whole clinic.
+
+## What you'll build
+
+A tenant "Clínica Exemplo" whose members can see tenant-owned patients —
+end to end through the services, not raw SQL.
+
+## Steps
+
+1. **Create the group.** Insert a `groups` row: `name`, unique `slug`,
+   `kind: "clinic"`, optional `meta` JSON. Do it through the groups
+   service (`GroupsLive` in `plugins/groups/src/index.ts`), not raw
+   drizzle — services own validation.
+
+2. **Add members.** `group_members` rows link `(groupId, "user",
+   userId, role?)`. Membership is what `accessibleTenantIds`
+   (`@ktb/tenant`) reads to compute a caller's tenant set — without it,
+   the tenant is invisible.
+
+3. **Create a tenant-owned patient.** Set `tenant_id` to the group's id
+   (keeping `owner_id` as the creator). The row is now visible to every
+   member the `patientScope` fence admits — see
+   [patient scoping](/en/docs/developers/plugins/patients/explanation/scoping-model).
+
+4. **Verify isolation.** A user outside the group must not see the
+   patient; a member must. `tenant_id NULL` rows stay personal regardless.
+
+## Verify
+
+```bash
+bun run check
+```
+
+Exercise via the UI or a server fn dispatching `PatientsQueries` — the
+fence lives in the service layer.

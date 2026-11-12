@@ -1,0 +1,57 @@
+---
+title: O pipeline de áudio
+description: Como o áudio da consulta flui do browser à transcrição — R2, queue, Whisper e limpeza LLM, com a máquina de estados que o rastreia.
+icon: AudioLines
+---
+
+O áudio de consulta é o caminho mais propenso a falhas do produto:
+arquivos grandes, workers assíncronos, dois estágios de IA e um requisito
+de consentimento. O design mantém cada estágio observável através de
+colunas na linha de `consultations`.
+
+## O fluxo
+
+```
+gravação do browser
+  → POST /api/consultations/:id/audio        (upload, só owner)
+  → objeto R2 (audioKey, bucket privado)
+  → mensagem AUDIO_QUEUE
+  → consumidor da queue (mesmo worker)
+  → Workers AI Whisper (serverTranscript — evidência ASR bruta)
+  → limpeza LLM (correctedTranscript + enhancementEngine)
+```
+
+## Colunas de estado
+
+| Coluna                | Papel                                            |
+| --------------------- | ------------------------------------------------ |
+| `audioKey`            | Chave do objeto R2 — o áudio armazenado          |
+| `audioStatus`         | `none → stored → queued → processing → done/failed` |
+| `audioError`          | Última falha do pipeline — mostrada ao médico, nunca o áudio |
+| `serverTranscript`    | Output do Whisper — evidência ASR bruta          |
+| `correctedTranscript` | PT-BR limpo por LLM — corrigido por máquina, NÃO aprovado pelo médico |
+| `enhancementEngine`   | Qual engine produziu a correção                  |
+
+`transcript` continua sendo a transcrição do browser; o pipeline do
+servidor nunca a sobrescreve — as duas coexistem para o médico comparar.
+
+## Invariantes
+
+- **`MAX_AUDIO_BYTES` = 25 MB** é aplicado duas vezes de propósito: a rota
+  de upload e `apps/web/src/lib/audio-jobs.ts` (o caminho da queue).
+  Mantenha-os em sincronia.
+- **Formato do payload**: modelos whisper-class recebem áudio em base64,
+  não `number[]` — um `number[]` de 25 MB serializaria para ~100 MB de
+  JSON.
+- **`consentAt`** é a trilha de consentimento LGPD — o pipeline não pode
+  rodar sem ela.
+- **Falhas são dados**: `audioStatus = "failed"` + `audioError`,
+  exibidos na UI — o médico tenta de novo, o sistema não descarta áudio
+  silenciosamente.
+
+## Onde cada coisa vive
+
+Endpoints de upload/stream: `plugins/consultations/src/api-routes/`
+(`consultations.$id.audio.ts`, `transcribe.ts`). Consumidor da queue e
+estado do job: `apps/web/src/lib/audio-jobs.ts`. Bindings R2/queue:
+declarados em `apps/web/alchemy.run.ts`.

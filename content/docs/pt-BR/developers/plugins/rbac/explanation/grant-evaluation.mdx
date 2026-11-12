@@ -1,0 +1,46 @@
+---
+title: Como grants são avaliados
+description: O caminho de resolução de subject_roles até a resposta de can() — role_permissions, semântica de deny e invalidação por epoch.
+icon: Scale
+---
+
+O RBAC dinâmico resolve "esse subject pode fazer X?" em request time a
+partir de três tabelas. A avaliação é deliberadamente simples — a
+complexidade está em manter os inputs frescos.
+
+## O caminho de resolução
+
+```
+subject_roles (quem tem qual papel)
+  → roles (o bundle)
+  → role_permissions (resource, action, effect)
+  → Permissions.can(resource, action)
+```
+
+- `subject_roles` atribui papéis a usuários *e* grupos — membership de
+  grupo expande para seus membros.
+- `role_permissions` guarda triplas `(resource, action, effect)`;
+  `effect` é allow/deny.
+- `Permissions.can` responde contra o conjunto de grants resolvido do
+  caller.
+
+## Semântica de deny
+
+Entradas deny existem mas **nunca satisfazem um check por si só** —
+existem para subtrair de allows mais amplos (ex.: "admins exceto
+billing"). A ordem de avaliação importa; leia `buildPermissions` em
+`packages/rbac/src/index.ts` antes de assumir que allow vence.
+
+## Invalidação por epoch
+
+`permission_epoch` é um contador de versão de linha única, incrementado a
+cada mudança de grant ou atribuição. Snapshots de permissão são cacheados
+por epoch — um bump invalida todos de uma vez, que é como revogações têm
+efeito sem reiniciar nada.
+
+## Modos estático vs dinâmico
+
+`entityAuthz` suporta um modo estático de permix `Def` (regras de
+compile-time, comportamento inalterado) e o modo dinâmico acima.
+`requireEntityAccess` escolhe o caminho certo — novos checks devem usá-lo
+para que ambos os modos continuem funcionando durante a migração.

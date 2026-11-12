@@ -1,0 +1,43 @@
+---
+title: Audit a feature's mutations
+description: Guided walkthrough — record audit entries from your service and see them in /platform/audit.
+icon: ScrollText
+---
+
+This tutorial adds audit coverage to a mutation: resolve the `Audit`
+service optionally, record after success, and verify the entry in the
+console.
+
+## What you'll build
+
+Every `updateSettings` call in your service writes an `admin_audit` row —
+without audit ever being able to break the mutation.
+
+## Steps
+
+1. **Resolve the service optionally.** Inside your `Effect.gen` service:
+
+   ```ts
+   const audit = yield* Effect.serviceOption(Audit); // from @ktb/audit
+   ```
+
+   Optional on purpose — the plugin may not be registered.
+
+2. **Record after the write succeeds.** Call
+   `audit.value.record({ action: "settings.update", targetType: "settings",
+   targetId: ..., detail: JSON.stringify({...}) })`. `record` never fails —
+   no try/catch needed (see
+   [record audit entries](/en/docs/developers/plugins/audit/how-to/record-audit-entries)).
+
+3. **Check the console.** As a platform admin, open `/platform/audit` —
+   newest-first, filterable by action/actor. Non-admins get a hard 404.
+
+## Verify
+
+```bash
+bun run check
+```
+
+Confirm the row appears with the right actor (from `Principal`, not your
+input), and that forcing an audit insert failure still lets the mutation
+succeed.

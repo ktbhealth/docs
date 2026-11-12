@@ -1,0 +1,42 @@
+---
+title: Ship a feature behind a permission
+description: Guided walkthrough — add a catalog permission, guard a service method, and verify deny-by-default.
+icon: KeySquare
+---
+
+This tutorial protects a service method with dynamic RBAC: catalog entry,
+role grant, runtime check.
+
+## What you'll build
+
+`exportReports` requires the `reports.export` permission — granted to a
+role, assigned to a user, enforced in the service.
+
+## Steps
+
+1. **Add the permission to the catalog.** In
+   `packages/rbac/src/vocabulary.ts`, add `"reports.export"` to
+   `PERMISSION_CATALOG` (or the appropriate group). Grants can't
+   reference permissions outside the catalog.
+
+2. **Guard the method.** In your service, use the authz helpers —
+   `requireCanAs("reports.export")` or `requireEntityAccess` for
+   entity-scoped checks (`packages/rbac/src/index.ts`). Denial throws
+   `Forbidden`, which server fns translate to not-visible.
+
+3. **Grant it.** Via `/platform` → RBAC admin (or `RbacCommands`:
+   `rbac.createRole` → `rbac.setRolePermission` → `rbac.assignSubject`),
+   create a role with the grant and assign it to a test user or group.
+
+4. **Verify deny-by-default.** Unassigned users get `Forbidden`;
+   `permission_epoch` bumps on grant changes so stale snapshots don't
+   linger.
+
+## Verify
+
+```bash
+bun run check
+```
+
+Test all three states: no grant → denied, grant via role → allowed, role
+revoked → denied again (after epoch invalidation).

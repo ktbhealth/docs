@@ -1,0 +1,46 @@
+---
+title: Plugin state and enablement
+description: Why plugin_state is opt-out, how the PluginStates service validates writes, and what system plugins mean.
+icon: ToggleLeft
+---
+
+Runtime plugin state exists so ops can disable a feature without a
+deploy — but the design treats enablement as the exception, not the
+rule, and validates every write against the real plugin graph.
+
+## Opt-out semantics
+
+No `plugin_state` row = **enabled** with schema-default config. The table
+only records deviations: explicit disables and config overrides. This
+keeps the common case (everything on) free of bookkeeping and makes
+"which plugins are off?" a short list.
+
+## Validated writes
+
+`PluginStates` is provided by the composition root from the *discovered*
+registry — so `setEnabled`/`setConfig` validate against reality:
+
+- Can't disable a plugin others `requiredDeps`-depend on.
+- Config must satisfy the plugin's `meta.config` Schema.
+- Unknown ids fail with `UnknownPlugin`.
+
+## System plugins
+
+`system: true` manifests (like the admin gate marker) are always enabled
+— state rows for them are dead data ignored entirely, and
+`setEnabled(…, false)` fails `PluginSystemLocked`. Config writes remain
+allowed: config is not enablement.
+
+## Consumers fail closed
+
+CQRS gating and route helpers translate `PluginDisabled` into
+not-visible responses — a disabled plugin behaves as if it doesn't exist,
+not as a broken one. `pluginStatesFn` exposes the enabled-id set for
+chrome/nav filtering so disabled features disappear from the UI too.
+
+## The console shell
+
+`/platform` pages come from `panel.pages` contributions; the host's splat
+route dispatches by exact path. `custom_pages` can never claim
+`/platform/*` — the namespace is reserved so admin UI can't be shadowed
+(see [custom pages](/en/docs/developers/plugins/pages/explanation/rendering-model)).

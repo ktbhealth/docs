@@ -1,0 +1,45 @@
+---
+title: How grants are evaluated
+description: The resolution path from subject_roles to a can() answer — role_permissions, deny semantics, and epoch invalidation.
+icon: Scale
+---
+
+Dynamic RBAC resolves "may this subject do X?" at request time from three
+tables. The evaluation is deliberately simple — the complexity lives in
+keeping the inputs fresh.
+
+## The resolution path
+
+```
+subject_roles (who has which role)
+  → roles (the bundle)
+  → role_permissions (resource, action, effect)
+  → Permissions.can(resource, action)
+```
+
+- `subject_roles` assigns roles to users *and* groups — group membership
+  expands to its members.
+- `role_permissions` stores `(resource, action, effect)` triples;
+  `effect` is allow/deny.
+- `Permissions.can` answers against the caller's resolved grant set.
+
+## Deny semantics
+
+Deny entries exist but **never satisfy a check by themselves** — they
+exist to subtract from broader allows (e.g. "admins except billing").
+Evaluation order matters; read `buildPermissions` in
+`packages/rbac/src/index.ts` before assuming allow-wins.
+
+## Epoch invalidation
+
+`permission_epoch` is a single-row version counter bumped on every grant
+or assignment change. Permission snapshots are cached per epoch — a bump
+invalidates all of them at once, which is how revocations take effect
+without restarting anything.
+
+## Static vs dynamic modes
+
+`entityAuthz` supports a static permix `Def` mode (compile-time rules,
+unchanged behavior) and the dynamic mode above. `requireEntityAccess`
+picks the right path — new checks should use it so both modes keep
+working during migration.

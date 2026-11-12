@@ -1,0 +1,42 @@
+---
+title: Build a session-aware feature
+description: Guided walkthrough — resolve the session in a server fn and gate your feature on it.
+icon: KeyRound
+---
+
+This tutorial adds authentication to a feature the supported way: through
+the `Auth` port, never by reading cookies or importing better-auth.
+
+## What you'll build
+
+A server fn `accountOverviewFn` that returns data only for signed-in
+users — anonymous callers get the same not-visible response as errors.
+
+## Steps
+
+1. **Get the session user.** Use the existing helpers in
+   `apps/web/src/lib/auth.ts` — `getSessionUser()` /
+   `ensureSessionUser()` — which wrap the `Auth` port's `getSession`.
+   They return the provider-agnostic `SessionUser` (`id`, `email`,
+   `name`).
+
+2. **Write the fn** `createServerFn({ method: "GET" })` style: call the
+   helper, `return null`/not-visible when there's no session, otherwise
+   `Effect.gen` your domain logic.
+
+3. **Gate the UI.** The client calls the fn; a null result renders the
+   signed-out state. For hard gates, pair with route guards — see
+   `platformAdminFn` for the boolean-gate pattern.
+
+4. **Never bypass.** Don't read `cookie` headers or import
+   `better-auth`/`@ktb/auth-better` in feature code — arch rules and the
+   port boundary exist so the provider can change underneath you.
+
+## Verify
+
+```bash
+bun run check
+```
+
+Signed out → null; signed in → data; banned user → null (sessions are
+revoked on `setUserBanned`).

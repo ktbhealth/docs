@@ -1,0 +1,40 @@
+---
+title: Sessions and identities
+description: How a request becomes a SessionUser — better-auth behind the Auth port, host-owned tables, and the suspension switch.
+icon: Fingerprint
+---
+
+Authentication answers one question — "who is this request from?" — and
+the whole design exists to keep that answer provider-swappable while
+staying enforceable in every service.
+
+## Request → Session
+
+1. The client sends the better-auth session cookie.
+2. `Auth.getSession(headers)` (the `@ktb/auth` port) delegates to the
+   `@ktb/auth-better` adapter, which validates the token against the
+   `session` table and resolves the `user` row.
+3. The result is a `Session` carrying `SessionUser { id, email, name }` —
+   the only identity shape plugins ever see.
+
+## Why host-owned tables
+
+`user`/`session`/`account`/`verification` live in `packages/db/src/auth.ts`,
+not in a plugin. This breaks a workspace cycle (`@ktb/db` can't depend on
+a plugin that depends on it) and signals that identity is infrastructure,
+not a feature.
+
+## Suspension as a first-class state
+
+`user.banned` + `setUserBanned` implement platform-level suspension: ban
+revokes all session rows, `getSession` returns null while the flag is
+set, unban restores access. It's provider-agnostic on the port so adapters
+map it onto their own storage.
+
+## Session ≠ authorization
+
+A valid session proves identity only. What the user may *do* is decided
+by RBAC grants evaluated per request — see
+[grant evaluation](/en/docs/developers/plugins/rbac/explanation/grant-evaluation).
+Services compose both: `requirePrincipalUser` for "signed in",
+`requireCanAs` for "allowed".

@@ -1,0 +1,44 @@
+---
+title: How custom pages render
+description: The request path from URL to markdown — wildcard descriptor, published-only lookup, and the markdown subset renderer.
+icon: Eye
+---
+
+Custom pages are resolved like filesystem routes but sourced from the
+database — the design keeps content dynamic while the render path stays
+boring.
+
+## Request flow
+
+1. The router's wildcard descriptor matches any unmatched path and hands
+   it to the pages guard/loader.
+2. The request path is normalized by the same `normalizePagePath` used
+   for admin input — already URL-decoded, trailing slashes tolerated.
+3. `publishedByPath` loads the row **only if `published = true`** —
+   drafts and missing paths both produce the same not-found result.
+4. `renderMarkdown` (`plugins/pages/src/markdown.tsx`) renders a
+   **markdown subset**: headings, lists, links, inline formatting —
+   deliberately not full markdown/MDX, so stored content can't inject
+   components or scripts.
+
+## Why a subset renderer
+
+`content` is user-supplied data. Rendering it through the docs site's MDX
+pipeline would execute arbitrary components; the subset renderer produces
+plain React nodes — safe by construction, no sanitization step needed.
+If you need richer content, that's a sign the page should be a real route,
+not a custom page.
+
+## The /platform reservation
+
+`normalizePagePath` rejects the `/platform` namespace outright. Console
+pages belong to `panel.pages` — an app-context contribution with its own
+gate — so a custom page can never shadow admin UI or bypass the
+`PlatformAdmin` check.
+
+## Admin vs visitor asymmetry
+
+Admins manage through `panel.pages` + server fns (see
+[fns.ts](https://github.com/ktbhealth/product)); visitors only ever hit
+the published read path. There is no draft-preview URL — preview is the
+admin list itself.

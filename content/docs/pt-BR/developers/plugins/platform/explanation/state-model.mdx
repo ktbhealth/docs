@@ -1,0 +1,49 @@
+---
+title: Estado e habilitação de plugins
+description: Por que plugin_state é opt-out, como o service PluginStates valida escritas e o que plugins de sistema significam.
+icon: ToggleLeft
+---
+
+O estado de plugin em runtime existe para que ops desligue uma feature sem
+deploy — mas o design trata habilitação como exceção, não regra, e valida
+cada escrita contra o grafo real de plugins.
+
+## Semântica opt-out
+
+Sem linha em `plugin_state` = **habilitado** com config default do schema.
+A tabela só registra desvios: disables explícitos e overrides de config.
+Isso mantém o caso comum (tudo ligado) livre de bookkeeping e faz "quais
+plugins estão desligados?" ser uma lista curta.
+
+## Escritas validadas
+
+`PluginStates` é fornecido pelo composition root a partir do registry
+*descoberto* — então `setEnabled`/`setConfig` validam contra a realidade:
+
+- Não dá para desabilitar um plugin do qual outros dependem via
+  `requiredDeps`.
+- Config precisa satisfazer o Schema `meta.config` do plugin.
+- Ids desconhecidos falham com `UnknownPlugin`.
+
+## Plugins de sistema
+
+Manifests `system: true` (como o marker do admin gate) estão sempre
+habilitados — linhas de estado para eles são dado morto ignorado
+inteiramente, e `setEnabled(…, false)` falha com `PluginSystemLocked`.
+Escritas de config continuam permitidas: config não é habilitação.
+
+## Consumidores falham fechados
+
+Gates de CQRS e helpers de rota traduzem `PluginDisabled` para respostas
+de não-visível — um plugin desabilitado se comporta como se não existisse,
+não como algo quebrado. `pluginStatesFn` expõe o conjunto de ids
+habilitados para filtragem de chrome/nav, então features desligadas
+desaparecem da UI também.
+
+## O shell do console
+
+Páginas `/platform` vêm de contribuições `panel.pages`; o splat route do
+host despacha por path exato. `custom_pages` nunca pode reivindicar
+`/platform/*` — o namespace é reservado para que a UI admin não seja
+sobreposta (veja
+[páginas customizadas](/pt-BR/docs/developers/plugins/pages/explanation/rendering-model)).

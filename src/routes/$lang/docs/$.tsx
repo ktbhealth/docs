@@ -60,7 +60,7 @@ function legacyDevelopersPath(slugs: string[]): string | null {
     const sub = slugs[3];
     // bare /plugins/<id> serves the hand-written index.mdx landing page
     if (!sub) return null;
-    if (sub !== 'reference' && sub !== 'how-to') {
+    if (!['reference', 'how-to', 'tutorials', 'explanation'].includes(sub)) {
       return `developers/plugins/${slugs[2]}/reference/${slugs.slice(3).join('/')}`;
     }
     return null;

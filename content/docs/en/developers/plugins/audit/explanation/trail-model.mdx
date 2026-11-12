@@ -1,0 +1,44 @@
+---
+title: The audit trail
+description: Why admin_audit is append-only, never-fails, and actor-attributed — and what that implies for producers.
+icon: History
+---
+
+`admin_audit` is designed as evidence, not logging: append-only rows with
+the actor taken from the authenticated principal, written through a
+contract that can never break the mutation it describes.
+
+## Append-only by design
+
+Rows are never updated or deleted — corrections are new entries, not
+edits. `createdAt` (indexed) is the ordering key; `action`,
+`actorUserId`, and `tenant_id` are indexed for the console's filters.
+`detail` stays raw JSON text — consumers parse what they wrote.
+
+## Actor from Principal, never input
+
+`insertAuditEntry` fills `actorUserId`/`actorEmail` from the bound
+`Principal` — the same session-derived identity authz uses. A caller
+cannot audit-as someone else; there is no actor field in
+`AuditEntryInput`.
+
+## Never-fails is a feature
+
+`Audit.record` catches insert errors *and* defects, logs them, and
+returns void. Rationale: an audit trail that can take down mutations
+incentivizes disabling it under pressure — exactly when you need it. The
+cost is possible audit gaps during DB distress, accepted deliberately.
+
+## Optional by dependency
+
+Consumers use `Effect.serviceOption(Audit)` — audit is a
+`requiredDeps`-free optional capability. A deployment without the audit
+plugin still works; it just doesn't record. This is why `record` is
+`Effect.Effect<void>` with no error channel.
+
+## Reading is the privileged side
+
+Writes are open to any registered consumer; reads are admin-gated
+(`/platform/audit` plus service-level checks). The asymmetry is
+intentional: writing evidence should be frictionless, reading it should
+be privileged.

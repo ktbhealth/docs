@@ -1,0 +1,50 @@
+---
+title: Patient scoping — owner vs tenant
+description: Why patient rows carry two scope columns and how the visibility fence composes them.
+icon: GitBranch
+---
+
+`patients` has two scope columns because the product serves two sharing
+models at once: a doctor keeping personal records, and a clinic sharing
+records across its members. Understanding the fence prevents the two most
+common bugs — leaking personal rows into a tenant, and hiding tenant rows
+from members.
+
+## The columns
+
+| Column      | Meaning                                              |
+| ----------- | ---------------------------------------------------- |
+| `owner_id`  | Creator/owner attribution — always set               |
+| `tenant_id` | `groups.id` when clinic-owned; `NULL` = personal row |
+
+`tenant_id` uses `ON DELETE SET NULL` — deleting a clinic group degrades
+its patients to personal rows rather than deleting them.
+
+## The fence
+
+`patientScope(ownerId)` ANDs two conditions:
+
+1. `tenantScopeCondition(patients)` — the row's `tenant_id` is `NULL` or
+   in the caller's accessible tenant set (`@ktb/tenant`).
+2. `owner_id = caller OR tenant_id IS NOT NULL` — personal rows are
+   owner-only; tenant rows are visible to any member the fence admits.
+
+In personal scope (no tenant memberships) the accessible set is empty, so
+the fence degrades to "own personal rows only" — which is why the second
+clause exists: without it, clause 1 alone would already hide other owners'
+personal rows, but tenant rows would leak to anyone.
+
+## Where it's enforced
+
+Inside the patients services — list/get/mutations all apply the scope.
+Cross-plugin callers get the same guarantee by dispatching
+`PatientsQueries`/`PatientsCommands` instead of reading the table; the
+service applies authz (`requireCanAs`) on top.
+
+## Extending it
+
+New patient-adjacent tables should copy the pattern: `owner_id` +
+`tenant_id` columns declared inline (importing `@ktb/tenant` helpers into
+`schema.ts` would create a workspace cycle — see the comment in
+`plugins/patients/src/schema.ts`), fenced in the service layer, never in
+the schema.

@@ -1,0 +1,45 @@
+---
+title: Entrega de notificações
+description: Por que notificações assinam após commit, isolam falhas e combinam stream ao vivo com backlog persistido.
+icon: RadioTower
+---
+
+O pipeline de notificações faz três trade-offs deliberados que explicam
+boa parte do seu design: a entrega é pelo menos uma vez (persiste
+primeiro, stream depois), produtores nunca sentem falhas de consumidores,
+e updates ao vivo são uma dica — o banco é a fonte da verdade.
+
+## Assinatura after-commit
+
+`events.subscribeAfterCommit` roda projectors apenas depois do commit da
+boundary do comando produtor. Consequências:
+
+- Uma escrita de notificação **não pode fazer rollback** da mutação que
+  descreve.
+- O comando produtor **não pode sofrer rollback** por falha de
+  notificação — `ingest` captura todas as causas e loga.
+- A ordem é "mutação commitada, depois notifica" — nunca o inverso.
+
+## Persiste, depois transmite
+
+`ingest` insere a linha primeiro, depois publica no live stream `PubSub`.
+Um cliente que perde o stream ainda vê a notificação no próximo load —
+`listNotifications` lê a tabela, e o header combina itens do stream sobre
+uma janela de catch-up `STREAM_BACKLOG = 50`. A entrega ao vivo é uma
+otimização, não uma garantia.
+
+## Isolamento de falhas em todo lugar
+
+Tanto `ingest` quanto `publishRows` envolvem seus corpos em
+`Effect.catchCause(Effect.logError)` — um projector ruim, um soluço de DB
+ou um subscriber morto loga e segue em frente. É a mesma filosofia do
+[record nunca-falha da auditoria](/pt-BR/docs/developers/plugins/audit/how-to/record-audit-entries):
+escritas de canal lateral não podem virar modos de falha do fluxo
+primário.
+
+## Authz é por operação
+
+Leituras exigem `notification.read`, mutações `notification.update` —
+aplicadas dentro de `NotificationsLive` via `requirePrincipalUser`, não
+na UI. O stream em si é escopado por usuário: `stream(userId)` só carrega
+linhas daquele usuário.

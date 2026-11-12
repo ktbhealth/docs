@@ -1,0 +1,46 @@
+---
+title: A trilha de auditoria
+description: Por que admin_audit é append-only, nunca-falha e atribuído ao ator — e o que isso implica para produtores.
+icon: History
+---
+
+`admin_audit` é desenhada como evidência, não logging: linhas append-only
+com o ator vindo do principal autenticado, escritas através de um contrato
+que nunca pode quebrar a mutação que descreve.
+
+## Append-only por design
+
+Linhas nunca são atualizadas nem deletadas — correções são novas entradas,
+não edições. `createdAt` (indexado) é a chave de ordenação; `action`,
+`actorUserId` e `tenant_id` são indexados para os filtros do console.
+`detail` permanece texto JSON cru — consumidores fazem parse do que
+escreveram.
+
+## Ator via Principal, nunca input
+
+`insertAuditEntry` preenche `actorUserId`/`actorEmail` a partir do
+`Principal` vinculado — a mesma identidade derivada de sessão que a authz
+usa. Um caller não pode auditar-como-outra-pessoa; não existe campo de
+ator em `AuditEntryInput`.
+
+## Nunca-falha é uma feature
+
+`Audit.record` captura erros de insert *e* defects, loga e retorna void.
+Racional: uma trilha de auditoria que pode derrubar mutações incentiva
+desabilitá-la sob pressão — exatamente quando você precisa dela. O custo
+são possíveis gaps de auditoria durante distress de DB, aceito
+deliberadamente.
+
+## Opcional por dependência
+
+Consumidores usam `Effect.serviceOption(Audit)` — auditoria é uma
+capability opcional sem `requiredDeps`. Um deploy sem o plugin de audit
+continua funcionando; só não registra. É por isso que `record` é
+`Effect.Effect<void>` sem canal de erro.
+
+## Ler é o lado privilegiado
+
+Escritas são abertas a qualquer consumidor registrado; leituras são
+admin-gated (`/platform/audit` mais checagens no service). A assimetria é
+intencional: escrever evidência deve ser sem fricção, lê-la deve ser
+privilegiado.

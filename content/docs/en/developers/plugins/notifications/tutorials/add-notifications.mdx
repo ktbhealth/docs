@@ -1,0 +1,42 @@
+---
+title: Add notifications to a feature
+description: Guided walkthrough — emit an event, map it to a notification, and see it in the bell.
+icon: Bell
+---
+
+This tutorial wires a feature's domain event into the notifications
+pipeline end to end: dispatch → projector → persisted row → live bell.
+
+## What you'll build
+
+When your feature emits `FeatureCompleted`, the acting user gets a console
+notification — without your feature knowing notifications exist.
+
+## Steps
+
+1. **Emit the event.** In your plugin's service, dispatch on the
+   `EventBus` after the mutation commits — same pattern as
+   `PatientCreated` in `plugins/patients/src/index.ts`.
+
+2. **Define the event** in your plugin's `api.ts` with `Event.make(...)`
+   if it isn't already part of a CQRS group.
+
+3. **Map it.** Add a `mapEvent` entry to `NOTIFICATION_MAP` in
+   `plugins/notifications/src/Notifications.ts` projecting the event to a
+   `NotificationDraft` (`userId`, `kind`, `title`, optional `body`/
+   `payload`). See the existing `ConsultationCreated` entry for locale
+   handling.
+
+4. **Verify delivery.** Trigger the action, then check the header bell —
+   the row persists even if the stream missed it (backlog merge,
+   `STREAM_BACKLOG = 50`).
+
+## Verify
+
+```bash
+bun run check
+```
+
+Confirm: notification appears for the right user only, `unreadCount`
+increments, `markRead` clears it, and a projector failure logs but never
+breaks the producing command.
