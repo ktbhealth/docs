@@ -1,10 +1,7 @@
 {
 	"title": "Auth",
 	"pages": [
-		"index",
-		"account",
-		"session",
-		"user",
-		"verification"
+		"reference",
+		"how-to"
 	]
 }

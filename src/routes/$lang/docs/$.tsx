@@ -43,8 +43,22 @@ const LEGACY_DEVELOPERS: Record<string, string> = {
   'reference/packages': 'kernel/reference/packages',
 };
 
+const PLUGIN_IDS = [
+  'patients', 'consultations', 'groups', 'notifications', 'audit',
+  'pages', 'auth', 'rbac', 'platform',
+];
+
 function legacyDevelopersPath(slugs: string[]): string | null {
   if (slugs.length < 2) return null;
+  // plugins/<plugin> content moved under reference/ (how-to/ is new).
+  if (slugs[0] === 'developers' && slugs[1] === 'plugins' && PLUGIN_IDS.includes(slugs[2])) {
+    const sub = slugs[3];
+    if (!sub) return `developers/plugins/${slugs[2]}/reference`;
+    if (sub !== 'reference' && sub !== 'how-to') {
+      return `developers/plugins/${slugs[2]}/reference/${slugs.slice(3).join('/')}`;
+    }
+    return null;
+  }
   // plugins/ briefly hosted quadrant pages and reference/database — both moved.
   if (slugs[0] === 'developers' && slugs[1] === 'plugins' && ['tutorials', 'how-to', 'explanation', 'reference'].includes(slugs[2])) {
     const rest = slugs.slice(2).join('/');
