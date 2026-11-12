@@ -1,0 +1,41 @@
+erDiagram
+
+
+"notifications" {
+  INTEGER id
+  TEXT user_id
+  TEXT kind
+  TEXT title
+  TEXT body
+  TEXT payload
+  INTEGER read_at
+  INTEGER created_at
+}
+"admin_audit" {
+  INTEGER id
+  TEXT actor_user_id
+  TEXT actor_email
+  TEXT action
+  TEXT target_type
+  TEXT target_id
+  TEXT detail
+  INTEGER tenant_id FK
+  INTEGER created_at
+}
+"plugin_state" {
+  TEXT plugin_id PK
+  INTEGER enabled
+  TEXT config
+  INTEGER updated_at
+}
+"custom_pages" {
+  INTEGER id
+  TEXT path
+  TEXT title
+  TEXT content
+  INTEGER published
+  INTEGER show_in_nav
+  INTEGER sort_order
+  INTEGER created_at
+  INTEGER updated_at
+}

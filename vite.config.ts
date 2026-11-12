@@ -3,6 +3,7 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import { fumadocsMdx } from 'fumadocs-mdx/vite';
+import { remarkMermaid } from '@theguild/remark-mermaid';
 import { nitro } from 'nitro/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 
@@ -19,7 +20,15 @@ export default defineConfig({
     port: 3000,
   },
   plugins: [
-    fumadocsMdx(),
+    fumadocsMdx({
+      globalOptions: {
+        mdxOptions: {
+          // turn ```mermaid fenced blocks into <Mermaid> components
+          // (rendered client-side via lazy `import('mermaid')`)
+          remarkPlugins: [remarkMermaid],
+        },
+      },
+    }),
     paraglideVitePlugin({
       project: './project.inlang',
       outdir: './src/paraglide',

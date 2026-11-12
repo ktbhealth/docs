@@ -1,0 +1,35 @@
+erDiagram
+
+"role_permissions" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"subject_roles" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+
+"permission_epoch" {
+  INTEGER id
+  INTEGER epoch
+}
+"role_permissions" {
+  INTEGER id
+  INTEGER role_id FK
+  TEXT resource
+  TEXT action
+  TEXT effect
+  INTEGER created_at
+}
+"roles" {
+  INTEGER id
+  TEXT name
+  TEXT description
+  TEXT meta
+  INTEGER created_at
+  INTEGER updated_at
+}
+"subject_roles" {
+  INTEGER id
+  TEXT subject_kind
+  TEXT subject_id
+  INTEGER role_id FK
+  TEXT tenant_id
+  TEXT granted_by
+  INTEGER expires_at
+  INTEGER created_at
+}

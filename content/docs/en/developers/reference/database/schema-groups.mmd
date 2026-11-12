@@ -1,0 +1,21 @@
+erDiagram
+
+"group_members" }o--|| "groups" : "FOREIGN KEY (group_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+
+"group_members" {
+  INTEGER id
+  INTEGER group_id FK
+  TEXT member_kind
+  TEXT member_id
+  TEXT role
+  INTEGER created_at
+}
+"groups" {
+  INTEGER id
+  TEXT name
+  TEXT slug
+  TEXT kind
+  TEXT meta
+  INTEGER created_at
+  INTEGER updated_at
+}

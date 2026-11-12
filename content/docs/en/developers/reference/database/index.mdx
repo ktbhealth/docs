@@ -1,0 +1,282 @@
+---
+title: Database schema
+description: Auto-generated ERD and table reference from the Drizzle schema.
+icon: Database
+---
+
+This section is **generated** from the Drizzle migrations in the `product`
+repo (`packages/db/drizzle/*.sql`). Do not edit the files here by hand —
+regenerate them instead.
+
+## Regenerate
+
+From the `product` repo root:
+
+```bash
+bun run db:erd
+```
+
+Requirements: `tbls` on `PATH` (or `TBLS_BIN` set). The script applies every
+migration to a throwaway SQLite database and runs `tbls doc` + `tbls out`,
+writing the results into `docs/content/docs/<locale>/developers/reference/database/`
+for both `en` and `pt-BR`.
+
+CI can verify the committed output is up to date without writing anything:
+
+```bash
+bun run db:erd --check
+```
+
+## What's here
+
+![Full entity-relationship diagram](./schema.svg)
+
+- `schema.svg` — full entity-relationship diagram (all tables).
+- `schema-<domain>.svg` — per-domain ER diagrams (see below).
+- `schema.mmd` / `schema-<domain>.mmd` — the same diagrams as Mermaid
+  `erDiagram` source; the full schema is also embedded below so it can be
+  rendered once Mermaid support lands.
+- `<table>.mdx` + `<table>.svg` — per-table column/index reference with a
+  focused ER diagram.
+
+## Domains
+
+The schema is split along plugin/package boundaries:
+
+### Auth
+
+`user`, `session`, `account`, `verification` — better-auth
+infrastructure (`packages/db`).
+
+![Auth domain ER diagram](./schema-auth.svg)
+
+### RBAC
+
+`roles`, `role_permissions`, `subject_roles`, `permission_epoch` —
+roles, grants and the permission cache epoch (`packages/rbac` +
+`plugins/rbac`).
+
+![RBAC domain ER diagram](./schema-rbac.svg)
+
+### Clinical
+
+`patients`, `consultations` — patient records and consultations
+(`plugins/patients` + `plugins/consultations`).
+
+![Clinical domain ER diagram](./schema-clinical.svg)
+
+### Groups
+
+`groups`, `group_members` — patient cohorts and membership
+(`plugins/groups`).
+
+![Groups domain ER diagram](./schema-groups.svg)
+
+### Platform
+
+`notifications`, `plugin_state`, `custom_pages`, `admin_audit` —
+platform-owned runtime state, notifications, custom pages and the admin
+audit log.
+
+![Platform domain ER diagram](./schema-platform.svg)
+
+## Full schema (Mermaid)
+
+```mermaid
+erDiagram
+
+"account" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"session" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"patients" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"consultations" }o--o| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
+"consultations" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"group_members" }o--|| "groups" : "FOREIGN KEY (group_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"role_permissions" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"subject_roles" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"admin_audit" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+
+"account" {
+  TEXT id PK
+  TEXT account_id
+  TEXT provider_id
+  TEXT user_id FK
+  TEXT access_token
+  TEXT refresh_token
+  TEXT id_token
+  INTEGER access_token_expires_at
+  INTEGER refresh_token_expires_at
+  TEXT scope
+  TEXT password
+  INTEGER created_at
+  INTEGER updated_at
+}
+"session" {
+  TEXT id PK
+  INTEGER expires_at
+  TEXT token
+  INTEGER created_at
+  INTEGER updated_at
+  TEXT ip_address
+  TEXT user_agent
+  TEXT user_id FK
+}
+"user" {
+  TEXT id PK
+  TEXT name
+  TEXT email
+  INTEGER email_verified
+  TEXT image
+  INTEGER created_at
+  INTEGER updated_at
+  INTEGER banned
+}
+"verification" {
+  TEXT id PK
+  TEXT identifier
+  TEXT value
+  INTEGER expires_at
+  INTEGER created_at
+  INTEGER updated_at
+}
+"patients" {
+  INTEGER id
+  TEXT owner_id
+  TEXT name
+  INTEGER created_at
+  INTEGER active
+  TEXT social_name
+  TEXT gender
+  TEXT birth_date
+  TEXT cpf
+  TEXT cns
+  TEXT passport
+  TEXT phone
+  TEXT email
+  TEXT preferred_language
+  TEXT address_line
+  TEXT address_number
+  TEXT address_complement
+  TEXT district
+  TEXT city
+  TEXT state
+  TEXT postal_code
+  TEXT country
+  TEXT mother_name
+  TEXT marital_status
+  TEXT race_color
+  TEXT nationality
+  TEXT emergency_contact_name
+  TEXT emergency_contact_relationship
+  TEXT emergency_contact_phone
+  INTEGER updated_at
+  INTEGER tenant_id FK
+}
+"consultations" {
+  INTEGER id
+  TEXT user_id
+  INTEGER patient_id FK
+  TEXT transcript
+  TEXT anamnesis
+  TEXT review
+  TEXT engine
+  TEXT source
+  TEXT status
+  TEXT bot_id
+  INTEGER consent_at
+  TEXT audio_key
+  TEXT audio_status
+  TEXT audio_content_type
+  INTEGER audio_size
+  TEXT audio_error
+  TEXT server_transcript
+  TEXT corrected_transcript
+  TEXT enhancement_engine
+  INTEGER created_at
+  INTEGER tenant_id FK
+}
+"group_members" {
+  INTEGER id
+  INTEGER group_id FK
+  TEXT member_kind
+  TEXT member_id
+  TEXT role
+  INTEGER created_at
+}
+"groups" {
+  INTEGER id
+  TEXT name
+  TEXT slug
+  TEXT kind
+  TEXT meta
+  INTEGER created_at
+  INTEGER updated_at
+}
+"notifications" {
+  INTEGER id
+  TEXT user_id
+  TEXT kind
+  TEXT title
+  TEXT body
+  TEXT payload
+  INTEGER read_at
+  INTEGER created_at
+}
+"permission_epoch" {
+  INTEGER id
+  INTEGER epoch
+}
+"role_permissions" {
+  INTEGER id
+  INTEGER role_id FK
+  TEXT resource
+  TEXT action
+  TEXT effect
+  INTEGER created_at
+}
+"roles" {
+  INTEGER id
+  TEXT name
+  TEXT description
+  TEXT meta
+  INTEGER created_at
+  INTEGER updated_at
+}
+"subject_roles" {
+  INTEGER id
+  TEXT subject_kind
+  TEXT subject_id
+  INTEGER role_id FK
+  TEXT tenant_id
+  TEXT granted_by
+  INTEGER expires_at
+  INTEGER created_at
+}
+"admin_audit" {
+  INTEGER id
+  TEXT actor_user_id
+  TEXT actor_email
+  TEXT action
+  TEXT target_type
+  TEXT target_id
+  TEXT detail
+  INTEGER tenant_id FK
+  INTEGER created_at
+}
+"plugin_state" {
+  TEXT plugin_id PK
+  INTEGER enabled
+  TEXT config
+  INTEGER updated_at
+}
+"custom_pages" {
+  INTEGER id
+  TEXT path
+  TEXT title
+  TEXT content
+  INTEGER published
+  INTEGER show_in_nav
+  INTEGER sort_order
+  INTEGER created_at
+  INTEGER updated_at
+}
+```

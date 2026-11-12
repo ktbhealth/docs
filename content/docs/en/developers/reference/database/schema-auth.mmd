@@ -1,0 +1,48 @@
+erDiagram
+
+"account" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"session" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+
+"account" {
+  TEXT id PK
+  TEXT account_id
+  TEXT provider_id
+  TEXT user_id FK
+  TEXT access_token
+  TEXT refresh_token
+  TEXT id_token
+  INTEGER access_token_expires_at
+  INTEGER refresh_token_expires_at
+  TEXT scope
+  TEXT password
+  INTEGER created_at
+  INTEGER updated_at
+}
+"session" {
+  TEXT id PK
+  INTEGER expires_at
+  TEXT token
+  INTEGER created_at
+  INTEGER updated_at
+  TEXT ip_address
+  TEXT user_agent
+  TEXT user_id FK
+}
+"user" {
+  TEXT id PK
+  TEXT name
+  TEXT email
+  INTEGER email_verified
+  TEXT image
+  INTEGER created_at
+  INTEGER updated_at
+  INTEGER banned
+}
+"verification" {
+  TEXT id PK
+  TEXT identifier
+  TEXT value
+  INTEGER expires_at
+  INTEGER created_at
+  INTEGER updated_at
+}
