@@ -1,0 +1,14 @@
+erDiagram
+
+
+"admin_audit" {
+  INTEGER id
+  TEXT actor_user_id
+  TEXT actor_email
+  TEXT action
+  TEXT target_type
+  TEXT target_id
+  TEXT detail
+  INTEGER tenant_id FK
+  INTEGER created_at
+}

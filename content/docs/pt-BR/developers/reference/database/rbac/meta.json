@@ -1,0 +1,10 @@
+{
+	"title": "RBAC",
+	"pages": [
+		"index",
+		"permission_epoch",
+		"role_permissions",
+		"roles",
+		"subject_roles"
+	]
+}

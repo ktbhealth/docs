@@ -2,21 +2,14 @@
 	"title": "Database",
 	"pages": [
 		"index",
-		"account",
-		"admin_audit",
+		"patients",
 		"consultations",
-		"custom_pages",
-		"group_members",
 		"groups",
 		"notifications",
-		"patients",
-		"permission_epoch",
-		"plugin_state",
-		"role_permissions",
-		"roles",
-		"session",
-		"subject_roles",
-		"user",
-		"verification"
+		"audit",
+		"pages",
+		"auth",
+		"rbac",
+		"platform"
 	]
 }

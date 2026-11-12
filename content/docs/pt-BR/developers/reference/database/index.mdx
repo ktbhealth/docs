@@ -1,6 +1,6 @@
 ---
 title: Schema do banco de dados
-description: ERD e referência de tabelas gerados automaticamente a partir do schema Drizzle.
+description: ERD e referência de tabelas gerados do schema Drizzle, organizados por plugin.
 icon: Database
 ---
 
@@ -13,7 +13,8 @@ manualmente — regenere-os.
 A partir da raiz do repositório `product`:
 
 ```bash
-bun run db:erd
+bun run db:erd        # regenera
+bun run db:erd:check  # drift check de CI (sai 1 se estiver desatualizado)
 ```
 
 Requisito: `tbls` no `PATH` (ou `TBLS_BIN` definido). O script aplica todas
@@ -22,262 +23,21 @@ as migrations num banco SQLite temporário e executa `tbls doc` +
 `docs/content/docs/<locale>/developers/reference/database/` para os locales
 `en` e `pt-BR`.
 
-O CI pode verificar se a saída commitada está atualizada sem escrever nada:
+## Estrutura
 
-```bash
-bun run db:erd --check
-```
+Cada seção corresponde ao plugin ou pacote dono das tabelas:
 
-## O que há aqui
+- [Patients](./patients/) — `plugins/patients`
+- [Consultations](./consultations/) — `plugins/consultations`
+- [Groups](./groups/) — `plugins/groups`
+- [Notifications](./notifications/) — `plugins/notifications`
+- [Audit log](./audit/) — `plugins/audit`
+- [Custom pages](./pages/) — `plugins/pages`
+- [Auth](./auth/) — `packages/db/src/auth.ts` (better-auth)
+- [RBAC](./rbac/) — `packages/rbac` + `plugins/rbac`
+- [Platform](./platform/) — estado do kernel em `packages/db`
 
-![Diagrama entidade-relacionamento completo](./schema.svg)
-
-- `schema.svg` — diagrama entidade-relacionamento completo (todas as tabelas).
-- `schema-<domain>.svg` — diagramas ER por domínio (ver abaixo).
-- `schema.mmd` / `schema-<domain>.mmd` — os mesmos diagramas como fonte
-  Mermaid `erDiagram`; o schema completo também está embutido abaixo para
-  ser renderizado quando o suporte a Mermaid chegar.
-- `<table>.mdx` + `<table>.svg` — referência de colunas/índices por tabela
-  com um diagrama ER focado.
-
-## Domínios
-
-O schema é dividido seguindo os limites de plugins/packages:
-
-### Autenticação
-
-`user`, `session`, `account`, `verification` — infraestrutura do
-better-auth (`packages/db`).
-
-![Diagrama ER do domínio de autenticação](./schema-auth.svg)
-
-### RBAC
-
-`roles`, `role_permissions`, `subject_roles`, `permission_epoch` —
-papéis, concessões e o epoch de cache de permissões (`packages/rbac` +
-`plugins/rbac`).
-
-![Diagrama ER do domínio RBAC](./schema-rbac.svg)
-
-### Clínico
-
-`patients`, `consultations` — prontuários de pacientes e consultas
-(`plugins/patients` + `plugins/consultations`).
-
-![Diagrama ER do domínio clínico](./schema-clinical.svg)
-
-### Grupos
-
-`groups`, `group_members` — coortes de pacientes e associação de membros
-(`plugins/groups`).
-
-![Diagrama ER do domínio de grupos](./schema-groups.svg)
-
-### Plataforma
-
-`notifications`, `plugin_state`, `custom_pages`, `admin_audit` —
-estado de runtime da plataforma, notificações, páginas personalizadas e o
-log de auditoria administrativa.
-
-![Diagrama ER do domínio de plataforma](./schema-platform.svg)
-
-## Schema completo (Mermaid)
-
-```mermaid
-erDiagram
-
-"account" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"session" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"patients" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
-"consultations" }o--o| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
-"consultations" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
-"group_members" }o--|| "groups" : "FOREIGN KEY (group_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"role_permissions" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"subject_roles" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"admin_audit" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
-
-"account" {
-  TEXT id PK
-  TEXT account_id
-  TEXT provider_id
-  TEXT user_id FK
-  TEXT access_token
-  TEXT refresh_token
-  TEXT id_token
-  INTEGER access_token_expires_at
-  INTEGER refresh_token_expires_at
-  TEXT scope
-  TEXT password
-  INTEGER created_at
-  INTEGER updated_at
-}
-"session" {
-  TEXT id PK
-  INTEGER expires_at
-  TEXT token
-  INTEGER created_at
-  INTEGER updated_at
-  TEXT ip_address
-  TEXT user_agent
-  TEXT user_id FK
-}
-"user" {
-  TEXT id PK
-  TEXT name
-  TEXT email
-  INTEGER email_verified
-  TEXT image
-  INTEGER created_at
-  INTEGER updated_at
-  INTEGER banned
-}
-"verification" {
-  TEXT id PK
-  TEXT identifier
-  TEXT value
-  INTEGER expires_at
-  INTEGER created_at
-  INTEGER updated_at
-}
-"patients" {
-  INTEGER id
-  TEXT owner_id
-  TEXT name
-  INTEGER created_at
-  INTEGER active
-  TEXT social_name
-  TEXT gender
-  TEXT birth_date
-  TEXT cpf
-  TEXT cns
-  TEXT passport
-  TEXT phone
-  TEXT email
-  TEXT preferred_language
-  TEXT address_line
-  TEXT address_number
-  TEXT address_complement
-  TEXT district
-  TEXT city
-  TEXT state
-  TEXT postal_code
-  TEXT country
-  TEXT mother_name
-  TEXT marital_status
-  TEXT race_color
-  TEXT nationality
-  TEXT emergency_contact_name
-  TEXT emergency_contact_relationship
-  TEXT emergency_contact_phone
-  INTEGER updated_at
-  INTEGER tenant_id FK
-}
-"consultations" {
-  INTEGER id
-  TEXT user_id
-  INTEGER patient_id FK
-  TEXT transcript
-  TEXT anamnesis
-  TEXT review
-  TEXT engine
-  TEXT source
-  TEXT status
-  TEXT bot_id
-  INTEGER consent_at
-  TEXT audio_key
-  TEXT audio_status
-  TEXT audio_content_type
-  INTEGER audio_size
-  TEXT audio_error
-  TEXT server_transcript
-  TEXT corrected_transcript
-  TEXT enhancement_engine
-  INTEGER created_at
-  INTEGER tenant_id FK
-}
-"group_members" {
-  INTEGER id
-  INTEGER group_id FK
-  TEXT member_kind
-  TEXT member_id
-  TEXT role
-  INTEGER created_at
-}
-"groups" {
-  INTEGER id
-  TEXT name
-  TEXT slug
-  TEXT kind
-  TEXT meta
-  INTEGER created_at
-  INTEGER updated_at
-}
-"notifications" {
-  INTEGER id
-  TEXT user_id
-  TEXT kind
-  TEXT title
-  TEXT body
-  TEXT payload
-  INTEGER read_at
-  INTEGER created_at
-}
-"permission_epoch" {
-  INTEGER id
-  INTEGER epoch
-}
-"role_permissions" {
-  INTEGER id
-  INTEGER role_id FK
-  TEXT resource
-  TEXT action
-  TEXT effect
-  INTEGER created_at
-}
-"roles" {
-  INTEGER id
-  TEXT name
-  TEXT description
-  TEXT meta
-  INTEGER created_at
-  INTEGER updated_at
-}
-"subject_roles" {
-  INTEGER id
-  TEXT subject_kind
-  TEXT subject_id
-  INTEGER role_id FK
-  TEXT tenant_id
-  TEXT granted_by
-  INTEGER expires_at
-  INTEGER created_at
-}
-"admin_audit" {
-  INTEGER id
-  TEXT actor_user_id
-  TEXT actor_email
-  TEXT action
-  TEXT target_type
-  TEXT target_id
-  TEXT detail
-  INTEGER tenant_id FK
-  INTEGER created_at
-}
-"plugin_state" {
-  TEXT plugin_id PK
-  INTEGER enabled
-  TEXT config
-  INTEGER updated_at
-}
-"custom_pages" {
-  INTEGER id
-  TEXT path
-  TEXT title
-  TEXT content
-  INTEGER published
-  INTEGER show_in_nav
-  INTEGER sort_order
-  INTEGER created_at
-  INTEGER updated_at
-}
-```
+A página inicial de cada seção embute seu diagrama ER como Mermaid
+renderizado, com o código-fonte `erDiagram` em `schema.mmd` ao lado. O
+schema completo está em [`schema.mmd`](./schema.mmd) — cole em qualquer
+renderizador Mermaid para outros formatos.
