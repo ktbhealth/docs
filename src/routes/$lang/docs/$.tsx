@@ -34,7 +34,7 @@ const LEGACY_DEVELOPERS: Record<string, string> = {
   'explanation/ports-and-adapters': 'kernel/explanation/ports-and-adapters',
   'explanation/positioning': 'apps/explanation/positioning',
   'explanation/client-server-split': 'apps/explanation/client-server-split',
-  'reference/commands': 'kernel/reference/commands',
+  'reference/commands': 'root/reference/commands',
   'reference/site-structure': 'apps/reference/site-structure',
   'reference/ui-components': 'apps/reference/ui-components',
   'reference/integration-surface': 'apps/reference/integration-surface',
@@ -50,7 +50,18 @@ const PLUGIN_IDS = [
 
 // Pages moved between quadrants after the initial IA restructure.
 const MOVED_PAGES: Record<string, string> = {
-  'apps/reference/commands': 'kernel/reference/commands',
+  'apps/reference/commands': 'root/reference/commands',
+  // general/cross-cutting pages moved kernel/ → root/
+  'kernel/how-to/testing': 'root/how-to/testing',
+  'kernel/how-to/debugging': 'root/how-to/debugging',
+  'kernel/how-to/environment-variables': 'root/how-to/environment-variables',
+  'kernel/how-to/ci': 'root/how-to/ci',
+  'kernel/explanation/authentication': 'root/explanation/authentication',
+  'kernel/explanation/internationalization': 'root/explanation/internationalization',
+  'kernel/explanation/deployment': 'root/explanation/deployment',
+  'kernel/explanation/error-handling': 'root/explanation/error-handling',
+  'kernel/reference/commands': 'root/reference/commands',
+  'kernel/reference/glossary': 'root/reference/glossary',
 };
 
 function legacyDevelopersPath(slugs: string[]): string | null {

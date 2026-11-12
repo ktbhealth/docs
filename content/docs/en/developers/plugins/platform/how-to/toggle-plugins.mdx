@@ -45,7 +45,7 @@ appropriate not-visible response — the same philosophy as authz denials.
 
 `/platform` itself is gated twice: `platformAdminFn` checks the session
 email against `PLATFORM_ADMIN_EMAILS` (env allowlist, see
-[Environment variables](/en/docs/developers/kernel/how-to/environment-variables)),
+[Environment variables](/en/docs/developers/root/how-to/environment-variables)),
 and domain services re-check via the `PlatformAdmin` service — defense in
 depth, a missing UI guard can't leak admin data.
 

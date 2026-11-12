@@ -47,7 +47,7 @@ adequada de não-visível — a mesma filosofia das negações de authz.
 
 O próprio `/platform` é protegido duas vezes: `platformAdminFn` verifica o
 email da sessão contra `PLATFORM_ADMIN_EMAILS` (allowlist de env, veja
-[Variáveis de ambiente](/pt-BR/docs/developers/kernel/how-to/environment-variables)),
+[Variáveis de ambiente](/pt-BR/docs/developers/root/how-to/environment-variables)),
 e os services de domínio re-verificam via o service `PlatformAdmin` —
 defesa em profundidade, um guard de UI faltando não vaza dado admin.
 
