@@ -2,9 +2,6 @@
 	"title": "Referência",
 	"pages": [
 		"index",
-		"account",
-		"session",
-		"user",
-		"verification"
+		"tables"
 	]
 }

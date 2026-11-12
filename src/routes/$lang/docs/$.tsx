@@ -63,6 +63,10 @@ function legacyDevelopersPath(slugs: string[]): string | null {
     if (!['reference', 'how-to', 'tutorials', 'explanation'].includes(sub)) {
       return `developers/plugins/${slugs[2]}/reference/${slugs.slice(3).join('/')}`;
     }
+    // table pages moved under reference/tables/ — redirect legacy flat URLs
+    if (sub === 'reference' && slugs[4] && slugs[4] !== 'tables') {
+      return `developers/plugins/${slugs[2]}/reference/tables/${slugs.slice(4).join('/')}`;
+    }
     return null;
   }
   // plugins/ briefly hosted quadrant pages and reference/database — both moved.

@@ -1,0 +1,9 @@
+{
+	"title": "Tables",
+	"pages": [
+		"account",
+		"session",
+		"user",
+		"verification"
+	]
+}

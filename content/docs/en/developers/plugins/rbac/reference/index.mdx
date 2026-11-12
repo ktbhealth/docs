@@ -1,6 +1,6 @@
 ---
-title: "RBAC"
-description: "Roles, role-permission grants and subject (user/group) role assignments, with an epoch for cache invalidation."
+title: "Database"
+description: "RBAC database schema — ER diagram and per-table reference."
 icon: Network
 ---
 
@@ -48,9 +48,11 @@ erDiagram
 }
 ```
 
+Mermaid source: [`schema.mmd`](./schema.mmd)
+
 ## Tables
 
-- [`permission_epoch`](./permission_epoch.mdx)
-- [`role_permissions`](./role_permissions.mdx)
-- [`roles`](./roles.mdx)
-- [`subject_roles`](./subject_roles.mdx)
+- [`permission_epoch`](./tables/permission_epoch.mdx)
+- [`role_permissions`](./tables/role_permissions.mdx)
+- [`roles`](./tables/roles.mdx)
+- [`subject_roles`](./tables/subject_roles.mdx)
