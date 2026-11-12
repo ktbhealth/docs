@@ -1,0 +1,52 @@
+---
+title: Crie papéis e conceda permissões
+description: Estenda o catálogo de permissões, crie um papel e atribua-o — o modelo RBAC dinâmico.
+icon: KeySquare
+---
+
+O RBAC é **dinâmico**: papéis são bundles de grants `(resource, action,
+effect)` gerenciados em runtime, atribuíveis a usuários e grupos — não
+config de compile-time. Dois packages dividem o trabalho:
+`packages/rbac` (vocabulário + service `Permissions`) e `plugins/rbac`
+(tabelas, UI admin, queries).
+
+## O vocabulário
+
+`packages/rbac/src/vocabulary.ts` guarda `PERMISSION_CATALOG` — strings
+`"resource.action"` como `patient.read`, `consultation.update`,
+`platform.admin`. As ações de entidade espelham o permix `Def` de
+`@ktb/authz`; as ações de plataforma estão em `PLATFORM_ACTIONS`. O
+catálogo hoje é sincronizado à mão (codegen adiado) — **ao adicionar uma
+nova permissão, adicione aqui primeiro**, senão grants de papel não
+conseguem referenciá-la.
+
+## Criar um papel
+
+Papéis vivem em `roles` + `role_permissions` (+ `subject_roles` para
+atribuições). O caminho suportado é a UI admin em `/platform`, que passa
+por `RbacQueries`/`RbacCommands` — edições de papel validam grants contra
+o catálogo (`isKnownPermission` avisa sobre entradas desconhecidas) e
+escritas são via CQRS, nunca SQL cru.
+
+## Como os checks resolvem
+
+Em request time, `Permissions.can(resource, action)` (ou os helpers
+`requireCanAs`/`entityAuthz` de `packages/rbac`) resolve os grants do
+caller a partir das atribuições de papel. `permission_epoch` existe para
+invalidação de cache: mudanças de grant incrementam o epoch para que
+snapshots de permissão velhos sejam descartados. Entradas deny nunca
+satisfazem um check — a ordem de avaliação importa, veja
+`buildPermissions` em `packages/rbac/src/index.ts`.
+
+## Modo estático vs dinâmico
+
+`entityAuthz` suporta dois modos: o caminho estático do permix `Def`
+(comportamento inalterado) e o caminho dinâmico do rbac. Novos checks de
+entidade devem passar por `requireEntityAccess` para que ambos os modos
+continuem funcionando.
+
+## Schema
+
+Fluxo padrão para mudanças de tabela: `schema.ts` → `bun run db:generate`
+→ `bun run db:migrate:local` → `bun run db:erd`. Veja a
+[referência RBAC gerada](/pt-BR/docs/developers/plugins/rbac/reference).

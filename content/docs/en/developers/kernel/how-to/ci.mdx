@@ -1,0 +1,44 @@
+---
+title: Understand CI and pull requests
+description: What the pipeline checks, how to reproduce it locally, and the PR conventions.
+icon: GitPullRequest
+---
+
+## Pipeline
+
+`.github/workflows/ci.yml` runs on every push to `main` and every PR:
+
+| Job / step                    | What it does                                              |
+| ----------------------------- | --------------------------------------------------------- |
+| `ci:check`                    | fmt + lint + typecheck (Vite+ tasks in `vite.config.ts`)   |
+| `ci:test`                     | vitest — depends on `ci:build` (needs Paraglide output)   |
+| `ci:build`                    | production build                                          |
+| `ci:route-types`              | verifies generated `route-types.d.ts` are fresh           |
+| `ci:db-schema` / `ci:db-migrations` / `ci:worker-types` | generated-file drift checks |
+| `ci:knip` / `ci:arch`         | dead-code analysis + architecture boundary smoke test     |
+| `erd`                         | regenerates DB docs in the sibling docs repo; fails on drift |
+
+Locally, `bun run check` covers fmt/lint/typecheck. To reproduce a CI step:
+`bunx vp run ci:<name>` from the repo root.
+
+## Generated files
+
+Drift checks exist because several files are tool output — never hand-edit
+them; regenerate instead:
+
+- `packages/db/drizzle/*.sql` → `bun run db:generate`
+- `src/paraglide/` → any `vp` task that builds
+- `plugins/*/src/route-types.d.ts` → `bun run gen:route-types`
+- docs ERD pages → `bun run db:erd` (see the [Plugins](/en/docs/developers/plugins) section)
+
+## Pull requests
+
+- Branch from `main`, keep commits focused; the repo uses
+  [conventional commits](https://www.conventionalcommits.org/) (`feat:`,
+  `fix:`, `refactor:`, `docs:`, `chore:`).
+- Reference the tracking item in the PR body when there is one (the org
+  uses myco IDs like `T-0xx`).
+- Direct pushes to `main` are allowed org-wide — CI does not gate them, so
+  run `bun run check` + relevant tests before pushing.
+- The `erd` CI job clones the public `ktbhealth/docs` repo anonymously and
+  needs `tbls` — it installs a pinned version itself, nothing to configure.

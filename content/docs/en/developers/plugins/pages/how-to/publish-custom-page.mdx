@@ -1,0 +1,53 @@
+---
+title: Publish a custom page
+description: Create DB-backed pages with controlled paths, ordering, and nav placement.
+icon: FileText
+---
+
+`plugins/pages` serves **custom pages**: markdown content stored in
+`custom_pages`, rendered on demand at clean URLs, with admin control over
+publication, navigation, and ordering. Pages are data, not code — no
+deploy needed.
+
+## The model
+
+| Column        | Meaning                                             |
+| ------------- | --------------------------------------------------- |
+| `path`        | Unique URL path (`/welcome`, `/faq`) — normalized  |
+| `title`       | Display title                                       |
+| `content`     | Markdown body (rendered by `markdown.tsx`)          |
+| `published`   | Only published pages render for visitors           |
+| `showInNav`   | Include in site navigation                          |
+| `sortOrder`   | Ordering within nav                                 |
+
+## Path rules
+
+`normalizePagePath` in `plugins/pages/src/service.ts` is the single
+validator, applied both to admin input and to incoming request paths:
+
+- Must start with `/`, no trailing slash (except root).
+- Rejects whitespace, URL sigils (`?`, `#`, `*`), overlong paths.
+- **Rejects the `/platform` namespace** — console paths belong to
+  `panel.pages`, an app-context concern; custom pages can never shadow
+  the admin console.
+- The unique index on `path` is the backstop; the service also maps it to
+  a friendly `PathTaken` error.
+
+## Create and publish
+
+Pages are managed through the plugin's admin surface (platform page +
+server fns in `fns.ts`) — admin fns call the service, which enforces
+publication state. Visitors only ever see `published = true` rows through
+the wildcard descriptor; drafts are invisible, not forbidden.
+
+## Ordering and nav
+
+`showInNav` + `sortOrder` drive the nav contribution (`chrome.tsx`). Keep
+`sortOrder` dense (0, 1, 2…) — gaps are fine, duplicates resolve
+consistently but are confusing to maintain.
+
+## Schema changes
+
+Standard flow: `schema.ts` → `bun run db:generate` →
+`bun run db:migrate:local` → `bun run db:erd`. See the
+[generated reference](/en/docs/developers/plugins/pages/reference).

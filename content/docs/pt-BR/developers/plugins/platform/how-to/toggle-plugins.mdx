@@ -1,0 +1,57 @@
+---
+title: Ative/desative plugins e leia o estado
+description: Habilite/desabilite plugins em runtime, entenda a semântica de plugin_state e use o admin gate.
+icon: ToggleLeft
+---
+
+`packages/platform` é dono do **estado de plugin em runtime**: a tabela
+`plugin_state` mais o service Effect `PluginStates`, fornecido pelo
+composition root a partir do registry de plugins descoberto. É assim que
+admins do `/platform` desligam features de plugin sem deploy.
+
+## Semântica
+
+- **Sem linha em `plugin_state` = HABILITADO** com config default do
+  schema (opt-out — desabilitar é a exceção).
+- `config` NULL significa "usar os defaults do schema `meta.config`".
+- **Plugins de sistema** (`system: true` no manifest) estão sempre
+  habilitados: linhas de estado para eles são dado morto, e
+  `setEnabled(…, false)` falha com `PluginSystemLocked`. Escritas de
+  config continuam permitidas.
+
+## O service
+
+```ts
+// packages/platform/src/plugin-states.ts
+class PluginStates extends Context.Service<…>()
+// isEnabled(id), enabledIds(), entries(), setEnabled(id, bool), setConfig(id, cfg)
+```
+
+Escritas são validadas contra o **dep graph real e o contrato de config** —
+você não pode desabilitar um plugin do qual outros dependem via
+`requiredDeps`, e a config precisa satisfazer o Schema `meta.config` do
+plugin.
+
+## Modos de falha (tipados)
+
+| Erro                 | Significado                                          |
+| -------------------- | ---------------------------------------------------- |
+| `PluginDisabled`     | Acesso a plugin desabilitado — resposta fail-closed  |
+| `UnknownPlugin`      | Id não está no registry descoberto                   |
+| `PluginSystemLocked` | Tentativa de desabilitar plugin `system: true`       |
+
+Gates de CQRS e helpers de rota traduzem `PluginDisabled` para a resposta
+adequada de não-visível — a mesma filosofia das negações de authz.
+
+## O admin gate
+
+O próprio `/platform` é protegido duas vezes: `platformAdminFn` verifica o
+email da sessão contra `PLATFORM_ADMIN_EMAILS` (allowlist de env, veja
+[Variáveis de ambiente](/pt-BR/docs/developers/kernel/how-to/environment-variables)),
+e os services de domínio re-verificam via o service `PlatformAdmin` —
+defesa em profundidade, um guard de UI faltando não vaza dado admin.
+
+## Schema
+
+`plugin_state` pertence ao host em `packages/db`. Veja a
+[referência gerada](/pt-BR/docs/developers/plugins/platform/reference).

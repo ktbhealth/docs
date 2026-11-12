@@ -1,0 +1,61 @@
+---
+title: Record audit entries
+description: Write to the admin audit log from any mutation — the Audit service contract and its guarantees.
+icon: ScrollText
+---
+
+`plugins/audit` owns the `admin_audit` table — the append-only record of
+admin/console mutations. Any plugin can write to it through the `Audit`
+Effect service; only platform admins read it (at `/platform/audit`).
+
+## The contract
+
+```ts
+// plugins/audit/src/index.ts
+class Audit extends Context.Service<Audit, {
+  record: (entry: AuditEntryInput) => Effect.Effect<void>;
+}>()
+```
+
+`AuditEntryInput` carries `action` (a namespaced verb like
+`patients.delete`), optional `targetType`/`targetId`, a JSON `detail`
+payload, and `tenantId`. Actor identity (`actorUserId`/`actorEmail`) is
+filled from the bound `Principal` — you never pass it.
+
+## Record from a mutation
+
+Inside an Effect service, after the mutation succeeds:
+
+```ts
+const audit = yield* Effect.serviceOption(Audit); // may be absent!
+if (audit._tag === "Some") {
+  yield* audit.value.record({
+    action: "patients.update",
+    targetType: "patient",
+    targetId: String(id),
+    detail: JSON.stringify({ fields: changedKeys }),
+  });
+}
+```
+
+Two deliberate guarantees:
+
+- **`record` NEVER fails.** Insert errors and defects are logged and
+  swallowed — an audit write must not take down the mutation it describes.
+  You don't need (and shouldn't add) a try/catch.
+- **The plugin may be absent.** Always resolve with
+  `Effect.serviceOption(Audit)` — consumers must work when audit isn't
+  registered.
+
+## Read side
+
+Reads are admin-gated and live in the platform console
+(`/platform/audit` via `platform-page.tsx`). Listing is newest-first with
+`createdAt`/`action`/`actorUserId` indexes — query through the plugin's
+service functions (`listAuditEntries`), not raw table access.
+
+## Schema
+
+`admin_audit` is plugin-owned; standard flow for changes:
+`schema.ts` → `db:generate` → `db:migrate:local` → `db:erd`. See the
+[generated reference](/en/docs/developers/plugins/audit/reference).

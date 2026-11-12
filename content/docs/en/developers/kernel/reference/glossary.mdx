@@ -1,0 +1,67 @@
+---
+title: Glossary
+description: Terms used across the platform docs — plugins, ports, adapters, and infrastructure vocabulary.
+icon: BookA
+---
+
+## Architecture
+
+- **Plugin** — the unit of feature composition in `plugins/`. Contributes
+  tables, services, routes, nav/chrome, and pages to the registry. See
+  [first plugin](/en/docs/developers/kernel/tutorials/first-plugin).
+- **Package** — reusable infrastructure in `packages/` *below* the plugin
+  system: ports, adapters, drivers, env composition. Never joins the
+  registry. See [packages reference](/en/docs/developers/kernel/reference/packages).
+- **Port** — a contract (usually an Effect `Context.Service`) that defines
+  a capability without naming a provider. See
+  [ports & adapters](/en/docs/developers/kernel/explanation/ports-and-adapters).
+- **Adapter** — the edge implementation of a port (D1, better-auth,
+  Turnstile, Whisper…). The only layer allowed to touch provider APIs.
+- **Composition root** — an app (`apps/web`, this docs site) that wires
+  ports to adapters and mounts plugins.
+- **Arch rules** — the boundary policy in `tools/arch-policy.mjs` enforced
+  by oxlint `ktb-arch/*` rules. See
+  [arch rules](/en/docs/developers/kernel/reference/arch-rules).
+
+## Data
+
+- **Drizzle** — the ORM/schema toolkit; schema in `packages/db/src`,
+  migrations generated to `packages/db/drizzle/*.sql`.
+- **D1** — Cloudflare's SQLite database; bound to the worker as `DB`.
+- **Migration** — a generated, immutable SQL file. Never hand-edit.
+- **ERD** — entity-relationship diagram; generated per plugin under
+  `developers/plugins/<name>/reference/`.
+- **tbls** — the Go tool that renders the ERDs from a real SQLite database
+  built from migrations.
+
+## Runtime
+
+- **Worker** — the Cloudflare Workers script serving `apps/web`.
+- **workerd / miniflare** — the production-compatible runtime used by
+  `bun run dev`; `dev:node` is the plain-Node alternative.
+- **Binding** — a resource injected into the worker (D1, R2, Queue, AI,
+  secrets) declared in `alchemy.run.ts`.
+- **Alchemy** — the IaC tool that provisions the Cloudflare stack.
+- **cuora** — the org secrets vault; injects env vars at dev/deploy time.
+- **Server fn** — a TanStack Start server function; the RPC boundary
+  between UI and services (see `apps/web/src/lib/fns.ts`).
+
+## Identity & access
+
+- **Auth port** — `@ktb/auth`'s `Auth` service; plugins see `Session`,
+  never better-auth types.
+- **better-auth** — the auth provider behind `@ktb/auth-better`.
+- **RBAC** — role-based access control; `packages/rbac` + `plugins/rbac`,
+  with a permission epoch for cache invalidation.
+- **Tenant** — the clinic/organization isolation boundary (`packages/tenant`).
+
+## Docs & process
+
+- **Diátaxis** — the docs framework: tutorials, how-to, explanation,
+  reference.
+- **Paraglide** — the i18n compiler; message catalogs in `messages/`,
+  generated runtime (never hand-edited).
+- **fumadocs** — the docs UI framework (this site).
+- **myco** — the org ledger for proposals, ADRs, and tasks (`T-0xx`,
+  `P-0xx` IDs).
+- **Conventional commits** — `feat:`, `fix:`, `docs:`… commit style.

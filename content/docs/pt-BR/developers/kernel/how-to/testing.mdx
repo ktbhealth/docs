@@ -1,0 +1,44 @@
+---
+title: Run tests
+description: Rode testes unitários por pacote, entenda o gate de cobertura e execute testes e2e.
+icon: FlaskConical
+---
+
+Os testes usam **vitest** (via o task runner Vite+). O gate de cobertura do
+repo inteiro é 100%, então sempre delimite a execução ao pacote que você
+alterou.
+
+## Testes unitários
+
+```bash
+cd packages/kernel && bunx vitest run     # um pacote
+cd apps/web && bunx vitest run            # o app
+bun run test                              # tudo (lento; evite em loop)
+```
+
+Cada pacote mantém seus `*.test.ts` ao lado do código-fonte. Testes que
+precisam do runtime Cloudflare usam o pool de workers — veja um teste
+vizinho para o padrão de setup antes de escrever um novo.
+
+## Cobertura
+
+`bun run test:coverage` em `apps/web` roda o vitest com
+`@vitest/coverage-v8`. O threshold global é 100% — uma execução parcial
+falha em arquivos não relacionados, o que é esperado. Verifique a cobertura
+apenas do seu pacote.
+
+## Testes e2e
+
+Os e2e com Playwright ficam em `apps/web` e são **opt-in** — não fazem
+parte do CI padrão por serem lentos:
+
+```bash
+cd apps/web && bun run test:e2e
+```
+
+## No CI
+
+O job `ci` roda `bunx vp run ci:test`, que builda antes (o output do
+Paraglide precisa existir). Se os testes falharem só no CI, verifique se os
+arquivos gerados estão atualizados — veja
+[Variáveis de ambiente](/pt-BR/docs/developers/kernel/how-to/environment-variables).

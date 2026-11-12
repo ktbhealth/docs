@@ -1,0 +1,55 @@
+---
+title: Tratamento de erros e fronteiras
+description: Como falhas fluem — erros Effect tipados nos services, validação Schema no wire e tradução deliberada de erros na borda.
+icon: ShieldAlert
+---
+
+O codebase tem um modelo de falhas consistente construído sobre **Effect**
+e **effect/Schema**. Entender onde cada camada trata erros evita tanto
+vazamento de abstração quanto bugs engolidos.
+
+## Dentro dos services
+
+A lógica de domínio vive em services Effect atrás de ports. Falhas são
+valores tipados no canal de erro — `Forbidden`, `NotFound`, erros de
+validação — não exceções lançadas. Services compõem com `Effect.gen` e
+combinadores; quem chama consegue ver todos os modos de falha no tipo.
+
+## Na fronteira das server-fns
+
+`apps/web/src/lib/fns.ts` é onde erros de domínio encontram o HTTP. O
+padrão é deliberado:
+
+- Handlers traduzem **negações de autorização na mesma resposta de uma
+  entidade inexistente** (`null`, `{ ok: false }`, 404) via
+  `Effect.catchTag` — um recurso proibido precisa ser indistinguível de um
+  recurso inexistente, para não vazar dados e para links velhos não caírem
+  num error boundary.
+- **Outros erros continuam propagando** — só o caso de negação é traduzido.
+- O input do wire é validado com `Schema.decodeUnknownSync`, e os schemas
+  toleram coerções de `null`/`undefined`/string (veja
+  `normalizePatientId`) porque clientes enviam dados pouco tipados.
+
+## Defesa em profundidade
+
+Alguns gates são verificados duas vezes de propósito: `platformAdminFn`
+retorna um boolean para o route guard (404 fixo para não-admins), e os
+services de domínio re-verificam o mesmo gate nos caminhos de dados — um
+guard de UI faltando nunca pode virar vazamento de dados.
+
+## Na borda
+
+Adapters concentram todos os modos de falha específicos de plataforma
+(erros de D1, timeouts de provider, retries de fila). As regras de
+arquitetura mantêm imports `cloudflare:*`/`workerd:*` fora de ports e
+plugins, então uma queda de provider aparece como um erro de service
+tipado, não como um conjunto disperso de crashes de runtime.
+
+## Regras práticas
+
+- Nova server fn? Valide o input com Schema, traduza `Forbidden` para a
+  resposta de "não visível" e deixe o resto lançar.
+- Novo erro de service? Adicione-o ao canal de erro tipado — não use
+  `throw` dentro de `Effect.gen`.
+- Capturando `unknown` na fronteira? Você está num adapter — em qualquer
+  outro lugar, deixe propagar.

@@ -1,0 +1,64 @@
+---
+title: Configure authentication
+description: Onde a auth é configurada — a factory better-auth, secrets de env, captcha e a Auth port que os consumidores usam.
+icon: KeyRound
+---
+
+Toda a configuração de auth converge numa única factory:
+`packages/auth-better/src/auth.ts` → `makeAuth(db, opts)` envolve
+`betterAuth(...)`. Todo o resto — plugins, rotas, services — só vê a port
+`Auth` de `@ktb/auth`.
+
+## A factory
+
+```ts
+export const makeAuth = (db: AuthDb, opts: AuthOptions = {}) =>
+  betterAuth({
+    database: drizzleAdapter(...),
+    emailAndPassword: { enabled: true },
+    // social providers, plugins, callbacks…
+  });
+```
+
+`AuthOptions` é o ponto de extensão: passe config de providers, listas de
+plugins e hooks ali. Email+senha vem habilitado por padrão; providers OAuth
+são adicionados como entradas `socialProviders` do better-auth no mesmo
+objeto.
+
+## Secrets e env
+
+Ligados em dev/deploy (veja
+[Variáveis de ambiente](/pt-BR/docs/developers/kernel/how-to/environment-variables)):
+
+| Variável              | Propósito                                  |
+| --------------------- | ------------------------------------------ |
+| `BETTER_AUTH_SECRET`  | Assinatura de sessão/token — do cuora       |
+| `BETTER_AUTH_URL`     | URL base pública para links de callback/reset |
+| `TURNSTILE_SECRET_KEY`| Verificação de captcha (prod)               |
+
+Localmente, o captcha cai para `@ktb/captcha-stub` — a wiring fica em
+`apps/web/src/routes/api/`.
+
+## Sessões para consumidores
+
+Nunca leia cookies nem chame better-auth diretamente. Injete a port:
+
+```ts
+const auth = yield* Auth;               // @ktb/auth
+const session = yield* Effect.promise(() =>
+  auth.getSession(headers),
+);
+```
+
+`session.user` é o `SessionUser` agnóstico de provider. Para gates de UI
+que precisam de "isso é o admin da plataforma?", use `PlatformAdmin` de
+`@ktb/platform` — o allowlist de env (`PLATFORM_ADMIN_EMAILS`) — não roles
+de auth.
+
+## Schema
+
+`user`/`session`/`account`/`verification` pertencem ao host em
+`packages/db/src/auth.ts`. Mudanças de coluna ainda passam por
+`db:generate` → `db:migrate:local` → `db:erd` (a
+[referência de auth](/pt-BR/docs/developers/plugins/auth/reference)
+regenera).

@@ -1,0 +1,70 @@
+---
+title: Glossário
+description: Termos usados na documentação da plataforma — plugins, ports, adapters e vocabulário de infraestrutura.
+icon: BookA
+---
+
+## Arquitetura
+
+- **Plugin** — a unidade de composição de features em `plugins/`. Contribui
+  tabelas, services, rotas, nav/chrome e páginas ao registry. Veja
+  [primeiro plugin](/pt-BR/docs/developers/kernel/tutorials/first-plugin).
+- **Package** — infraestrutura reutilizável em `packages/` *abaixo* do
+  sistema de plugins: ports, adapters, drivers, composição de env. Nunca
+  entra no registry. Veja
+  [referência de packages](/pt-BR/docs/developers/kernel/reference/packages).
+- **Port** — um contrato (geralmente um `Context.Service` do Effect) que
+  define uma capability sem nomear um provider. Veja
+  [ports & adapters](/pt-BR/docs/developers/kernel/explanation/ports-and-adapters).
+- **Adapter** — a implementação de borda de uma port (D1, better-auth,
+  Turnstile, Whisper…). A única camada autorizada a tocar APIs de provider.
+- **Composition root** — um app (`apps/web`, este site de docs) que conecta
+  ports a adapters e monta plugins.
+- **Arch rules** — a política de fronteiras em `tools/arch-policy.mjs`,
+  aplicada pelas regras oxlint `ktb-arch/*`. Veja
+  [regras de arquitetura](/pt-BR/docs/developers/kernel/reference/arch-rules).
+
+## Dados
+
+- **Drizzle** — toolkit de ORM/schema; schema em `packages/db/src`,
+  migrations geradas em `packages/db/drizzle/*.sql`.
+- **D1** — o banco SQLite da Cloudflare; ligado ao worker como `DB`.
+- **Migration** — arquivo SQL gerado e imutável. Nunca edite à mão.
+- **ERD** — diagrama entidade-relacionamento; gerado por plugin em
+  `developers/plugins/<name>/reference/`.
+- **tbls** — a ferramenta Go que renderiza os ERDs a partir de um banco
+  SQLite real construído das migrations.
+
+## Runtime
+
+- **Worker** — o script Cloudflare Workers que serve `apps/web`.
+- **workerd / miniflare** — o runtime compatível com produção usado por
+  `bun run dev`; `dev:node` é a alternativa Node puro.
+- **Binding** — um recurso injetado no worker (D1, R2, Queue, AI, secrets)
+  declarado em `alchemy.run.ts`.
+- **Alchemy** — a ferramenta de IaC que provisiona o stack Cloudflare.
+- **cuora** — o vault de secrets da org; injeta variáveis de ambiente em
+  dev/deploy.
+- **Server fn** — uma server function do TanStack Start; a fronteira RPC
+  entre UI e services (veja `apps/web/src/lib/fns.ts`).
+
+## Identidade e acesso
+
+- **Auth port** — o service `Auth` de `@ktb/auth`; plugins veem `Session`,
+  nunca tipos do better-auth.
+- **better-auth** — o provider de auth por trás de `@ktb/auth-better`.
+- **RBAC** — controle de acesso baseado em papéis; `packages/rbac` +
+  `plugins/rbac`, com permission epoch para invalidação de cache.
+- **Tenant** — a fronteira de isolamento clínica/organização
+  (`packages/tenant`).
+
+## Docs e processo
+
+- **Diátaxis** — o framework de docs: tutorials, how-to, explanation,
+  reference.
+- **Paraglide** — o compilador de i18n; catálogos de mensagens em
+  `messages/`, runtime gerado (nunca editar à mão).
+- **fumadocs** — o framework de UI dos docs (este site).
+- **myco** — o ledger da org para proposals, ADRs e tasks (IDs `T-0xx`,
+  `P-0xx`).
+- **Conventional commits** — estilo de commit `feat:`, `fix:`, `docs:`…

@@ -1,0 +1,54 @@
+---
+title: Debug locally
+description: Inspect the running app, the local D1 database, and generated artifacts when something breaks.
+icon: Bug
+---
+
+## Dev servers
+
+```bash
+bun run dev          # workerd/miniflare path (reads .dev.vars natively)
+bun run dev:node     # plain Node path (uses src/lib/dev-vars.ts loader)
+bun run dev:secrets  # pull secrets from cuora into .dev.vars first
+```
+
+Both paths serve `apps/web` on the same port — pick one and stay on it;
+runtime-specific bugs (workerd vs Node) are a real class of issue here.
+
+## Local database
+
+Local D1 is a SQLite file pointed to by `DATABASE_URL` in
+`apps/web/.env.local`. Inspect it directly:
+
+```bash
+bun run db:studio        # Drizzle Studio GUI
+sqlite3 <path-from-DATABASE_URL> '.tables'
+```
+
+After schema changes, regenerate and apply:
+
+```bash
+bun run db:generate      # new SQL in packages/db/drizzle/
+bun run db:migrate:local # apply to local D1
+```
+
+See [Database migrations](/en/docs/developers/kernel/how-to/migrations)
+for the full flow including deploys.
+
+## Generated artifacts
+
+Several files are tool output — if behavior looks stale, regenerate before
+debugging code:
+
+```bash
+bun run gen:route-types  # plugins/*/src/route-types.d.ts
+bun run check            # fmt + lint + typecheck (regenerates paraglide)
+bun run check:arch       # boundary rules smoke test
+```
+
+## Server functions
+
+`apps/web/src/lib/fns.ts` holds the server-fn layer. Wire input is
+validated with effect/Schema and must tolerate null/undefined/string
+coercions — a surprising `400` usually means a coercion bug there, not in
+the plugin.

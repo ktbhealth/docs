@@ -1,0 +1,45 @@
+---
+title: Entenda CI e pull requests
+description: O que o pipeline verifica, como reproduzi-lo localmente e as convenções de PR.
+icon: GitPullRequest
+---
+
+## Pipeline
+
+`.github/workflows/ci.yml` roda em todo push para `main` e todo PR:
+
+| Job / step                    | O que faz                                                   |
+| ----------------------------- | ----------------------------------------------------------- |
+| `ci:check`                    | fmt + lint + typecheck (tasks Vite+ em `vite.config.ts`)    |
+| `ci:test`                     | vitest — depende de `ci:build` (precisa do output Paraglide)|
+| `ci:build`                    | build de produção                                           |
+| `ci:route-types`              | verifica se `route-types.d.ts` gerados estão atualizados    |
+| `ci:db-schema` / `ci:db-migrations` / `ci:worker-types` | drift checks de arquivos gerados |
+| `ci:knip` / `ci:arch`         | análise de código morto + smoke test das regras de arquitetura |
+| `erd`                         | regenera docs de banco no repo docs irmão; falha em drift   |
+
+Localmente, `bun run check` cobre fmt/lint/typecheck. Para reproduzir um
+step do CI: `bunx vp run ci:<nome>` na raiz do repo.
+
+## Arquivos gerados
+
+Os drift checks existem porque vários arquivos são saída de ferramenta —
+nunca edite à mão; regenere:
+
+- `packages/db/drizzle/*.sql` → `bun run db:generate`
+- `src/paraglide/` → qualquer task `vp` que builda
+- `plugins/*/src/route-types.d.ts` → `bun run gen:route-types`
+- páginas ERD dos docs → `bun run db:erd` (veja a seção [Plugins](/pt-BR/docs/developers/plugins))
+
+## Pull requests
+
+- Crie branch a partir de `main`, mantenha commits focados; o repo usa
+  [conventional commits](https://www.conventionalcommits.org/) (`feat:`,
+  `fix:`, `refactor:`, `docs:`, `chore:`).
+- Referencie o item de tracking no corpo do PR quando houver (a org usa IDs
+  myco como `T-0xx`).
+- Pushes diretos em `main` são permitidos em toda a org — o CI não os
+  bloqueia, então rode `bun run check` + testes relevantes antes de pushar.
+- O job `erd` do CI clona o repo público `ktbhealth/docs` anonimamente e
+  precisa de `tbls` — ele instala uma versão fixada sozinho, nada a
+  configurar.

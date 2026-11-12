@@ -1,0 +1,58 @@
+---
+title: Extend the patient record
+description: Add a field to patients end to end — schema, migration, record validation, and regenerated docs.
+icon: Users
+---
+
+The `patients` table is FHIR R4-aligned: clinical-administrative fields are
+nullable so name-only records stay valid. This guide adds a new field.
+
+## 1. Add the column
+
+Edit `plugins/patients/src/schema.ts`. Columns are plain Drizzle — match
+the existing style (snake_case column names, `text`/`integer` modes):
+
+```ts
+/** Preferred contact phone (digits + formatting). */
+phone2: text("phone_2"),
+```
+
+Plugin tables are aggregated into the composed schema by the generated
+`packages/db/src/schema.gen.ts` — you never edit that file.
+
+## 2. Generate and apply the migration
+
+```bash
+bun run db:generate      # → packages/db/drizzle/*.sql (generated, never edit)
+bun run db:migrate:local # apply to local D1
+```
+
+## 3. Surface it in the record model
+
+Patient fields are typed in `plugins/patients/src/record.ts`:
+
+- Add the key to `TEXT_FIELDS` (or the typed-field union) so it flows
+  through `PatientFields`.
+- Add validation/normalization in the record parser — CPF/CNS-style
+  fields have dedicated formatters there; reuse the pattern.
+- Keep `MAX_TEXT` limits in mind.
+
+## 4. Check authorization and tenancy
+
+Patient rows are fenced by `patientScope` (`owner_id` + `tenant_id` via
+`tenantScopeCondition`). New fields inherit the existing authz — if the
+field needs different visibility, that is a service-layer decision, not a
+schema one. Mutations go through the CQRS commands
+(`PatientsCommands`) and emit `PatientCreated`/`PatientDeleted` events on
+the `EventBus` — wire new events the same way if the field is auditable.
+
+## 5. Regenerate docs and types
+
+```bash
+bun run db:erd            # refresh the generated ERD/table docs
+bun run gen:route-types   # if you touched routes
+bun run check             # fmt + lint + typecheck
+```
+
+The [patients table reference](/en/docs/developers/plugins/patients/reference/patients)
+updates automatically once `db:erd` runs.

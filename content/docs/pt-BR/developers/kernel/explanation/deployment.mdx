@@ -1,0 +1,55 @@
+---
+title: Deployment architecture
+description: Como o produto é publicado — Alchemy no Cloudflare Workers, D1, R2, Queues e injeção de secrets via cuora.
+icon: CloudUpload
+---
+
+`apps/web` é publicado como um único **Cloudflare Worker** provisionado por
+**Alchemy** (`apps/web/alchemy.run.ts`). Infraestrutura é código — o stack
+declara recursos e bindings; não há setup manual no dashboard.
+
+## Recursos
+
+| Recurso      | Propósito                                             | Definido em              |
+| ------------ | ----------------------------------------------------- | ------------------------ |
+| Banco D1     | Todos os dados do app (binding `DB`)                  | `deploySqlDatabase`      |
+| Workers AI   | Binding `AI` — features de transcrição/LLM            | `Cloudflare.Workers.AI()`|
+| Bucket R2    | Áudio de consultas (`AUDIO_BUCKET`, privado)          | `Cloudflare.R2.Bucket("audio")` |
+| Queue        | Transcrição assíncrona (`AUDIO_QUEUE` → mesmo worker) | `Cloudflare.Queues.Queue("transcription")` |
+
+As migrations do D1 são geradas pelo Drizzle (`bun run db:generate`) e
+sincronizadas para `packages/db/alchemy-migrations` no momento do deploy
+(`sync-alchemy-migrations.mjs`, executado dentro do `infra:deploy`).
+
+## Bindings e secrets
+
+Tudo que o worker precisa chega como **binding**, não como constante de
+build:
+
+- Secrets (`BETTER_AUTH_SECRET`, `TURNSTILE_SECRET_KEY`, chaves LLM,
+  `RECALL_API_KEY`, …) são injetados por `cuora run --env prod` no deploy —
+  veja
+  [Variáveis de ambiente](/pt-BR/docs/developers/kernel/how-to/environment-variables).
+- Config não-secreta (`BETTER_AUTH_URL`, `PLATFORM_ADMIN_EMAILS`,
+  `VITE_DOCS_URL`) é ligada da mesma forma por paridade.
+
+É por isso que as regras de arquitetura proíbem `process.env`/`cloudflare:*`
+fora da borda: plugins recebem capabilities via services Effect, nunca via
+leitura de env.
+
+## Deploy
+
+```bash
+cd apps/web && bun run infra:deploy   # sincroniza migrations → cuora → alchemy deploy --stage prod
+```
+
+Requer acesso ao vault cuora. Stages mapeiam para stages do Alchemy; `prod`
+é o ambiente live.
+
+## Runtime local vs produção
+
+`bun run dev` roda o runtime real do **workerd** via miniflare — bindings,
+D1 e `.dev.vars` se comportam como em produção. `bun run dev:node` é um
+caminho Node puro para iteração mais rápida; ele reimplementa shims de
+binding em `src/lib/`. Prefira `dev` ao debugar qualquer coisa ligada a
+bindings.

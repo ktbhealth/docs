@@ -1,1 +1,1 @@
-{"title": "How-to guides", "pages": ["migrations"]}
+{"title": "How-to guides", "pages": ["migrations", "testing", "debugging", "environment-variables", "ci"]}

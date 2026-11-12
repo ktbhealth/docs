@@ -1,0 +1,59 @@
+---
+title: Manage group membership
+description: Crie grupos e gerencie membros — o primitivo por trás de clínicas, orgs e escopo de tenant.
+icon: UsersRound
+---
+
+`plugins/groups` é o primitivo genérico de agrupamento: linhas em `groups`
+(clínicas, orgs, coortes — `kind` é livre, `meta` é um payload JSON) mais
+`group_members`, uma tabela de membership polimórfica
+(`memberKind`/`memberId`, `"user"` hoje). É também o **primitivo de
+tenant**: `patients.tenant_id` e `consultations.tenant_id` apontam para
+`groups.id`, então o membership aqui é o que torna uma linha visível aos
+membros de uma clínica.
+
+## Conceitos
+
+- **Grupo** — `name`, `slug` único, `kind`, `meta` JSON opcional.
+- **Membro** — `(groupId, memberKind, memberId, role?)`; uma linha por
+  membro, deletada em cascata com o grupo.
+- **Vínculo de tenant** — services resolvem o conjunto de tenants
+  acessíveis do caller via `@ktb/tenant` (`accessibleTenantIds`,
+  `tenantScopeCondition`); `tenant_id` `NULL` significa linha pessoal,
+  `groups.id` significa linha de tenant.
+
+## Adicionar membership em código
+
+Escritas de membership passam pelos services do plugin (`GroupsLive` /
+`GroupsQueriesLive` em `plugins/groups/src/index.ts`) — as mesmas camadas
+tipo-CQRS que outros plugins usam. De outro plugin, despache as queries de
+group via o service `Query` em vez de importar tabelas:
+
+```ts
+const groups = yield* Query.dispatcher(GroupsQueries);
+const result = yield* groups["groups.list"]({ /* … */ });
+```
+
+(Confira `plugins/groups/src/api.ts` para os nomes exatos das queries.)
+
+## Adicionar um novo member kind
+
+`memberKind` é uma coluna de texto livre — `"user"` é o único tipo em uso
+hoje, `"patient"` está planejado. Para suportar um novo tipo:
+
+1. Mantenha `memberId` como texto (ids são strings no schema inteiro).
+2. Adicione a lógica de resolução do tipo na camada de service — quem pode
+   adicionar/remover esse tipo de membro é decisão de authz.
+3. Se o tipo afeta a visibilidade de tenant, estenda o uso de
+   `accessibleTenantIds`/`tenantScopeCondition` em `@ktb/tenant` — não
+   faça caso especial dentro dos consumidores.
+
+## Mudanças de schema
+
+`groups`/`group_members` são tabelas do plugin agregadas pelo
+`schema.gen.ts` gerado. Mudanças seguem o fluxo padrão:
+`schema.ts` → `bun run db:generate` → `bun run db:migrate:local` →
+`bun run db:erd`.
+
+Veja a [referência das tabelas de groups](/pt-BR/docs/developers/plugins/groups/reference)
+para a documentação gerada de colunas/índices.

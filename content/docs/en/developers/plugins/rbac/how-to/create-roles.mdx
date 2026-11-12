@@ -1,0 +1,49 @@
+---
+title: Create roles and grant permissions
+description: Extend the permission catalog, create a role, and assign it — the dynamic RBAC model.
+icon: KeySquare
+---
+
+RBAC is **dynamic**: roles are runtime-managed bundles of
+`(resource, action, effect)` grants assignable to users and groups — not
+compile-time config. Two packages share the work: `packages/rbac` (the
+vocabulary + `Permissions` service) and `plugins/rbac` (tables, admin UI,
+queries).
+
+## The vocabulary
+
+`packages/rbac/src/vocabulary.ts` holds `PERMISSION_CATALOG` — flat
+`"resource.action"` strings like `patient.read`, `consultation.update`,
+`platform.admin`. Entity actions mirror the permix `Def` in `@ktb/authz`;
+platform actions are listed in `PLATFORM_ACTIONS`. The catalog is currently
+hand-synced (codegen is deferred) — **when you add a new permission, add it
+here first** or role grants can't reference it.
+
+## Create a role
+
+Roles live in `roles` + `role_permissions` (+ `subject_roles` for
+assignments). The supported path is the `/platform` admin UI, which goes
+through `RbacQueries`/`RbacCommands` — role edits validate grants against
+the catalog (`isKnownPermission` warns on unknown entries) and writes are
+ CQRS-dispatched, never raw SQL.
+
+## How checks resolve
+
+At request time, `Permissions.can(resource, action)` (or the
+`requireCanAs`/`entityAuthz` helpers in `packages/rbac`) resolves the
+caller's grants from role assignments. `permission_epoch` exists for
+cache invalidation: grant changes bump the epoch so stale permission
+snapshots are discarded. Deny entries never satisfy a check — evaluation
+order matters, check `buildPermissions` in `packages/rbac/src/index.ts`.
+
+## Static vs dynamic mode
+
+`entityAuthz` supports two modes: the static permix `Def` path (unchanged
+behavior) and the dynamic rbac path. New entity checks should go through
+`requireEntityAccess` so both modes keep working.
+
+## Schema
+
+Standard flow for table changes: `schema.ts` → `bun run db:generate` →
+`bun run db:migrate:local` → `bun run db:erd`. See the
+[generated RBAC reference](/en/docs/developers/plugins/rbac/reference).

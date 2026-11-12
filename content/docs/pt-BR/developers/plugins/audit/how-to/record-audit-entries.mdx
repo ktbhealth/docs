@@ -1,0 +1,62 @@
+---
+title: Registre entradas de auditoria
+description: Escreva no log de auditoria admin a partir de qualquer mutação — o contrato do service Audit e suas garantias.
+icon: ScrollText
+---
+
+`plugins/audit` é dono da tabela `admin_audit` — o registro append-only
+das mutações admin/console. Qualquer plugin pode escrever nela através do
+service Effect `Audit`; só admins da plataforma leem (em
+`/platform/audit`).
+
+## O contrato
+
+```ts
+// plugins/audit/src/index.ts
+class Audit extends Context.Service<Audit, {
+  record: (entry: AuditEntryInput) => Effect.Effect<void>;
+}>()
+```
+
+`AuditEntryInput` carrega `action` (verbo namespaced como
+`patients.delete`), `targetType`/`targetId` opcionais, um payload JSON
+`detail` e `tenantId`. A identidade do ator (`actorUserId`/`actorEmail`)
+é preenchida a partir do `Principal` vinculado — você nunca a passa.
+
+## Registrar a partir de uma mutação
+
+Dentro de um service Effect, após a mutação ter sucesso:
+
+```ts
+const audit = yield* Effect.serviceOption(Audit); // pode estar ausente!
+if (audit._tag === "Some") {
+  yield* audit.value.record({
+    action: "patients.update",
+    targetType: "patient",
+    targetId: String(id),
+    detail: JSON.stringify({ fields: changedKeys }),
+  });
+}
+```
+
+Duas garantias deliberadas:
+
+- **`record` NUNCA falha.** Erros de insert e defects são logados e
+  engolidos — uma escrita de auditoria não pode derrubar a mutação que
+  descreve. Você não precisa (e não deve) adicionar try/catch.
+- **O plugin pode estar ausente.** Sempre resolva com
+  `Effect.serviceOption(Audit)` — consumidores devem funcionar quando a
+  auditoria não está registrada.
+
+## Lado de leitura
+
+As leituras são admin-gated e vivem no console da plataforma
+(`/platform/audit` via `platform-page.tsx`). A listagem é newest-first com
+índices em `createdAt`/`action`/`actorUserId` — consulte pelas funções de
+service do plugin (`listAuditEntries`), não por acesso direto à tabela.
+
+## Schema
+
+`admin_audit` pertence ao plugin; fluxo padrão para mudanças:
+`schema.ts` → `db:generate` → `db:migrate:local` → `db:erd`. Veja a
+[referência gerada](/pt-BR/docs/developers/plugins/audit/reference).

@@ -1,0 +1,35 @@
+---
+title: Internationalization
+description: How locales work in the product app and in this docs site — Paraglide, message catalogs, and locale resolution.
+icon: Languages
+---
+
+Both the product app and this docs site use **Paraglide JS** for i18n, but
+they are separate compilations with separate message catalogs.
+
+## Product app (`apps/web`)
+
+- Messages live in `apps/web/messages/{en,es,pt-BR}.json`.
+- `src/lib/i18n.ts` resolves the locale **per request**: the Paraglide
+  locale cookie first, then the base locale (`en`). `setLocale` writes the
+  cookie; `localeName` gives endonym labels for the picker.
+- `src/paraglide/` is **generated** — `vp` tasks regenerate it; never
+  hand-edit.
+- Supported locales today: `en`, `pt-BR`, `es`.
+
+## Docs site (this repo)
+
+- Messages live in `messages/{en,pt-BR}.json`; content lives in
+  `content/docs/<locale>/` — every page exists once per locale.
+- `src/lib/i18n.ts` configures the fumadocs i18n layer; the
+  `$lang/docs/$.tsx` route is locale-scoped.
+- Locales: `en` (default) and `pt-BR`.
+
+## Rules of thumb
+
+- UI strings go through Paraglide messages — never hardcode user-facing
+  copy in components.
+- Docs content is per-locale MDX: keep page trees in parity (same slugs,
+  same `meta.json` structure) so navigation stays aligned.
+- Locale negotiation is cookie-based, not URL-prefix-based in the product
+  app; the docs site *does* prefix URLs (`/en/`, `/pt-BR/`).

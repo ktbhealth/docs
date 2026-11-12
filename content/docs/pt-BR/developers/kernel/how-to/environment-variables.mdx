@@ -1,0 +1,47 @@
+---
+title: Configure environment variables
+description: Onde secrets e config pública vivem no dev local, dev Node e deploys de produção.
+icon: KeyRound
+---
+
+O repo segue regras 12-factor: **variáveis de ambiente reais sempre vencem**
+valores de arquivos, e valores secretos nunca são logados.
+
+## Arquivos
+
+| Arquivo                   | Propósito                                                     |
+| ------------------------- | ------------------------------------------------------------- |
+| `apps/web/.env.local`     | Dev local — `DATABASE_URL`, `PLATFORM_ADMIN_EMAILS` (gitignored) |
+| `apps/web/.env.production`| Config pública de build — apenas `VITE_*`, **nunca secrets**   |
+| `apps/web/.dev.vars`      | Secrets para `dev`/`dev:node` — escrito por `dev:secrets`, gitignored |
+
+`.env.local` é carregado pelo Vite; `.dev.vars` é a convenção
+Cloudflare/workerd. No `dev:node`, `src/lib/dev-vars.ts` faz o parse de
+`.dev.vars` (estilo dotenv, `KEY=<JSON.stringify(value)>`).
+
+## Secrets locais
+
+Os secrets vêm do vault **cuora** — não cole chaves em arquivos manualmente:
+
+```bash
+bun run dev:secrets   # cuora run → escreve apps/web/.dev.vars
+```
+
+## Produção
+
+Deploys injetam secrets em runtime via cuora — nada secreto é embutido no
+build:
+
+```bash
+cd apps/web && bun run infra:deploy   # cuora run --env prod → alchemy deploy
+```
+
+Apenas variáveis `VITE_*` são inline no bundle do cliente durante o build
+(`.env.production`). Se você adicionar uma, ela é pública — trate como tal.
+
+## Adicionando uma nova variável
+
+1. Leia-a pela camada de env, não `process.env` direto, em código do app
+   (`apps/web/src/lib/`).
+2. Documente o nome da chave (nunca o valor) onde a feature vive.
+3. Adicione-a ao cuora para dev/prod — o vault é a fonte da verdade.

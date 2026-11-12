@@ -1,0 +1,62 @@
+---
+title: Configure authentication
+description: Where auth is configured — the better-auth factory, env secrets, captcha, and the Auth port consumers use.
+icon: KeyRound
+---
+
+All auth configuration converges on one factory:
+`packages/auth-better/src/auth.ts` → `makeAuth(db, opts)` wraps
+`betterAuth(...)`. Everything else — plugins, routes, services — only ever
+sees the `Auth` port from `@ktb/auth`.
+
+## The factory
+
+```ts
+export const makeAuth = (db: AuthDb, opts: AuthOptions = {}) =>
+  betterAuth({
+    database: drizzleAdapter(...),
+    emailAndPassword: { enabled: true },
+    // social providers, plugins, callbacks…
+  });
+```
+
+`AuthOptions` is the extension point: pass provider config, plugin lists,
+and hooks here. Email+password is enabled by default; OAuth providers are
+added as better-auth `socialProviders` entries in the same object.
+
+## Secrets and env
+
+Bound at deploy/dev time (see
+[Environment variables](/en/docs/developers/kernel/how-to/environment-variables)):
+
+| Variable               | Purpose                                   |
+| ---------------------- | ----------------------------------------- |
+| `BETTER_AUTH_SECRET`   | Session/token signing — from cuora         |
+| `BETTER_AUTH_URL`      | Public base URL for callback/reset links   |
+| `TURNSTILE_SECRET_KEY` | Captcha verification (prod)                |
+
+Locally, captcha falls back to `@ktb/captcha-stub` — the wiring lives in
+`apps/web/src/routes/api/`.
+
+## Sessions for consumers
+
+Never read cookies or call better-auth directly. Inject the port:
+
+```ts
+const auth = yield* Auth;               // @ktb/auth
+const session = yield* Effect.promise(() =>
+  auth.getSession(headers),
+);
+```
+
+`session.user` is the provider-agnostic `SessionUser`. For UI gates that
+need "is this the platform admin?", use `PlatformAdmin` from
+`@ktb/platform` — the env allowlist (`PLATFORM_ADMIN_EMAILS`) — not auth
+roles.
+
+## Schema
+
+`user`/`session`/`account`/`verification` are host-owned in
+`packages/db/src/auth.ts`. Column changes still go through
+`db:generate` → `db:migrate:local` → `db:erd` (the
+[auth reference](/en/docs/developers/plugins/auth/reference) regenerates).

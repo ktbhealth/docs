@@ -1,0 +1,55 @@
+---
+title: Toggle plugins and read state
+description: Enable/disable plugins at runtime, understand plugin_state semantics, and use the admin gate.
+icon: ToggleLeft
+---
+
+`packages/platform` owns **runtime plugin state**: the `plugin_state`
+table plus the `PluginStates` Effect service that the composition root
+provides from the discovered plugin registry. This is how `/platform`
+admins turn plugin features off without a deploy.
+
+## Semantics
+
+- **No `plugin_state` row = ENABLED** with schema-default config
+  (opt-out — disabling is the exception).
+- `config` NULL means "use `meta.config` schema defaults".
+- **System plugins** (`system: true` in the manifest) are always enabled:
+  state rows for them are dead data, and `setEnabled(…, false)` fails
+  with `PluginSystemLocked`. Config writes stay allowed.
+
+## The service
+
+```ts
+// packages/platform/src/plugin-states.ts
+class PluginStates extends Context.Service<…>()
+// isEnabled(id), enabledIds(), entries(), setEnabled(id, bool), setConfig(id, cfg)
+```
+
+Writes are validated against the **real dep graph and config contract** —
+you can't disable a plugin that others `requiredDeps`-depend on, and
+config must satisfy the plugin's `meta.config` Schema.
+
+## Failure modes (typed)
+
+| Error               | Meaning                                            |
+| ------------------- | -------------------------------------------------- |
+| `PluginDisabled`    | Reach for a disabled plugin — fail-closed answer   |
+| `UnknownPlugin`     | Id not in the discovered registry                  |
+| `PluginSystemLocked`| Tried to disable a `system: true` plugin           |
+
+CQRS gating and route helpers translate `PluginDisabled` into the
+appropriate not-visible response — the same philosophy as authz denials.
+
+## The admin gate
+
+`/platform` itself is gated twice: `platformAdminFn` checks the session
+email against `PLATFORM_ADMIN_EMAILS` (env allowlist, see
+[Environment variables](/en/docs/developers/kernel/how-to/environment-variables)),
+and domain services re-check via the `PlatformAdmin` service — defense in
+depth, a missing UI guard can't leak admin data.
+
+## Schema
+
+`plugin_state` is host-owned in `packages/db`. See the
+[generated reference](/en/docs/developers/plugins/platform/reference).

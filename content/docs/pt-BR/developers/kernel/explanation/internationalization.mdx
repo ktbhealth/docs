@@ -1,0 +1,35 @@
+---
+title: Internationalization
+description: Como os locales funcionam no app do produto e neste site de docs — Paraglide, catálogos de mensagens e resolução de locale.
+icon: Languages
+---
+
+Tanto o app do produto quanto este site de docs usam **Paraglide JS** para
+i18n, mas são compilações separadas com catálogos de mensagens separados.
+
+## App do produto (`apps/web`)
+
+- Mensagens ficam em `apps/web/messages/{en,es,pt-BR}.json`.
+- `src/lib/i18n.ts` resolve o locale **por request**: primeiro o cookie de
+  locale do Paraglide, depois o locale base (`en`). `setLocale` escreve o
+  cookie; `localeName` fornece os rótulos em endônimo para o seletor.
+- `src/paraglide/` é **gerado** — tasks `vp` o regeneram; nunca edite à mão.
+- Locales suportados hoje: `en`, `pt-BR`, `es`.
+
+## Site de docs (este repo)
+
+- Mensagens ficam em `messages/{en,pt-BR}.json`; o conteúdo fica em
+  `content/docs/<locale>/` — cada página existe uma vez por locale.
+- `src/lib/i18n.ts` configura a camada de i18n do fumadocs; a rota
+  `$lang/docs/$.tsx` é escopada por locale.
+- Locales: `en` (padrão) e `pt-BR`.
+
+## Regras práticas
+
+- Strings de UI passam por mensagens Paraglide — nunca hardcode texto
+  visível ao usuário em componentes.
+- O conteúdo dos docs é MDX por locale: mantenha as árvores em paridade
+  (mesmos slugs, mesma estrutura de `meta.json`) para a navegação ficar
+  alinhada.
+- A negociação de locale é por cookie, sem prefixo de URL, no app do
+  produto; o site de docs *prefixa* URLs (`/en/`, `/pt-BR/`).

@@ -1,0 +1,53 @@
+---
+title: Publique uma página customizada
+description: Crie páginas baseadas em banco com paths controlados, ordenação e posição na navegação.
+icon: FileText
+---
+
+`plugins/pages` serve **páginas customizadas**: conteúdo markdown guardado
+em `custom_pages`, renderizado sob demanda em URLs limpas, com controle
+admin sobre publicação, navegação e ordenação. Páginas são dados, não
+código — sem deploy.
+
+## O modelo
+
+| Coluna       | Significado                                          |
+| ------------ | ---------------------------------------------------- |
+| `path`       | Path de URL único (`/welcome`, `/faq`) — normalizado |
+| `title`      | Título de exibição                                   |
+| `content`    | Corpo markdown (renderizado por `markdown.tsx`)      |
+| `published`  | Só páginas publicadas renderizam para visitantes     |
+| `showInNav`  | Incluir na navegação do site                         |
+| `sortOrder`  | Ordenação dentro da nav                              |
+
+## Regras de path
+
+`normalizePagePath` em `plugins/pages/src/service.ts` é o único validador,
+aplicado tanto ao input admin quanto aos paths de request recebidos:
+
+- Deve começar com `/`, sem trailing slash (exceto root).
+- Rejeita whitespace, sigilos de URL (`?`, `#`, `*`), paths longos.
+- **Rejeita o namespace `/platform`** — paths do console pertencem a
+  `panel.pages`, uma responsabilidade do app-context; páginas customizadas
+  nunca podem sobrepor o console admin.
+- O índice único em `path` é o backstop; o service também mapeia para um
+  erro amigável `PathTaken`.
+
+## Criar e publicar
+
+Páginas são gerenciadas pela superfície admin do plugin (platform page +
+server fns em `fns.ts`) — as admin fns chamam o service, que aplica o
+estado de publicação. Visitantes só veem linhas `published = true` através
+do wildcard descriptor; rascunhos são invisíveis, não proibidos.
+
+## Ordenação e nav
+
+`showInNav` + `sortOrder` alimentam a contribuição de nav (`chrome.tsx`).
+Mantenha `sortOrder` denso (0, 1, 2…) — gaps são ok, duplicatas resolvem
+consistentemente mas confundem a manutenção.
+
+## Mudanças de schema
+
+Fluxo padrão: `schema.ts` → `bun run db:generate` →
+`bun run db:migrate:local` → `bun run db:erd`. Veja a
+[referência gerada](/pt-BR/docs/developers/plugins/pages/reference).

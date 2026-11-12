@@ -1,0 +1,50 @@
+---
+title: Authentication and sessions
+description: How identity works — the Auth port, the better-auth adapter, and the host-owned tables.
+icon: ShieldCheck
+---
+
+Authentication is a **port/adapter** pair, like everything else in the
+kernel.
+
+## The port
+
+`@ktb/auth` exports the `Auth` Effect service — the only thing plugins see:
+
+```ts
+interface AuthShape {
+  getSession(headers: Headers): Promise<Session | null>;
+  setUserBanned(userId: string, banned: boolean): Promise<void>;
+}
+```
+
+`Session` carries a provider-agnostic `SessionUser` (`id`, `email`,
+`name`). Plugins never import better-auth types.
+
+## The adapter
+
+`@ktb/auth-better` implements the port on top of **better-auth**. Session
+cookies, OAuth/account linking, and credential verification all live there.
+Captcha is pluggable too — `@ktb/captcha-turnstile` in production,
+`@ktb/captcha-stub` locally (see `apps/web/src/routes/api/` for the wiring).
+
+## The tables
+
+`user`, `session`, `account`, and `verification` are defined in
+`packages/db/src/auth.ts` — **host-owned by `@ktb/db`, not a plugin
+slice**. This deliberately breaks a workspace dependency cycle: plugins
+consume auth through the port, never through the schema directly. See the
+generated [Auth reference](/en/docs/developers/plugins/auth/reference).
+
+## Suspension
+
+`setUserBanned` is the platform kill switch (T-034): banning sets
+`user.banned`, `getSession` returns `null` while it is true, and existing
+sessions are revoked. Reactivation clears the flag.
+
+## Authorization is separate
+
+Authentication answers "who is this?". "What may they do?" is RBAC —
+roles and permissions resolved per request with a permission epoch for
+cache invalidation. See [RBAC reference](/en/docs/developers/plugins/rbac/reference)
+and the `authz`/`rbac` packages.

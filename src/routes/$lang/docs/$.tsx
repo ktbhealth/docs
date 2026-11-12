@@ -34,7 +34,7 @@ const LEGACY_DEVELOPERS: Record<string, string> = {
   'explanation/ports-and-adapters': 'kernel/explanation/ports-and-adapters',
   'explanation/positioning': 'apps/explanation/positioning',
   'explanation/client-server-split': 'apps/explanation/client-server-split',
-  'reference/commands': 'apps/reference/commands',
+  'reference/commands': 'kernel/reference/commands',
   'reference/site-structure': 'apps/reference/site-structure',
   'reference/ui-components': 'apps/reference/ui-components',
   'reference/integration-surface': 'apps/reference/integration-surface',
@@ -47,6 +47,11 @@ const PLUGIN_IDS = [
   'patients', 'consultations', 'groups', 'notifications', 'audit',
   'pages', 'auth', 'rbac', 'platform',
 ];
+
+// Pages moved between quadrants after the initial IA restructure.
+const MOVED_PAGES: Record<string, string> = {
+  'apps/reference/commands': 'kernel/reference/commands',
+};
 
 function legacyDevelopersPath(slugs: string[]): string | null {
   if (slugs.length < 2) return null;
@@ -75,6 +80,8 @@ function legacyDevelopersPath(slugs: string[]): string | null {
   }
   if (slugs[0] !== 'developers' || slugs.length < 3) return null;
   const rest = slugs.slice(1).join('/');
+  const moved = MOVED_PAGES[rest];
+  if (moved) return `developers/${moved}`;
   if (rest.startsWith('reference/database')) {
     const tail = rest.slice('reference/database'.length);
     return `developers/plugins${tail}`;

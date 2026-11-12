@@ -1,0 +1,57 @@
+---
+title: Extend consultations
+description: Adicione um campo, endpoint ou estágio de pipeline ao plugin consultations — schema, services CQRS e rotas de API.
+icon: Stethoscope
+---
+
+`plugins/consultations` é dono do registro de consulta de ponta a ponta:
+schema, services CQRS, rotas de UI e rotas de API. É o plugin mais
+complexo — siga as costuras existentes em vez de inventar novas.
+
+## As costuras
+
+| Responsabilidade | Onde                                                        |
+| ---------------- | ----------------------------------------------------------- |
+| Tabela           | `plugins/consultations/src/schema.ts` (`consultations`)     |
+| API CQRS         | `plugins/consultations/src/api.ts` (Queries, Commands, Events) |
+| Services         | `plugins/consultations/src/index.ts` (layers `*Live`)       |
+| Rotas de UI      | `src/routes/` montadas via `physical("/consultations", …)`  |
+| Rotas de API     | `src/api-routes/` montadas via `physical("/api", …)`        |
+| Server fns       | `src/fns.ts`                                                |
+
+## Adicionar uma coluna
+
+Mesmo fluxo do [patients](/pt-BR/docs/developers/plugins/patients/how-to/extend-patient-record):
+edite `schema.ts` → `bun run db:generate` → `bun run db:migrate:local`.
+A tabela carrega todo o estado do pipeline de áudio/transcrição
+(`audioStatus`, `serverTranscript`, `correctedTranscript`,
+`enhancementEngine`) — coloque estado de pipeline em colunas dedicadas
+com o mesmo formato "status + erro + payload" em vez de sobrecarregar
+`transcript`.
+
+## Adicionar um endpoint de API
+
+Crie um arquivo em `plugins/consultations/src/api-routes/` — ele é montado
+em `/api/*` automaticamente. Use `createPluginApiRoute` +
+`getSessionUser` de `@ktb/server-fns`; o runtime (bindings de DB, AI, R2,
+queue) chega pelo registry resolvido no host, então o plugin não precisa de
+imports do host. Veja `transcribe.ts` para o padrão, incluindo o teto
+`MAX_AUDIO_BYTES` que precisa se manter em sincronia com
+`apps/web/src/lib/audio-jobs.ts`.
+
+## Mexa no pipeline com cuidado
+
+O áudio flui browser → R2 (`audioKey`) → queue → Whisper → limpeza LLM.
+Transições de estado escrevem `audioStatus`/`audioError`; `consentAt` é a
+trilha de consentimento LGPD e não pode ser contornada. Leituras
+cross-plugin passam pelo dispatcher CQRS
+(`Query.dispatcher(PatientsQueries)`), nunca por joins diretos de tabela —
+veja como `patients.ownerOf` é usado para checagens de ownership.
+
+## Finalização
+
+```bash
+bun run gen:route-types   # route-types.d.ts é gerado
+bun run db:erd            # se o schema mudou
+bun run check && bunx vp run ci:test -- <package>
+```

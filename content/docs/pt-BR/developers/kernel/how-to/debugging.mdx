@@ -1,0 +1,55 @@
+---
+title: Debug locally
+description: Inspecione o app em execução, o banco D1 local e os artefatos gerados quando algo quebrar.
+icon: Bug
+---
+
+## Dev servers
+
+```bash
+bun run dev          # caminho workerd/miniflare (lê .dev.vars nativamente)
+bun run dev:node     # caminho Node puro (usa o loader src/lib/dev-vars.ts)
+bun run dev:secrets  # puxa secrets do cuora para .dev.vars antes
+```
+
+Os dois caminhos servem `apps/web` na mesma porta — escolha um e mantenha;
+bugs específicos de runtime (workerd vs Node) são uma classe real de
+problema aqui.
+
+## Banco local
+
+O D1 local é um arquivo SQLite apontado por `DATABASE_URL` em
+`apps/web/.env.local`. Inspecione diretamente:
+
+```bash
+bun run db:studio        # GUI do Drizzle Studio
+sqlite3 <path-from-DATABASE_URL> '.tables'
+```
+
+Após mudanças de schema, regenere e aplique:
+
+```bash
+bun run db:generate      # novo SQL em packages/db/drizzle/
+bun run db:migrate:local # aplica no D1 local
+```
+
+Veja [Migrations de banco](/pt-BR/docs/developers/kernel/how-to/migrations)
+para o fluxo completo incluindo deploys.
+
+## Artefatos gerados
+
+Vários arquivos são saída de ferramenta — se o comportamento parecer
+desatualizado, regenere antes de debugar o código:
+
+```bash
+bun run gen:route-types  # plugins/*/src/route-types.d.ts
+bun run check            # fmt + lint + typecheck (regenera paraglide)
+bun run check:arch       # smoke test das regras de fronteira
+```
+
+## Server functions
+
+`apps/web/src/lib/fns.ts` concentra a camada de server-fns. O input do
+wire é validado com effect/Schema e precisa tolerar coerções de
+null/undefined/string — um `400` surpreendente geralmente é bug de coerção
+ali, não no plugin.

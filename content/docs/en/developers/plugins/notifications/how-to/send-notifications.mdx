@@ -1,0 +1,63 @@
+---
+title: Send user notifications
+description: Turn domain events into console notifications — the NOTIFICATION_MAP projector pattern.
+icon: Bell
+---
+
+`plugins/notifications` persists per-user notifications from domain events
+and streams them live to the header bell. You rarely call it directly —
+you **map an event to a notification** and the plugin handles persistence,
+fan-out, and read state.
+
+## How it works
+
+1. A plugin dispatches an event on the `EventBus` (e.g.
+   `PatientCreated`, `ConsultationCreated`).
+2. `NotificationsLive` subscribes via `events.subscribeAfterCommit` — the
+   notification is written **after** the producing command commits, so a
+   failed notification never rolls back the mutation (and vice versa).
+3. The row is inserted into `notifications` and fanned out on a `PubSub`
+   live stream the header action consumes.
+
+## Add a notification for your event
+
+In `plugins/notifications/src/Notifications.ts`, extend
+`NOTIFICATION_MAP` with a `mapEvent` entry:
+
+```ts
+mapEvent(MyDomainEvent, (e) => ({
+  userId: e.ownerId,          // who sees it
+  kind: "my-domain.thing",    // namespaced kind
+  title: /* localized title */,
+  body: /* optional detail */,
+  payload: JSON.stringify({ /* extras for deep links */ }),
+})),
+```
+
+The projector is typed against its own event — `e` is the event payload.
+Look at the existing `PatientCreated`/`ConsultationCreated` entries for
+locale handling (`ingestLocale`) and payload shape.
+
+## Failure isolation
+
+`ingest` catches all causes and logs — a bad projector or DB error never
+propagates into the publisher or other subscribers. Keep projectors pure
+and total; do validation before dispatching the event instead.
+
+## Reading notifications
+
+Consumers use the CQRS surface in `plugins/notifications/src/api.ts`:
+
+- Queries: `notifications.list`, `notifications.unreadCount`
+- Commands: `notifications.markRead`, `notifications.markAllRead`
+
+Dispatch via `Query.dispatcher(NotificationsQueries)` /
+`Command.dispatcher(NotificationsCommands)` — never import the tables.
+Authorization is enforced inside the service (`notification.read` /
+`notification.update` permissions).
+
+## Schema changes
+
+The `notifications` table is plugin-owned; changes follow the standard
+flow (`schema.ts` → `db:generate` → `db:migrate:local` → `db:erd`). See the
+[generated table reference](/en/docs/developers/plugins/notifications/reference/notifications).

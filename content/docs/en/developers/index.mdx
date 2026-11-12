@@ -1,0 +1,39 @@
+---
+title: Developers
+description: Build on the KTB Health platform — kernel internals, plugins, and apps.
+icon: Code
+---
+
+The platform is a Bun monorepo (`product`) composed of three layers. Pick
+the track that matches what you're doing:
+
+## Kernel
+
+The infrastructure every plugin builds on — ports and adapters, package
+boundaries, migrations, and architecture rules.
+
+- [Architecture overview](/en/docs/developers/kernel/explanation/product-architecture)
+- [First plugin tutorial](/en/docs/developers/kernel/tutorials/first-plugin)
+- [Arch rules](/en/docs/developers/kernel/reference/arch-rules)
+
+## Plugins
+
+Each feature area is a plugin with its own section: guides for extending it
+and generated database reference (ER diagrams + table docs).
+
+- [All plugins](/en/docs/developers/plugins)
+- [RBAC](/en/docs/developers/plugins/rbac/reference) — roles and permissions
+- [Patients](/en/docs/developers/plugins/patients/reference) — patient records
+
+## Apps
+
+The composition roots — `apps/web` serves the product, this repo serves the
+docs. Setup, deployment, and site internals live here.
+
+- [Getting started](/en/docs/developers/apps/tutorials/getting-started)
+- [Dev environment](/en/docs/developers/apps/how-to/dev-environment)
+- [Site structure](/en/docs/developers/apps/reference/site-structure)
+
+Each section follows the same four quadrants: **tutorials** (learning by
+doing), **how-to guides** (solving a specific task), **explanation**
+(understanding the why), and **reference** (look things up).

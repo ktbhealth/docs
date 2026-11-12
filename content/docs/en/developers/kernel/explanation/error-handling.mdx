@@ -1,0 +1,53 @@
+---
+title: Error handling and boundaries
+description: How failures flow — typed Effect errors in services, Schema validation at the wire, and deliberate error translation at the edge.
+icon: ShieldAlert
+---
+
+The codebase has a consistent failure model built on **Effect** and
+**effect/Schema**. Understanding where each layer handles errors prevents
+both leaky abstractions and swallowed bugs.
+
+## Inside services
+
+Domain logic lives in Effect services behind ports. Failures are typed
+values in the error channel — `Forbidden`, `NotFound`, validation errors —
+not thrown exceptions. Services compose with `Effect.gen` and combinators;
+a caller can see every failure mode in the type.
+
+## At the server-fn boundary
+
+`apps/web/src/lib/fns.ts` is where domain errors meet HTTP. The pattern is
+deliberate:
+
+- Handlers translate **authorization denials into the same response as a
+  missing entity** (`null`, `{ ok: false }`, 404) via `Effect.catchTag` —
+  a forbidden resource must be indistinguishable from a nonexistent one,
+  so no data leaks and stale links don't hit an error boundary.
+- **Other errors still propagate** — only the denial case is translated.
+- Wire input is validated with `Schema.decodeUnknownSync`, and schemas
+  tolerate `null`/`undefined`/string coercions (see
+  `normalizePatientId`) because clients send loosely-typed data.
+
+## Defense in depth
+
+Some gates are checked twice on purpose: `platformAdminFn` returns a
+boolean for the route guard (hard 404 for non-admins), and the domain
+services re-check the same gate on data paths — a missing UI guard can
+never become a data leak.
+
+## At the edge
+
+Adapters own all platform-specific failure modes (D1 errors, provider
+timeouts, queue retries). Arch rules keep `cloudflare:*`/`workerd:*`
+imports out of ports and plugins, so a provider outage surfaces as a typed
+service error, not a scattered set of runtime crashes.
+
+## Practical rules
+
+- New server fn? Validate input with Schema, translate `Forbidden` to the
+  not-visible response, let everything else throw.
+- New service error? Add it to the typed error channel — don't `throw`
+  inside `Effect.gen`.
+- Catching `unknown` at the boundary? You are in an adapter — anywhere
+  else, let it propagate.

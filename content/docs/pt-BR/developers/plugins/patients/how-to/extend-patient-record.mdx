@@ -1,0 +1,59 @@
+---
+title: Extend the patient record
+description: Adicione um campo a patients de ponta a ponta — schema, migration, validação do record e docs regenerados.
+icon: Users
+---
+
+A tabela `patients` é alinhada ao FHIR R4: campos clínico-administrativos
+são nullable para que registros só-com-nome continuem válidos. Este guia
+adiciona um novo campo.
+
+## 1. Adicione a coluna
+
+Edite `plugins/patients/src/schema.ts`. Colunas são Drizzle puro — siga o
+estilo existente (nomes de coluna snake_case, modos `text`/`integer`):
+
+```ts
+/** Preferred contact phone (digits + formatting). */
+phone2: text("phone_2"),
+```
+
+As tabelas do plugin são agregadas ao schema composto pelo
+`packages/db/src/schema.gen.ts` gerado — você nunca edita esse arquivo.
+
+## 2. Gere e aplique a migration
+
+```bash
+bun run db:generate      # → packages/db/drizzle/*.sql (gerado, nunca editar)
+bun run db:migrate:local # aplica no D1 local
+```
+
+## 3. Exponha no modelo de record
+
+Os campos do paciente são tipados em `plugins/patients/src/record.ts`:
+
+- Adicione a chave a `TEXT_FIELDS` (ou à união de campos tipados) para que
+  ela flua por `PatientFields`.
+- Adicione validação/normalização no parser do record — campos como
+  CPF/CNS têm formatters dedicados ali; reutilize o padrão.
+- Atenção aos limites de `MAX_TEXT`.
+
+## 4. Verifique autorização e tenancy
+
+Linhas de paciente são cercadas por `patientScope` (`owner_id` +
+`tenant_id` via `tenantScopeCondition`). Campos novos herdam a authz
+existente — se o campo precisa de visibilidade diferente, isso é decisão
+da camada de service, não do schema. Mutações passam pelos comandos CQRS
+(`PatientsCommands`) e emitem eventos `PatientCreated`/`PatientDeleted` no
+`EventBus` — conecte novos eventos da mesma forma se o campo for auditável.
+
+## 5. Regenere docs e types
+
+```bash
+bun run db:erd            # atualiza ERD/docs de tabela gerados
+bun run gen:route-types   # se você mexeu em rotas
+bun run check             # fmt + lint + typecheck
+```
+
+A [referência da tabela patients](/pt-BR/docs/developers/plugins/patients/reference/patients)
+atualiza automaticamente após `bun run db:erd`.

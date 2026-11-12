@@ -1,0 +1,41 @@
+---
+title: Run tests
+description: Run unit tests per package, understand the coverage gate, and run e2e tests.
+icon: FlaskConical
+---
+
+Tests use **vitest** (via the Vite+ task runner). The repo-wide coverage
+gate is 100%, so always scope test runs to the package you changed.
+
+## Unit tests
+
+```bash
+cd packages/kernel && bunx vitest run     # one package
+cd apps/web && bunx vitest run            # the app
+bun run test                              # everything (slow; avoid in a loop)
+```
+
+Each package owns its `*.test.ts` files next to the source. Tests that need
+the Cloudflare runtime use the workers pool — check a neighboring test for
+the setup pattern before writing a new one.
+
+## Coverage
+
+`bun run test:coverage` in `apps/web` runs vitest with
+`@vitest/coverage-v8`. The global threshold is 100% — a partial run fails on
+unrelated files, which is expected. Verify coverage for your package only.
+
+## E2E tests
+
+Playwright e2e lives in `apps/web` and is **opt-in** — it is not part of
+default CI because it is slow:
+
+```bash
+cd apps/web && bun run test:e2e
+```
+
+## In CI
+
+The `ci` job runs `bunx vp run ci:test`, which builds first (Paraglide
+output must exist). If tests fail only in CI, check that generated files
+are fresh — see [Environment variables](/en/docs/developers/kernel/how-to/environment-variables).

@@ -1,0 +1,63 @@
+---
+title: Envie notificações ao usuário
+description: Transforme eventos de domínio em notificações do console — o padrão de projector NOTIFICATION_MAP.
+icon: Bell
+---
+
+`plugins/notifications` persiste notificações por usuário a partir de
+eventos de domínio e as transmite ao vivo para o sino do header. Você
+raramente o chama diretamente — você **mapeia um evento para uma
+notificação** e o plugin cuida de persistência, fan-out e estado de leitura.
+
+## Como funciona
+
+1. Um plugin despacha um evento no `EventBus` (ex.:
+   `PatientCreated`, `ConsultationCreated`).
+2. `NotificationsLive` assina via `events.subscribeAfterCommit` — a
+   notificação é escrita **depois** do commit do comando que a gerou, então
+   uma notificação falha nunca faz rollback da mutação (e vice-versa).
+3. A linha é inserida em `notifications` e transmitida num live stream
+   `PubSub` que o header action consome.
+
+## Adicionar notificação para o seu evento
+
+Em `plugins/notifications/src/Notifications.ts`, estenda
+`NOTIFICATION_MAP` com uma entrada `mapEvent`:
+
+```ts
+mapEvent(MyDomainEvent, (e) => ({
+  userId: e.ownerId,          // quem vê
+  kind: "my-domain.thing",    // kind namespaced
+  title: /* título localizado */,
+  body: /* detalhe opcional */,
+  payload: JSON.stringify({ /* extras para deep links */ }),
+})),
+```
+
+O projector é tipado contra o próprio evento — `e` é o payload do evento.
+Veja as entradas existentes de `PatientCreated`/`ConsultationCreated`
+para tratamento de locale (`ingestLocale`) e formato do payload.
+
+## Isolamento de falhas
+
+`ingest` captura todas as causas e loga — um projector ruim ou erro de DB
+nunca propaga para o publisher ou outros subscribers. Mantenha projectors
+puros e totais; faça validação antes de despachar o evento.
+
+## Ler notificações
+
+Consumidores usam a superfície CQRS em `plugins/notifications/src/api.ts`:
+
+- Queries: `notifications.list`, `notifications.unreadCount`
+- Commands: `notifications.markRead`, `notifications.markAllRead`
+
+Despache via `Query.dispatcher(NotificationsQueries)` /
+`Command.dispatcher(NotificationsCommands)` — nunca importe as tabelas.
+A autorização é aplicada dentro do service (permissões
+`notification.read` / `notification.update`).
+
+## Mudanças de schema
+
+A tabela `notifications` pertence ao plugin; mudanças seguem o fluxo
+padrão (`schema.ts` → `db:generate` → `db:migrate:local` → `db:erd`). Veja a
+[referência gerada da tabela](/pt-BR/docs/developers/plugins/notifications/reference/notifications).
