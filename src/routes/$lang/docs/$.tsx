@@ -23,7 +23,7 @@ const LEGACY_DEVELOPERS: Record<string, string> = {
   'tutorials/writing-content': 'apps/tutorials/writing-content',
   'tutorials/first-deploy': 'apps/tutorials/first-deploy',
   'tutorials/contribute': 'apps/tutorials/contribute',
-  'tutorials/first-plugin': 'plugins/tutorials/first-plugin',
+  'tutorials/first-plugin': 'kernel/tutorials/first-plugin',
   'tutorials/add-a-port-adapter': 'kernel/tutorials/add-a-port-adapter',
   'how-to/dev-environment': 'apps/how-to/dev-environment',
   'how-to/dev-node': 'apps/how-to/dev-node',
@@ -31,8 +31,8 @@ const LEGACY_DEVELOPERS: Record<string, string> = {
   'how-to/e2e-tests': 'apps/how-to/e2e-tests',
   'how-to/migrations': 'kernel/how-to/migrations',
   'explanation/product-architecture': 'kernel/explanation/product-architecture',
-  'explanation/ports-and-adapters': 'plugins/explanation/ports-and-adapters',
-  'explanation/positioning': 'plugins/explanation/positioning',
+  'explanation/ports-and-adapters': 'kernel/explanation/ports-and-adapters',
+  'explanation/positioning': 'apps/explanation/positioning',
   'explanation/client-server-split': 'apps/explanation/client-server-split',
   'reference/commands': 'apps/reference/commands',
   'reference/site-structure': 'apps/reference/site-structure',
@@ -44,10 +44,26 @@ const LEGACY_DEVELOPERS: Record<string, string> = {
 };
 
 function legacyDevelopersPath(slugs: string[]): string | null {
+  if (slugs.length < 2) return null;
+  // plugins/ briefly hosted quadrant pages and reference/database — both moved.
+  if (slugs[0] === 'developers' && slugs[1] === 'plugins' && ['tutorials', 'how-to', 'explanation', 'reference'].includes(slugs[2])) {
+    const rest = slugs.slice(2).join('/');
+    if (rest.startsWith('reference/database')) {
+      const tail = rest.slice('reference/database'.length);
+      return `developers/plugins${tail}`;
+    }
+    const mapped = LEGACY_DEVELOPERS[rest];
+    if (mapped) {
+      const tail = slugs.slice(4).join('/');
+      return `developers/${mapped}${tail ? `/${tail}` : ''}`;
+    }
+    return null;
+  }
   if (slugs[0] !== 'developers' || slugs.length < 3) return null;
   const rest = slugs.slice(1).join('/');
   if (rest.startsWith('reference/database')) {
-    return `developers/plugins/${rest}`;
+    const tail = rest.slice('reference/database'.length);
+    return `developers/plugins${tail}`;
   }
   const page = slugs[2];
   const mapped = LEGACY_DEVELOPERS[`${slugs[1]}/${page}`];

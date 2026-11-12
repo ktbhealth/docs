@@ -1,1 +1,15 @@
-{"title": "Plugins", "pages": ["tutorials", "how-to", "explanation", "reference"]}
+{
+	"title": "Plugins",
+	"pages": [
+		"index",
+		"patients",
+		"consultations",
+		"groups",
+		"notifications",
+		"audit",
+		"pages",
+		"auth",
+		"rbac",
+		"platform"
+	]
+}

@@ -1,0 +1,40 @@
+---
+title: Plugins
+description: Referência de banco por plugin — diagramas ER e docs de tabelas, gerados do schema Drizzle.
+icon: Puzzle
+---
+
+Cada seção abaixo corresponde a um plugin (ou pacote de capability) no
+repositório `product` e contém suas tabelas de banco: diagrama ER, o código
+`erDiagram` (`schema.mmd`) e referência de colunas/índices por tabela.
+
+Este conteúdo é **gerado** das migrations Drizzle
+(`packages/db/drizzle/*.sql`) — não edite manualmente.
+
+## Regenerar
+
+A partir da raiz do repositório `product`:
+
+```bash
+bun run db:erd        # regenera
+bun run db:erd:check  # drift check de CI (sai 1 se estiver desatualizado)
+```
+
+Requer `tbls` no `PATH` (ou `TBLS_BIN`). O script aplica todas as migrations
+num banco SQLite temporário e executa `tbls doc` + `tbls out`, gravando em
+`docs/content/docs/<locale>/developers/plugins/` para `en` e `pt-BR`.
+
+## Seções
+
+- [Patients](./patients/) — `plugins/patients`
+- [Consultations](./consultations/) — `plugins/consultations`
+- [Groups](./groups/) — `plugins/groups`
+- [Notifications](./notifications/) — `plugins/notifications`
+- [Audit log](./audit/) — `plugins/audit`
+- [Custom pages](./pages/) — `plugins/pages`
+- [Auth](./auth/) — `packages/db/src/auth.ts` (better-auth)
+- [RBAC](./rbac/) — `packages/rbac` + `plugins/rbac`
+- [Platform](./platform/) — estado do kernel em `packages/db`
+
+O schema completo está em [`schema.mmd`](./schema.mmd) — cole em qualquer
+renderizador Mermaid para outros formatos.
