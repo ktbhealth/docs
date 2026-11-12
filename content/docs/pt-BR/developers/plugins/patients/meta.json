@@ -1,6 +1,7 @@
 {
 	"title": "Patients",
 	"pages": [
+		"index",
 		"reference",
 		"how-to"
 	]

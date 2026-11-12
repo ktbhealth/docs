@@ -1,0 +1,29 @@
+---
+title: RBAC
+description: Controle de acesso dinâmico baseado em papéis — catálogo de permissões, grants de papel, atribuições e invalidação por epoch.
+icon: KeySquare
+---
+
+A seção RBAC cobre autorização: `packages/rbac` (vocabulário + service
+`Permissions`) e `plugins/rbac` (tabelas `roles`, `role_permissions`,
+`subject_roles`, `permission_epoch`, UI admin).
+
+## Conceitos-chave
+
+- **Papéis dinâmicos** — bundles de grants `(resource, action, effect)`
+  gerenciados em runtime, atribuíveis a usuários e grupos; gerenciados em
+  `/platform`.
+- **Catálogo de permissões** — `PERMISSION_CATALOG` em
+  `packages/rbac/src/vocabulary.ts` é o vocabulário tipado contra o qual
+  grants são validados; sincronizado à mão até o codegen chegar.
+- **Invalidação por epoch** — `permission_epoch` incrementa em mudanças de
+  grant para descartar snapshots de permissão em cache.
+- **Dois modos de authz** — permix `Def` estático vs rbac dinâmico,
+  unificados via `entityAuthz`/`requireEntityAccess`.
+- **Deny nunca satisfaz** — a ordem de avaliação importa; veja
+  `buildPermissions`.
+
+## Para onde ir
+
+- [Crie papéis e conceda permissões](/pt-BR/docs/developers/plugins/rbac/how-to/create-roles) — catálogo, papéis, atribuição
+- [Referência das tabelas](/pt-BR/docs/developers/plugins/rbac/reference) — colunas, índices, diagrama ER

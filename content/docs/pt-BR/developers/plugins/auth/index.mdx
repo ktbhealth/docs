@@ -1,0 +1,26 @@
+---
+title: Auth
+description: Autenticação atrás de uma port — adapter better-auth, tabelas do host, sessões e suspensão.
+icon: KeyRound
+---
+
+A seção auth cobre identidade: a port `Auth` (`@ktb/auth`), o adapter
+better-auth (`@ktb/auth-better`) e as tabelas do host (`user`, `session`,
+`account`, `verification`) definidas em `packages/db/src/auth.ts`.
+
+## Conceitos-chave
+
+- **Port/adapter** — plugins veem `Auth.getSession`/`setUserBanned` e um
+  `SessionUser` agnóstico de provider; nunca tipos do better-auth.
+- **Schema do host** — tabelas de auth vivem em `@ktb/db`, deliberadamente
+  fora do sistema de plugins para quebrar um ciclo de workspace.
+- **Suspensão** — `setUserBanned` revoga sessões; `getSession` retorna
+  null enquanto `user.banned` estiver setado.
+- **Captcha plugável** — Turnstile em produção, stub localmente.
+- **AuthN ≠ AuthZ** — "quem é?" vs "o que pode fazer?" (veja
+  [RBAC](/pt-BR/docs/developers/plugins/rbac)).
+
+## Para onde ir
+
+- [Configure autenticação](/pt-BR/docs/developers/plugins/auth/how-to/configure-auth) — factory, secrets, captcha
+- [Referência das tabelas](/pt-BR/docs/developers/plugins/auth/reference) — colunas, índices, diagrama ER

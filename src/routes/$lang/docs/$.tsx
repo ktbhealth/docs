@@ -58,7 +58,8 @@ function legacyDevelopersPath(slugs: string[]): string | null {
   // plugins/<plugin> content moved under reference/ (how-to/ is new).
   if (slugs[0] === 'developers' && slugs[1] === 'plugins' && PLUGIN_IDS.includes(slugs[2])) {
     const sub = slugs[3];
-    if (!sub) return `developers/plugins/${slugs[2]}/reference`;
+    // bare /plugins/<id> serves the hand-written index.mdx landing page
+    if (!sub) return null;
     if (sub !== 'reference' && sub !== 'how-to') {
       return `developers/plugins/${slugs[2]}/reference/${slugs.slice(3).join('/')}`;
     }

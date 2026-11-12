@@ -1,0 +1,28 @@
+---
+title: RBAC
+description: Dynamic role-based access control — permission catalog, role grants, assignments, and epoch invalidation.
+icon: KeySquare
+---
+
+The RBAC section covers authorization: `packages/rbac` (vocabulary +
+`Permissions` service) and `plugins/rbac` (tables `roles`,
+`role_permissions`, `subject_roles`, `permission_epoch`, admin UI).
+
+## Key concepts
+
+- **Dynamic roles** — runtime-managed `(resource, action, effect)` grant
+  bundles assignable to users and groups; managed at `/platform`.
+- **Permission catalog** — `PERMISSION_CATALOG` in
+  `packages/rbac/src/vocabulary.ts` is the typed vocabulary grants
+  validate against; hand-synced until codegen lands.
+- **Epoch invalidation** — `permission_epoch` bumps on grant changes so
+  cached permission snapshots are discarded.
+- **Two authz modes** — static permix `Def` vs dynamic rbac, unified
+  through `entityAuthz`/`requireEntityAccess`.
+- **Deny never satisfies** — evaluation order matters; see
+  `buildPermissions`.
+
+## Where to go next
+
+- [Create roles and grant permissions](/en/docs/developers/plugins/rbac/how-to/create-roles) — catalog, roles, assignment
+- [Table reference](/en/docs/developers/plugins/rbac/reference) — columns, indexes, ER diagram

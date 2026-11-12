@@ -1,0 +1,28 @@
+---
+title: Audit log
+description: A trilha de auditoria admin append-only — quem fez o quê, onde e quando.
+icon: ScrollText
+---
+
+O plugin audit é dono de `admin_audit`: um log append-only das mutações
+admin/console, gravável por qualquer plugin através do service Effect
+`Audit` e legível apenas por admins da plataforma em `/platform/audit`.
+
+## Conceitos-chave
+
+- **Append-only** — linhas nunca são atualizadas nem deletadas;
+  `createdAt` é a chave de ordenação (indexada junto com `action` e
+  `actorUserId`).
+- **Contrato never-fails** — `Audit.record` loga e engole os próprios
+  erros; uma escrita de auditoria nunca derruba a mutação que descreve.
+- **Dependência opcional** — consumidores resolvem via
+  `Effect.serviceOption(Audit)`; o plugin pode estar ausente.
+- **Ator via Principal** — `actorUserId`/`actorEmail` vêm do principal
+  vinculado, nunca de input do caller.
+- **Tenant-aware** — `tenant_id` → `groups.id` delimita entradas por
+  clínica.
+
+## Para onde ir
+
+- [Registre entradas de auditoria](/pt-BR/docs/developers/plugins/audit/how-to/record-audit-entries) — o contrato `Audit.record`
+- [Referência da tabela](/pt-BR/docs/developers/plugins/audit/reference) — colunas, índices, diagrama ER

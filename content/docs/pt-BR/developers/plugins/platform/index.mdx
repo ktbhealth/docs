@@ -1,0 +1,32 @@
+---
+title: Platform
+description: Infraestrutura do host — estado de plugin em runtime, o admin gate e o shell do console /platform.
+icon: LayoutDashboard
+---
+
+A seção platform cobre infraestrutura de nível de host:
+`packages/platform` (o service `PluginStates`, o gate `PlatformAdmin`) e a
+tabela `plugin_state` em `packages/db` — além do console `/platform` para
+o qual plugins contribuem páginas.
+
+## Conceitos-chave
+
+- **Estado de plugin em runtime** — linhas em `plugin_state` ligam/desligam
+  plugins sem deploy; sem linha = habilitado com defaults do schema
+  (opt-out).
+- **Escritas validadas** — `setEnabled`/`setConfig` verificam o dep graph
+  real e o Schema `meta.config` de cada plugin; plugins de sistema não
+  podem ser desabilitados (`PluginSystemLocked`).
+- **Falhas tipadas** — `PluginDisabled`, `UnknownPlugin`,
+  `PluginSystemLocked`; helpers de CQRS/rota traduzem para respostas de
+  não-visível.
+- **Admin gate, duas vezes** — `platformAdminFn` (allowlist de env
+  `PLATFORM_ADMIN_EMAILS`) para a UI, service `PlatformAdmin` re-verificado
+  nos services de domínio.
+- **Shell do console** — plugins contribuem `panel.pages`; paths
+  `/platform/*` são reservados e inalcançáveis por páginas customizadas.
+
+## Para onde ir
+
+- [Ative/desative plugins e leia o estado](/pt-BR/docs/developers/plugins/platform/how-to/toggle-plugins) — semântica, erros, o gate
+- [Referência da tabela](/pt-BR/docs/developers/plugins/platform/reference) — colunas, índices, diagrama ER

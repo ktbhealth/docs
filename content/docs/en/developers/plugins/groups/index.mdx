@@ -1,0 +1,27 @@
+---
+title: Groups
+description: Generic groups and membership — the primitive behind clinics, orgs, and tenant scoping.
+icon: UsersRound
+---
+
+The groups plugin is the platform's grouping primitive: `groups` rows
+(clinics, orgs, cohorts — `kind` is free-form) plus `group_members`, a
+polymorphic membership table. It doubles as the **tenant primitive** —
+`tenant_id` columns across the schema point at `groups.id`.
+
+## Key concepts
+
+- **Group** — `name`, unique `slug`, free-form `kind`, optional `meta`
+  JSON payload.
+- **Member** — `(groupId, memberKind, memberId, role?)`; `memberKind` is
+  text (`"user"` today, `"patient"` planned), cascade-deleted with the
+  group.
+- **Tenant link** — `@ktb/tenant` resolves the caller's accessible tenant
+  set; `tenant_id NULL` = personal row, `groups.id` = tenant-owned.
+- **Consumers** — patients and consultations fence rows through
+  `tenantScopeCondition`; membership here is what makes rows visible.
+
+## Where to go next
+
+- [Manage membership](/en/docs/developers/plugins/groups/how-to/manage-membership) — member kinds, tenant semantics
+- [Table reference](/en/docs/developers/plugins/groups/reference) — columns, indexes, ER diagram

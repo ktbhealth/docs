@@ -1,0 +1,26 @@
+---
+title: Audit log
+description: The append-only admin audit trail — who did what, where, and when.
+icon: ScrollText
+---
+
+The audit plugin owns `admin_audit`: an append-only log of admin/console
+mutations, writable by any plugin through the `Audit` Effect service and
+readable only by platform admins at `/platform/audit`.
+
+## Key concepts
+
+- **Append-only** — rows are never updated or deleted; `createdAt` is the
+  ordering key (indexed with `action` and `actorUserId`).
+- **Never-fails contract** — `Audit.record` logs and swallows its own
+  errors; an audit write can never take down the mutation it describes.
+- **Optional dependency** — consumers resolve via
+  `Effect.serviceOption(Audit)`; the plugin may be absent.
+- **Actor from Principal** — `actorUserId`/`actorEmail` come from the
+  bound principal, never from caller input.
+- **Tenant-aware** — `tenant_id` → `groups.id` scopes entries to clinics.
+
+## Where to go next
+
+- [Record audit entries](/en/docs/developers/plugins/audit/how-to/record-audit-entries) — the `Audit.record` contract
+- [Table reference](/en/docs/developers/plugins/audit/reference) — columns, indexes, ER diagram

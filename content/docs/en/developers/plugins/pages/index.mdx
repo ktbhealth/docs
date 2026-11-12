@@ -1,0 +1,26 @@
+---
+title: Custom pages
+description: DB-backed pages rendered at clean URLs — content as data, with admin-controlled publication and nav.
+icon: FileText
+---
+
+The pages plugin serves custom pages: markdown content in `custom_pages`,
+rendered on demand at normalized URL paths, managed through the admin
+surface — no deploy needed to publish content.
+
+## Key concepts
+
+- **Content as data** — `path`, `title`, markdown `content`,
+  `published`, `showInNav`, `sortOrder`.
+- **Path normalization** — `normalizePagePath` is the single validator for
+  admin input and request paths; it rejects the `/platform` namespace so
+  custom pages can never shadow the admin console.
+- **Invisible drafts** — only `published` rows render; drafts 404 for
+  visitors rather than 403.
+- **Nav contribution** — `showInNav` + `sortOrder` feed the site
+  navigation via `chrome.tsx`.
+
+## Where to go next
+
+- [Publish a custom page](/en/docs/developers/plugins/pages/how-to/publish-custom-page) — paths, publication, ordering
+- [Table reference](/en/docs/developers/plugins/pages/reference) — columns, indexes, ER diagram

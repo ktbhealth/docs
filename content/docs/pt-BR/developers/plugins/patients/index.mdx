@@ -1,0 +1,28 @@
+---
+title: Patients
+description: Registros de pacientes — dados clínico-administrativos alinhados ao FHIR R4 com escopo de owner e tenant.
+icon: Users
+---
+
+O plugin patients é dono do registro de paciente: a tabela `patients`,
+comandos/queries CQRS, validação do record e o vínculo com consultas que
+outros plugins consomem.
+
+## Conceitos-chave
+
+- **Alinhamento FHIR R4** — campos mapeiam para FHIR Patient + extensões
+  RNDS/BR Core; tudo além de `name` é nullable para que registros mínimos
+  continuem válidos. Códigos e labels vivem em `record.ts`.
+- **Escopo duplo** — `owner_id` (linhas pessoais) + `tenant_id` →
+  `groups.id` (linhas da clínica), cercadas por
+  `patientScope`/`tenantScopeCondition`.
+- **Superfície CQRS** — `PatientsQueries`/`PatientsCommands` no `EventBus`;
+  outros plugins despacham `patients.ownerOf` etc. em vez de dar join em
+  tabelas.
+- **Eventos** — `PatientCreated`/`PatientDeleted` alimentam notificações e
+  auditoria.
+
+## Para onde ir
+
+- [Estenda o registro de paciente](/pt-BR/docs/developers/plugins/patients/how-to/extend-patient-record) — adicione um campo de ponta a ponta
+- [Referência da tabela](/pt-BR/docs/developers/plugins/patients/reference) — colunas, índices, diagrama ER

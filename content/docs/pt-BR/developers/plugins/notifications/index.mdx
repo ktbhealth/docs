@@ -1,0 +1,27 @@
+---
+title: Notifications
+description: Notificações de console por usuário persistidas a partir de eventos de domínio, com stream ao vivo para o sino do header.
+icon: Bell
+---
+
+O plugin notifications transforma eventos de domínio em notificações
+visíveis ao usuário: linhas em `notifications`, uma superfície CQRS de
+leitura/comando e um live stream `PubSub` alimentando o sino do header.
+
+## Conceitos-chave
+
+- **Dirigido por eventos** — plugins despacham eventos no `EventBus`;
+  projectors do `NOTIFICATION_MAP` os transformam em `NotificationDraft`s.
+- **Assinatura after-commit** — `subscribeAfterCommit` escreve a
+  notificação só depois do commit do comando que a gerou; falhas são
+  logadas e isoladas, nunca propagadas.
+- **Live stream** — linhas persistidas são transmitidas no `PubSub`; o
+  header action combina stream + backlog (`STREAM_BACKLOG = 50`).
+- **Superfície CQRS** — queries `notifications.list`/`unreadCount` e
+  commands `markRead`/`markAllRead`; authz via permissões
+  `notification.read`/`notification.update`.
+
+## Para onde ir
+
+- [Envie notificações](/pt-BR/docs/developers/plugins/notifications/how-to/send-notifications) — mapeie seu evento para uma notificação
+- [Referência da tabela](/pt-BR/docs/developers/plugins/notifications/reference) — colunas, índices, diagrama ER

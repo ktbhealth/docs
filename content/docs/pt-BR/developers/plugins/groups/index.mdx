@@ -1,0 +1,28 @@
+---
+title: Groups
+description: Grupos genéricos e membership — o primitivo por trás de clínicas, orgs e escopo de tenant.
+icon: UsersRound
+---
+
+O plugin groups é o primitivo de agrupamento da plataforma: linhas em
+`groups` (clínicas, orgs, coortes — `kind` é livre) mais `group_members`,
+uma tabela de membership polimórfica. Ele também é o **primitivo de
+tenant** — colunas `tenant_id` no schema apontam para `groups.id`.
+
+## Conceitos-chave
+
+- **Grupo** — `name`, `slug` único, `kind` livre, payload JSON `meta`
+  opcional.
+- **Membro** — `(groupId, memberKind, memberId, role?)`; `memberKind` é
+  texto (`"user"` hoje, `"patient"` planejado), deletado em cascata com o
+  grupo.
+- **Vínculo de tenant** — `@ktb/tenant` resolve o conjunto de tenants
+  acessíveis do caller; `tenant_id NULL` = linha pessoal, `groups.id` =
+  linha de tenant.
+- **Consumidores** — patients e consultations cercam linhas via
+  `tenantScopeCondition`; o membership aqui é o que torna linhas visíveis.
+
+## Para onde ir
+
+- [Gerencie membership](/pt-BR/docs/developers/plugins/groups/how-to/manage-membership) — member kinds, semântica de tenant
+- [Referência das tabelas](/pt-BR/docs/developers/plugins/groups/reference) — colunas, índices, diagrama ER

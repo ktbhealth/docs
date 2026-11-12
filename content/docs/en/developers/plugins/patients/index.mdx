@@ -1,0 +1,26 @@
+---
+title: Patients
+description: Patient records — FHIR R4-aligned clinical-administrative data with owner and tenant scoping.
+icon: Users
+---
+
+The patients plugin owns the patient record: the `patients` table, CQRS
+commands/queries, record validation, and the consult linkage other plugins
+consume.
+
+## Key concepts
+
+- **FHIR R4 alignment** — fields map to FHIR Patient + RNDS/BR Core
+  extensions; everything beyond `name` is nullable so minimal records stay
+  valid. Codes and labels live in `record.ts`.
+- **Dual scoping** — `owner_id` (personal rows) + `tenant_id` → `groups.id`
+  (clinic-owned rows), fenced by `patientScope`/`tenantScopeCondition`.
+- **CQRS surface** — `PatientsQueries`/`PatientsCommands` on the `EventBus`;
+  other plugins dispatch `patients.ownerOf` etc. instead of joining tables.
+- **Events** — `PatientCreated`/`PatientDeleted` feed notifications and
+  audit.
+
+## Where to go next
+
+- [Extend the patient record](/en/docs/developers/plugins/patients/how-to/extend-patient-record) — add a field end to end
+- [Table reference](/en/docs/developers/plugins/patients/reference) — columns, indexes, ER diagram

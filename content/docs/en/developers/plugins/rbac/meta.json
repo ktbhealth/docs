@@ -1,6 +1,7 @@
 {
 	"title": "RBAC",
 	"pages": [
+		"index",
 		"reference",
 		"how-to"
 	]

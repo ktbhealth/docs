@@ -1,0 +1,28 @@
+---
+title: Consultations
+description: The consult record and audio pipeline — transcript, anamnesis, consent trail, and async transcription.
+icon: Stethoscope
+---
+
+The consultations plugin owns the consult lifecycle end to end: the
+`consultations` table, UI and API routes, the audio storage/transcription
+pipeline, and the structured anamnesis.
+
+## Key concepts
+
+- **One table, whole pipeline** — `consultations` carries transcript,
+  anamnesis, audio keys, and pipeline state (`audioStatus`,
+  `serverTranscript`, `correctedTranscript`, `enhancementEngine`).
+- **Audio pipeline** — browser → R2 (`audioKey`) → queue → Whisper → LLM
+  cleanup; state transitions write `audioStatus`/`audioError`.
+- **Consent trail** — `consentAt` records when the doctor declared patient
+  consent (LGPD); never bypass it.
+- **Plugin-owned routes** — UI under `/consultations`, API under `/api/*`,
+  both mounted via `physical()` with zero host route files.
+- **Cross-plugin reads** — ownership checks dispatch
+  `PatientsQueries["patients.ownerOf"]`, never direct joins.
+
+## Where to go next
+
+- [Extend consultations](/en/docs/developers/plugins/consultations/how-to/extend-consultations) — fields, endpoints, pipeline stages
+- [Table reference](/en/docs/developers/plugins/consultations/reference) — columns, indexes, ER diagram

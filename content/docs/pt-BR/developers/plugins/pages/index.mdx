@@ -1,0 +1,26 @@
+---
+title: Custom pages
+description: Páginas baseadas em banco renderizadas em URLs limpas — conteúdo como dado, com publicação e nav controladas pelo admin.
+icon: FileText
+---
+
+O plugin pages serve páginas customizadas: conteúdo markdown em
+`custom_pages`, renderizado sob demanda em paths de URL normalizados,
+gerenciado pela superfície admin — sem deploy para publicar conteúdo.
+
+## Conceitos-chave
+
+- **Conteúdo como dado** — `path`, `title`, `content` markdown,
+  `published`, `showInNav`, `sortOrder`.
+- **Normalização de path** — `normalizePagePath` é o único validador para
+  input admin e paths de request; rejeita o namespace `/platform` para que
+  páginas customizadas nunca sobreponham o console admin.
+- **Rascunhos invisíveis** — só linhas `published` renderizam; rascunhos
+  dão 404 para visitantes em vez de 403.
+- **Contribuição de nav** — `showInNav` + `sortOrder` alimentam a
+  navegação do site via `chrome.tsx`.
+
+## Para onde ir
+
+- [Publique uma página customizada](/pt-BR/docs/developers/plugins/pages/how-to/publish-custom-page) — paths, publicação, ordenação
+- [Referência da tabela](/pt-BR/docs/developers/plugins/pages/reference) — colunas, índices, diagrama ER

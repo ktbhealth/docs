@@ -1,0 +1,28 @@
+---
+title: Consultations
+description: O registro de consulta e o pipeline de áudio — transcrição, anamnese, trilha de consentimento e transcrição assíncrona.
+icon: Stethoscope
+---
+
+O plugin consultations é dono do ciclo de vida da consulta de ponta a
+ponta: a tabela `consultations`, rotas de UI e API, o pipeline de
+armazenamento/transcrição de áudio e a anamnese estruturada.
+
+## Conceitos-chave
+
+- **Uma tabela, pipeline inteiro** — `consultations` carrega transcript,
+  anamnese, chaves de áudio e estado do pipeline (`audioStatus`,
+  `serverTranscript`, `correctedTranscript`, `enhancementEngine`).
+- **Pipeline de áudio** — browser → R2 (`audioKey`) → queue → Whisper →
+  limpeza LLM; transições de estado escrevem `audioStatus`/`audioError`.
+- **Trilha de consentimento** — `consentAt` registra quando o médico
+  declarou consentimento do paciente (LGPD); nunca contorne.
+- **Rotas do plugin** — UI em `/consultations`, API em `/api/*`, ambas
+  montadas via `physical()` sem nenhum arquivo de rota no host.
+- **Leituras cross-plugin** — checagens de ownership despacham
+  `PatientsQueries["patients.ownerOf"]`, nunca joins diretos.
+
+## Para onde ir
+
+- [Estenda consultations](/pt-BR/docs/developers/plugins/consultations/how-to/extend-consultations) — campos, endpoints, estágios de pipeline
+- [Referência da tabela](/pt-BR/docs/developers/plugins/consultations/reference) — colunas, índices, diagrama ER

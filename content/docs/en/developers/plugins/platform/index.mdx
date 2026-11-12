@@ -1,0 +1,31 @@
+---
+title: Platform
+description: Host infrastructure — runtime plugin state, the admin gate, and the /platform console shell.
+icon: LayoutDashboard
+---
+
+The platform section covers host-level infrastructure: `packages/platform`
+(the `PluginStates` service, `PlatformAdmin` gate) and the `plugin_state`
+table in `packages/db` — plus the `/platform` console the plugins
+contribute pages to.
+
+## Key concepts
+
+- **Runtime plugin state** — `plugin_state` rows toggle plugins without a
+  deploy; no row = enabled with schema defaults (opt-out).
+- **Validated writes** — `setEnabled`/`setConfig` check the real dep graph
+  and each plugin's `meta.config` Schema; system plugins can't be
+  disabled (`PluginSystemLocked`).
+- **Typed failures** — `PluginDisabled`, `UnknownPlugin`,
+  `PluginSystemLocked`; CQRS/route helpers translate to not-visible
+  responses.
+- **Admin gate, twice** — `platformAdminFn` (env allowlist
+  `PLATFORM_ADMIN_EMAILS`) for the UI, `PlatformAdmin` service re-checked
+  in domain services.
+- **Console shell** — plugins contribute `panel.pages`; `/platform/*`
+  paths are reserved and unreachable by custom pages.
+
+## Where to go next
+
+- [Toggle plugins and read state](/en/docs/developers/plugins/platform/how-to/toggle-plugins) — semantics, errors, the gate
+- [Table reference](/en/docs/developers/plugins/platform/reference) — columns, indexes, ER diagram

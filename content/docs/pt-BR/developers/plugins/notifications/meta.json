@@ -1,6 +1,7 @@
 {
 	"title": "Notifications",
 	"pages": [
+		"index",
 		"reference",
 		"how-to"
 	]

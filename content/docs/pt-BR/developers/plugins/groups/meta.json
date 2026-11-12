@@ -1,6 +1,7 @@
 {
 	"title": "Groups",
 	"pages": [
+		"index",
 		"reference",
 		"how-to"
 	]

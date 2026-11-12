@@ -1,6 +1,7 @@
 {
 	"title": "Consultations",
 	"pages": [
+		"index",
 		"reference",
 		"how-to"
 	]
