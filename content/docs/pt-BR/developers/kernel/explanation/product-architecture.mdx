@@ -21,6 +21,37 @@ KTB Health.
 - **Tailwind v4** e o design system `@ktbhealth/ui`, consumidos como deps de
   git-tag (`github:ktbhealth/ui#vX.Y.Z@react`).
 
+## Descoberta e composição de plugins
+
+Plugins são descobertos por convenção, não por um registry central:
+`@ktb/app-host` (`packages/app-host/src/index.ts`) roda
+`import.meta.glob("../../../plugins/*/src/index.ts", { eager: true })` e
+alimenta os módulos em `discoverPlugins`, que espera que todo módulo
+exporte um array `plugins` de objetos `Plugin` de preocupação única — um
+export ausente ou malformado lança erro no build/startup em vez de ser
+silenciosamente descartado. Os manifests de `@ktb/platform` são
+registrados explicitamente junto ao glob. `import.meta.glob` é uma
+transformação de build do Vite que emite imports estáticos, preservando o
+bundling do workerd e a segurança de tipos.
+
+`orderPlugins` (`@ktb/driver-framework`) então ordena topologicamente a
+lista com `effect/Graph`: `requiredDeps` são arestas duras (id
+desconhecido lança erro), `optionalDeps` só ordenam quando o id resolve,
+ids duplicados e ciclos lançam erro. O registry client
+(`@ktb/app-host/client`) repete o mesmo pipeline sobre
+`plugins/*/src/client.ts`.
+
+No lado do servidor, `createApp` dobra a Layer `services` de cada plugin
+em ordem topo — cada layer recebe via `Layer.provideMerge` os outputs
+acumulados de tudo que veio antes, então um plugin pode consumir services
+fornecidos por seus deps. Layers de infra (Db, Auth, Bot, Captcha,
+Telemetry, PluginStates, os buses CQRS) compõem como "core" e são
+fornecidas às layers de plugin explicitamente. As layers são type-erased
+(`Layer.Any`), então requisitos são verificados quando `ManagedRuntime.make`
+constrói o `AppLive` — um requisito não satisfeito falha no boot. Veja
+[Manifesto do plugin](/pt-BR/docs/developers/kernel/reference/plugin-manifest)
+para os campos `PluginBase` que esse pipeline consome.
+
 ## Quality gates
 
 - `bun run check` — formatação + lint + typecheck.

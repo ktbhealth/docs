@@ -22,7 +22,8 @@ plugins estão desligados?" ser uma lista curta.
 
 - Não dá para desabilitar um plugin do qual outros dependem via
   `requiredDeps`.
-- Config precisa satisfazer o Schema `meta.config` do plugin.
+- Config é decodificado contra o `configSchema` do plugin (`effect/Schema`)
+  — veja [Manifesto do plugin](/pt-BR/docs/developers/kernel/reference/plugin-manifest).
 - Ids desconhecidos falham com `UnknownPlugin`.
 
 ## Plugins de sistema

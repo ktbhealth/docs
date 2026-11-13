@@ -1,0 +1,89 @@
+---
+title: Cross-plugin CQRS
+description: How plugins talk to each other without importing each other's internals.
+icon: Split
+---
+
+Plugins in the `product` monorepo are real boundaries: each owns its tables,
+its Effect services, and its internals. But features frequently need another
+plugin's data — consultations needs to know who owns a patient, notifications
+needs to know when a patient was created. The repo solves this with
+**cross-plugin CQRS** via `@effect-server-utils/cqrs`.
+
+## The idea
+
+CQRS here means three separate channels, all defined in a plugin's
+`src/api.ts` module:
+
+- **Queries** — typed reads (`Query.make` + `Query.group`). The consumer calls
+  `Query.dispatcher(Group)` and runs `queries["tag"](payload)`.
+- **Commands** — writes with effects (`Command.make` + `Command.group`).
+  Consumers go through `Command.dispatcher(Group)`.
+- **Domain events** — `Event.make`, published via `events.dispatch([...])`
+  and consumed via `events.subscribeAfterCommit(...)` on the app-wide
+  `EventBus`. There is no group — the bus is already global.
+
+Payload, success, and failure are declared with `effect/Schema` schemas —
+the contract is typed end to end, not a loose `any`.
+
+## Why it exists
+
+- **A mechanical boundary.** A plugin never imports another plugin's tables
+  or services — only the `@ktb/<name>/api` surface (exported in the plugin's
+  `package.json`). The `api.ts` is the contract; what isn't there doesn't
+  exist outside.
+- **An explicit convention.** Raw table reads are never exposed — only
+  named, intentional queries. This also protects sensitive data: the owning
+  plugin decides which projection is safe to leak.
+- **Convention-based discovery.** `packages/app-host` enumerates
+  `plugins/*/src/api.ts` via `import.meta.glob`, collects groups with the
+  `Query.isGroup`/`Command.isGroup` guards, and builds the dispatchers once
+  with shared middleware (observability + the disabled-plugin gate). No
+  central registry to edit.
+
+## How it shows up
+
+`plugins/patients/src/api.ts` defines the surface:
+
+```ts
+export const PatientOwnerOf = Query.make("patients.ownerOf", {
+  payload: { id: Schema.Number },
+  success: Schema.NullOr(
+    Schema.Struct({ ownerId: Schema.String, tenantId: Schema.NullOr(Schema.Number) }),
+  ),
+});
+export const PatientsQueries = Query.group(PatientOwnerOf);
+```
+
+`plugins/consultations` consumes it — importing nothing from patients beyond
+the typed contract:
+
+```ts
+const patientQueries = yield* Query.dispatcher(PatientsQueries);
+const owner = yield* patientQueries["patients.ownerOf"]({ id: patientId });
+```
+
+The same pattern covers writes and events: `plugins/patients/src/fns.ts`
+dispatches `patients.deleteCascade` via `Command.dispatcher`, while
+`notifications` subscribes to `PatientCreated`/`PatientDeleted` with
+`subscribeAfterCommit` to persist notifications — handlers run after the
+publisher's commit with failures isolated, so a bad subscriber can never
+roll back the operation that produced the event.
+
+## Where it sits in the architecture
+
+CQRS groups live in the plugin's domain layer; handlers
+(`Query.handlersOf`/`Command.handlersOf`) use ports/adapters internally —
+CQRS is the boundary *between* plugins, ports/adapters is the boundary
+*outward* from the process. Handlers keep their own authz checks
+(`requireCanAs`, `PlatformAdmin`) — bus middleware cannot widen the error
+channel, so authorization cannot live there.
+
+## Disabled plugins
+
+The enabled-state gate (P-058) is applied at dispatch, not composition:
+service layers always mount, but the dispatcher fails closed with
+`PluginDisabled` when **every** plugin id of the package (`plugins/<pkg>/*`)
+is disabled. State is read per dispatch via `PluginStates`, so toggles take
+effect without a restart — and the same gate covers both typed dispatchers
+and the dynamic `QueryBus`/`CommandBus`.

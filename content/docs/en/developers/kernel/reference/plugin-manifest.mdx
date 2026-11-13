@@ -1,0 +1,77 @@
+---
+title: Plugin manifest
+description: The PluginBase contract — id, meta, configSchema, requiredDeps/optionalDeps, system — and how PluginRegistry types dependencies at compile time.
+icon: FileJson
+---
+
+Every plugin is a `Plugin` object built with `definePlugin` from `@ktb/kernel`.
+This is the contract the host (`@ktb/app-host`) reads during discovery —
+defined in `packages/kernel/src/core.ts` and `contributions.ts`.
+
+## Manifest fields
+
+`PluginBase` carries identity and the dependency graph; the contribution
+fields (`tables`, `services`, `routes`, `landing`, `chrome`, `panel`,
+`pages`) form the `Plugin` union and are mutually exclusive by
+construction (`ForbiddenContributions` marks the rest as `?: never`).
+
+| Field | Role |
+| ----- | ---- |
+| `id` | Unique id in the registry (`"<domain>.<concern>"`, e.g. `manager.panel`). |
+| `meta` | Display/config metadata for the `/platform/plugins` manager: `name`, `description`, `version`, `icon`, `config`. |
+| `configSchema` | **Server-only.** The `effect/Schema` that validates config at runtime — the source of truth. Not serializable; absent from client manifests. |
+| `requiredDeps` | Hard dependency: the dep composes first (topo order) and composition fails when it's absent. |
+| `optionalDeps` | Ordering hint only: the dep may be absent; a plugin must **not** require an optional dep's services in its layer. |
+| `system` | Infrastructure plugin that can never be disabled (`PluginStates` ignores state rows for it; `setEnabled(…, false)` fails with `PluginSystemLocked`). Config stays editable. |
+
+## `PluginRegistry`: compile-time typed deps
+
+`packages/kernel/src/core.ts` declares an empty
+`interface PluginRegistry {}`. Each plugin module contributes its ids via
+module augmentation:
+
+```ts
+declare module "@ktb/kernel" {
+	interface PluginRegistry {
+		"manager.chrome": true;
+		"manager.panel": true;
+	}
+}
+```
+
+`requiredDeps`/`optionalDeps` are typed as `PluginId`
+(`keyof PluginRegistry`), so depending on an undeclared id fails
+typecheck in the plugin's own declaration — as long as the dep's module is
+imported (directly or transitively) so its augmentation is part of the
+program.
+
+**Runtime backstop:** plugins discovered via `import.meta.glob` may never
+have been loaded by the typechecker. `orderPlugins` in
+`@ktb/driver-framework` re-validates every dep at runtime — an unknown id
+in `requiredDeps` throws at startup (see
+[Plugin discovery and layer composition](/en/docs/developers/kernel/explanation/product-architecture)).
+
+## Config schema → auto-generated settings
+
+The config contract has two halves derived from each other:
+
+1. **`configSchema`** (server-only): a `Schema.Struct({...})` from
+   `effect/Schema`. It's the validator — `PluginStates.setConfig` decodes
+   incoming JSON against it, filling defaults and dropping unknown keys.
+   Details in
+   [Plugin state and enablement](/en/docs/developers/plugins/platform/explanation/state-model).
+2. **`meta.config.schema`**: a JSON Schema document (draft 2020-12)
+   produced by `Schema.toJsonSchemaDocument(configSchema)` — plain
+   serializable JSON, safe on BOTH the server and client registries. The
+   plugin manager projects that document into a settings form
+   (`configFormFields` in `plugins/manager`): one control per scalar
+   property (`string`/`number`/`integer`/`boolean`) or string enum.
+
+v1 covers flat scalar/enum properties only — nested objects, arrays,
+`anyOf`/`oneOf`/`const` are skipped by the generated form and need a
+bespoke `panel.settings` UI.
+
+> Never hand-edit the JSON document: change the `Schema` and re-derive
+> with `Schema.toJsonSchemaDocument`, keeping `index.ts` (server) and
+> `client.ts` (client) in sync — parity is asserted by
+> `apps/web/src/plugins.test.ts`.

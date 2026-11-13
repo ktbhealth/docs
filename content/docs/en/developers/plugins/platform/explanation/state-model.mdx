@@ -21,7 +21,8 @@ keeps the common case (everything on) free of bookkeeping and makes
 registry — so `setEnabled`/`setConfig` validate against reality:
 
 - Can't disable a plugin others `requiredDeps`-depend on.
-- Config must satisfy the plugin's `meta.config` Schema.
+- Config is decoded against the plugin's `configSchema` (`effect/Schema`)
+  — see [Plugin manifest](/en/docs/developers/kernel/reference/plugin-manifest).
 - Unknown ids fail with `UnknownPlugin`.
 
 ## System plugins

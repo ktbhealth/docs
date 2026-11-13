@@ -43,7 +43,8 @@ off a `Plugin` object.
 
 3. **Add cross-plugin surface (optional).** If other plugins need your data,
    export CQRS groups from `src/api.ts` (`Query.group`/`Command` from
-   `@effect-server-utils/cqrs`) — never expose raw table reads.
+   `@effect-server-utils/cqrs`) — never expose raw table reads. See
+   [Cross-plugin CQRS](/en/docs/developers/kernel/explanation/cqrs) for why.
 
 4. **Add UI.** Routes are TanStack file routes under `src/routes/`; nav and
    panel contributions go through the plugin's extension points

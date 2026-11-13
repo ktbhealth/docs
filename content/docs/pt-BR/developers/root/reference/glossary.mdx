@@ -10,8 +10,10 @@ icon: BookA
   tabelas, services, rotas, nav/chrome e páginas ao registry. Veja
   [primeiro plugin](/pt-BR/docs/developers/kernel/tutorials/first-plugin).
 - **Package** — infraestrutura reutilizável em `packages/` *abaixo* do
-  sistema de plugins: ports, adapters, drivers, composição de env. Nunca
-  entra no registry. Veja
+  sistema de plugins: ports, adapters, drivers, composição de env. Não é
+  descoberta pelo glob `plugins/*`; exceção: infraestrutura de host como
+  `@ktb/platform` contribui manifests `system: true` registrados
+  explicitamente pelo app-host. Veja
   [referência de packages](/pt-BR/docs/developers/kernel/reference/packages).
 - **Port** — um contrato (geralmente um `Context.Service` do Effect) que
   define uma capability sem nomear um provider. Veja

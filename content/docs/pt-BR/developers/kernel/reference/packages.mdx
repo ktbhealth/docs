@@ -18,9 +18,12 @@ O repo `product` é um bun workspace. Orientação rápida:
 | ------ | ----- |
 | `packages/kernel` | Primitivos de plugin (`definePlugin`) |
 | `packages/app-host` | Composition root — descobre plugins, liga layers, buses CQRS |
+| `packages/platform` | Infra do host — gate admin, plugin states, chrome do console; exporta manifests `plugins` (`platform.admin`, `platform.routes`, `platform.panel`) registrados pelo app-host |
 | `packages/db`, `packages/db-sqlite` | Schema Drizzle + acesso D1/SQLite |
 | `packages/auth`, `packages/auth-better` | Autenticação (better-auth) |
 | `packages/authz` | Primitivos de autorização (`Forbidden`, guards) |
+| `packages/rbac` | Autorização baseada em papéis — grants/permissões; wrapper de registry em `plugins/rbac` |
+| `packages/tenant` | Isolamento de tenant — seletor, escopo de queries, RLS |
 | `packages/server-fns` | Infra de server functions |
 | `packages/anamnesis`, `packages/anamnesis-llm` | Schema de nota estruturada + extração/limpeza por LLM |
 | `packages/transcription` | Port `Transcriber` + heurísticas de fallback |
@@ -30,6 +33,7 @@ O repo `product` é um bun workspace. Orientação rápida:
 | `packages/bot`, `packages/bot-recall` | Fonte de captura por meeting-bot |
 | `packages/captcha*` | Ports/adapters de proteção contra bots |
 | `packages/driver-framework` | Registry de drivers no cliente (seleção de adapter) |
+| `packages/observability`, `packages/observability-otlp` | Telemetria provider-agnostic (logs/métricas/traces) + adapter exportador OTLP |
 
 ## Plugins (`plugins/`)
 

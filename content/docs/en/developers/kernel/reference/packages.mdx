@@ -18,9 +18,12 @@ The `product` repo is a bun workspace. Quick orientation:
 | ------- | ---- |
 | `packages/kernel` | Plugin primitives (`definePlugin`) |
 | `packages/app-host` | Composition root — discovers plugins, wires layers, CQRS buses |
+| `packages/platform` | Host infrastructure — admin gate, plugin states, console chrome; exports `plugins` manifests (`platform.admin`, `platform.routes`, `platform.panel`) registered by app-host |
 | `packages/db`, `packages/db-sqlite` | Drizzle schema + D1/SQLite access |
 | `packages/auth`, `packages/auth-better` | Authentication (better-auth) |
 | `packages/authz` | Authorization primitives (`Forbidden`, guards) |
+| `packages/rbac` | Role-based authorization — grants/permissions; registry wrapper in `plugins/rbac` |
+| `packages/tenant` | Tenant isolation — selector, scoped queries, RLS |
 | `packages/server-fns` | Server function plumbing |
 | `packages/anamnesis`, `packages/anamnesis-llm` | Structured note schema + LLM extraction/cleanup |
 | `packages/transcription` | `Transcriber` port + fallback heuristics |
@@ -30,6 +33,7 @@ The `product` repo is a bun workspace. Quick orientation:
 | `packages/bot`, `packages/bot-recall` | Meeting-bot capture source |
 | `packages/captcha*` | Bot protection ports/adapters |
 | `packages/driver-framework` | Client driver registry (adapter selection) |
+| `packages/observability`, `packages/observability-otlp` | Provider-agnostic telemetry (logs/metrics/traces) + OTLP exporter adapter |
 
 ## Plugins (`plugins/`)
 

@@ -21,6 +21,35 @@ documentation app.
 - **Tailwind v4** and the `@ktbhealth/ui` design system, consumed as git-tag
   deps (`github:ktbhealth/ui#vX.Y.Z@react`).
 
+## Plugin discovery and layer composition
+
+Plugins are discovered by convention, not by a central registry:
+`@ktb/app-host` (`packages/app-host/src/index.ts`) runs
+`import.meta.glob("../../../plugins/*/src/index.ts", { eager: true })` and
+feeds the modules to `discoverPlugins`, which expects every module to
+export a `plugins` array of single-concern `Plugin` objects — a missing or
+malformed export throws at build/startup rather than being silently
+dropped. `@ktb/platform`'s manifests are registered explicitly alongside
+the glob. `import.meta.glob` is a Vite build-time transform that emits
+static imports, so workerd bundling and type safety are preserved.
+
+`orderPlugins` (`@ktb/driver-framework`) then topo-sorts the list with
+`effect/Graph`: `requiredDeps` are hard edges (an unknown id throws),
+`optionalDeps` only order when the id resolves, duplicate ids and cycles
+throw. The client registry (`@ktb/app-host/client`) repeats the same
+pipeline over `plugins/*/src/client.ts`.
+
+For the server side, `createApp` folds each plugin's `services` Layer in
+topo order — every layer is `Layer.provideMerge`d the accumulated outputs
+of everything before it, so a plugin can consume services provided by its
+deps. Infra layers (Db, Auth, Bot, Captcha, Telemetry, PluginStates, the
+CQRS buses) compose as "core" and are provided to the plugin layers
+explicitly. Layers are type-erased (`Layer.Any`), so requirements are
+checked when `ManagedRuntime.make` builds `AppLive` — an unsatisfied
+requirement fails at boot. See
+[Plugin manifest](/en/docs/developers/kernel/reference/plugin-manifest)
+for the `PluginBase` fields this pipeline consumes.
+
 ## Quality gates
 
 - `bun run check` — format + lint + typecheck.
