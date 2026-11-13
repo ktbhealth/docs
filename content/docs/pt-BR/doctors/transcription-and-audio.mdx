@@ -4,7 +4,7 @@ description: Idiomas, precisão, comportamento de fallback e o que acontece com 
 icon: AudioLines
 ---
 
-Referência de como o KTB transforma uma consulta em texto — e o que faz com o
+Referência de como a KTB transforma uma consulta em texto — e o que faz com o
 áudio depois.
 
 ## Idiomas
@@ -20,11 +20,11 @@ como um bloco de texto.
 
 ## Como funciona a transcrição
 
-O KTB usa uma estratégia **client-first**:
+A KTB usa uma estratégia **client-first**:
 
 1. **Transcrição no navegador** roda no browser enquanto você fala — rápida e
    privada por padrão.
-2. **Verificação de confiança.** Ao fim da sessão, o KTB mede quanto fala real
+2. **Verificação de confiança.** Ao fim da sessão, a KTB mede quanto fala real
    foi capturada em relação à saída da transcrição.
 3. **Fallback no servidor.** Se a confiança estiver suspeitamente baixa (pouca
    fala detectada, ou quase nenhum texto transcrito), o áudio gravado é enviado
