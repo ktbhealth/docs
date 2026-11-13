@@ -1,0 +1,42 @@
+---
+title: Explorar o banco com Drizzle Studio
+description: Abra um browser SQLite local sobre o schema real para inspecionar tabelas e dados.
+icon: Database
+---
+
+O [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview) é um
+browser gráfico local para o banco — tabelas, colunas, relações e linhas.
+Use-o para explorar o schema ou inspecionar dados durante o desenvolvimento.
+
+## Abrir o Studio
+
+```bash
+bun run db:studio        # na raiz do repo product
+```
+
+O comando materializa `packages/db/.studio.sqlite` — um arquivo SQLite
+local construído aplicando todas as migrations do Drizzle — e abre o Studio
+sobre ele (normalmente em `localhost:4983`).
+
+O arquivo é gitignored e descartável: é reconstruído automaticamente quando
+uma migration é mais nova que o arquivo. Ele **não** é o banco D1 de dev —
+começa vazio (só schema, sem linhas) e serve para inspeção, não para o app
+em execução.
+
+## O que observar
+
+- **Tabelas** — todas as tabelas de todos os plugins. Cruze com a
+  [referência gerada de tabelas](/pt-BR/docs/developers/plugins)
+  (diagramas ER + colunas/índices por tabela).
+- **Relações** — foreign keys aparecem como relações no Studio, batendo com
+  o `erDiagram` na seção `reference/` de cada plugin.
+- **Linhas** — o banco do studio não tem dados da aplicação. Para ver dados
+  reais, use o estado local do D1 (miniflare) ou semeie o banco manualmente.
+
+## Quando o Studio não basta
+
+- Mudanças de schema começam em `packages/db/src/schema.ts` → `bun run
+  db:generate` — veja [migrations de banco](/pt-BR/docs/developers/kernel/how-to/migrations).
+- A documentação publicada do schema (diagramas ER, referência por tabela,
+  pt-BR) é gerada por `bun run db:erd` — fica em `reference/` de cada
+  plugin, não no Studio.
