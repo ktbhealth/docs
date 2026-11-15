@@ -49,6 +49,11 @@ export default defineConfig({
     // please see https://tanstack.com/start/latest/docs/framework/react/guide/hosting#nitro for guides on hosting
     nitro({
       preset,
+      // Pinned: the default "latest" stamps the build date into
+      // wrangler.json, which eventually exceeds the workerd binary's
+      // newest supported compatibility date and breaks `vite build`
+      // prerendering (and CI) with no code change.
+      compatibilityDate: '2026-11-01',
     }),
   ],
   resolve: {
