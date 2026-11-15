@@ -8,6 +8,10 @@
 		"notifications",
 		"audit",
 		"pages",
+		"doctors",
+		"secretaries",
+		"patient-access",
+		"invites",
 		"auth",
 		"rbac",
 		"platform"
