@@ -31,7 +31,7 @@ CREATE TABLE `doctors` (
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | INTEGER |  | false |  |  |  |
+| id | INTEGER |  | false | [doctor_access](../../../secretaries/reference/tables/doctor_access.mdx) |  |  |
 | user_id | TEXT |  | false |  | [user](../../../auth/reference/tables/user.mdx) |  |
 | display_name | TEXT |  | false |  |  |  |
 | crm | TEXT |  | true |  |  |  |

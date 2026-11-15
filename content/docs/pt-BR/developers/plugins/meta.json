@@ -9,6 +9,7 @@
 		"audit",
 		"pages",
 		"doctors",
+		"secretaries",
 		"auth",
 		"rbac",
 		"platform"
