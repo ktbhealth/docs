@@ -10,6 +10,7 @@
 		"pages",
 		"doctors",
 		"secretaries",
+		"patient-access",
 		"auth",
 		"rbac",
 		"platform"

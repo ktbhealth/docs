@@ -12,6 +12,8 @@ erDiagram
 "doctors" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "doctor_access" }o--o| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "doctor_access" }o--|| "doctors" : "FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"patient_access" }o--o| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"patient_access" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
 "account" {
   TEXT id PK
@@ -214,6 +216,18 @@ erDiagram
   TEXT role
   TEXT status
   TEXT invited_by
+  INTEGER created_at
+  INTEGER updated_at
+}
+"patient_access" {
+  INTEGER id
+  INTEGER patient_id FK
+  TEXT user_id FK
+  TEXT email
+  TEXT relation
+  TEXT status
+  TEXT source
+  TEXT granted_by
   INTEGER created_at
   INTEGER updated_at
 }
