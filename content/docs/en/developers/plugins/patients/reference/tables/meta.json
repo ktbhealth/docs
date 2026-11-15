@@ -1,6 +1,7 @@
 {
 	"title": "Tables",
 	"pages": [
+		"patient_documents",
 		"patients"
 	]
 }

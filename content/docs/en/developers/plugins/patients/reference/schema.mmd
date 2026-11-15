@@ -1,5 +1,6 @@
 erDiagram
 
+"patient_documents" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
 "patients" {
   INTEGER id
@@ -10,9 +11,6 @@ erDiagram
   TEXT social_name
   TEXT gender
   TEXT birth_date
-  TEXT cpf
-  TEXT cns
-  TEXT passport
   TEXT phone
   TEXT email
   TEXT preferred_language
@@ -33,4 +31,12 @@ erDiagram
   TEXT emergency_contact_phone
   INTEGER updated_at
   INTEGER tenant_id FK
+}
+"patient_documents" {
+  INTEGER id
+  INTEGER patient_id FK
+  TEXT type
+  TEXT country
+  TEXT number
+  INTEGER created_at
 }

@@ -14,6 +14,7 @@ erDiagram
 "doctor_access" }o--|| "doctors" : "FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "patient_access" }o--o| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "patient_access" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"patient_documents" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
 "account" {
   TEXT id PK
@@ -67,9 +68,6 @@ erDiagram
   TEXT social_name
   TEXT gender
   TEXT birth_date
-  TEXT cpf
-  TEXT cns
-  TEXT passport
   TEXT phone
   TEXT email
   TEXT preferred_language
@@ -239,5 +237,13 @@ erDiagram
   TEXT inviter_name
   INTEGER expires_at
   INTEGER consumed_at
+  INTEGER created_at
+}
+"patient_documents" {
+  INTEGER id
+  INTEGER patient_id FK
+  TEXT type
+  TEXT country
+  TEXT number
   INTEGER created_at
 }
