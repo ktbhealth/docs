@@ -8,6 +8,7 @@
 		"notifications",
 		"audit",
 		"pages",
+		"doctors",
 		"auth",
 		"rbac",
 		"platform"
