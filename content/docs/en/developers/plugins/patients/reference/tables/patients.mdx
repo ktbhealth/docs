@@ -27,7 +27,7 @@ CREATE TABLE "patients" (
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | INTEGER |  | false | [consultations](../../../consultations/reference/tables/consultations.mdx) [patient_access](../../../patient-access/reference/tables/patient_access.mdx) [patient_documents](../../../patients/reference/tables/patient_documents.mdx) |  |  |
+| id | INTEGER |  | false | [consultations](/en/docs/developers/plugins/consultations/reference/tables/consultations) [patient_access](/en/docs/developers/plugins/patient-access/reference/tables/patient_access) [patient_documents](/en/docs/developers/plugins/patients/reference/tables/patient_documents) |  |  |
 | owner_id | TEXT |  | false |  |  |  |
 | name | TEXT |  | false |  |  |  |
 | created_at | INTEGER |  | false |  |  |  |
@@ -54,7 +54,7 @@ CREATE TABLE "patients" (
 | emergency_contact_relationship | TEXT |  | true |  |  |  |
 | emergency_contact_phone | TEXT |  | true |  |  |  |
 | updated_at | INTEGER |  | true |  |  |  |
-| tenant_id | INTEGER |  | true |  | [groups](../../../groups/reference/tables/groups.mdx) |  |
+| tenant_id | INTEGER |  | true |  | [groups](/en/docs/developers/plugins/groups/reference/tables/groups) |  |
 
 ## Constraints
 
