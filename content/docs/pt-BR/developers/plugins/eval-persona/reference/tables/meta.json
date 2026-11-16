@@ -1,5 +1,5 @@
 {
-	"title": "Tabelas",
+	"title": "Tabelas", "icon": "Table2",
 	"pages": [
 		"eval_instance",
 		"eval_instance_item",

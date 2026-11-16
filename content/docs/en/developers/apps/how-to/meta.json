@@ -1,1 +1,1 @@
-{"title": "How-to guides", "pages": ["dev-environment", "dev-node", "deploy-to-cloudflare", "e2e-tests"]}
+{"title": "How-to guides", "icon": "Wrench", "pages": ["dev-environment", "dev-node", "deploy-to-cloudflare", "e2e-tests"]}

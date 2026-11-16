@@ -1,1 +1,1 @@
-{ "title": "Doctors", "root": true, "pages": ["getting-started", "consult-flow", "transcription-and-audio", "troubleshooting", "privacy-and-consent"] }
+{ "title": "Doctors", "icon": "Stethoscope", "root": true, "pages": ["getting-started", "consult-flow", "transcription-and-audio", "troubleshooting", "privacy-and-consent"] }

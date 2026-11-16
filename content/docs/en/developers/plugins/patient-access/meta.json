@@ -1,5 +1,5 @@
 {
-	"title": "Patient access",
+	"title": "Patient access", "icon": "LockKeyhole",
 	"pages": [
 		"how-to",
 		"reference"

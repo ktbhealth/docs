@@ -1,5 +1,5 @@
 {
-	"title": "Custom pages",
+	"title": "Custom pages", "icon": "PanelsTopLeft",
 	"pages": [
 		"index",
 		"tutorials",

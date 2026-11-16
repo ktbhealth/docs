@@ -1,5 +1,5 @@
 {
-	"title": "Audit log",
+	"title": "Audit log", "icon": "ScrollText",
 	"pages": [
 		"index",
 		"tutorials",

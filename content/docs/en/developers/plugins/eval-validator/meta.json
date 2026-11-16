@@ -1,5 +1,5 @@
 {
-	"title": "Eval validator",
+	"title": "Eval validator", "icon": "BadgeCheck",
 	"pages": [
 		"how-to",
 		"reference"
