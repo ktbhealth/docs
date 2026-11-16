@@ -16,6 +16,6 @@
 		"rbac",
 		"platform",
 		"jobs",
-		"theme"
+		"eval-validator"
 	]
 }

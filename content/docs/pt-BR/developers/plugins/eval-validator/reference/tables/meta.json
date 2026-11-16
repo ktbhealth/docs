@@ -1,0 +1,9 @@
+{
+	"title": "Tabelas",
+	"pages": [
+		"eval_persona",
+		"eval_persona_batch",
+		"eval_run",
+		"eval_run_sample"
+	]
+}
