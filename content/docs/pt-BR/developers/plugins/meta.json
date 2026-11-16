@@ -5,6 +5,7 @@
 		"patients",
 		"consultations",
 		"groups",
+		"integrity",
 		"notifications",
 		"audit",
 		"pages",
@@ -18,6 +19,7 @@
 		"jobs",
 		"eval-validator",
 		"ai-endpoints",
-		"eval-persona"
+		"eval-persona",
+		"theme"
 	]
 }
