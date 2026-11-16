@@ -13,7 +13,18 @@ Owned by `plugins/ai-endpoints`.
 ```mermaid
 erDiagram
 
+"ai_agent_link" }o--|| "ai_endpoint" : "FOREIGN KEY (endpoint_id) REFERENCES ai_endpoint (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
+"ai_agent_link" {
+  INTEGER id
+  INTEGER endpoint_id FK
+  TEXT token_hash
+  TEXT created_by
+  INTEGER expires_at
+  INTEGER used_at
+  INTEGER created_at
+  INTEGER revoked_at
+}
 "ai_endpoint" {
   INTEGER id
   TEXT name
@@ -23,13 +34,14 @@ erDiagram
   TEXT session_id
   TEXT secret_ref
   TEXT transport
-  INTEGER timeout_ms
-  INTEGER enabled
-  INTEGER created_at
-  TEXT scope
-  INTEGER is_default
   TEXT agent_cmd
   TEXT ssh_host
+  TEXT scope
+  INTEGER is_default
+  INTEGER timeout_ms
+  INTEGER enabled
+  INTEGER last_seen_at
+  INTEGER created_at
 }
 ```
 
@@ -37,4 +49,5 @@ Mermaid source: [`schema.mmd`](./schema.mmd)
 
 ## Tables
 
+- [`ai_agent_link`](/en/docs/developers/plugins/ai-endpoints/reference/tables/ai_agent_link)
 - [`ai_endpoint`](/en/docs/developers/plugins/ai-endpoints/reference/tables/ai_endpoint)

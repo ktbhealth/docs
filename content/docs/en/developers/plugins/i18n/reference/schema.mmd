@@ -1,0 +1,47 @@
+erDiagram
+
+
+"i18n_crdt_updates" {
+  INTEGER id
+  TEXT namespace
+  TEXT key
+  TEXT locale
+  TEXT scope
+  TEXT scope_id
+  BLOB update
+  TEXT actor_id
+  INTEGER created_at
+}
+"i18n_locales" {
+  TEXT code PK
+  TEXT endonym
+  TEXT fallbacks
+  INTEGER enabled
+  INTEGER created_at
+}
+"i18n_messages" {
+  TEXT namespace PK
+  TEXT key PK
+  TEXT locale PK
+  TEXT scope PK
+  TEXT scope_id PK
+  TEXT kind
+  TEXT value
+  TEXT draft_value
+  TEXT status
+  TEXT params
+  INTEGER version
+  INTEGER created_at
+  INTEGER updated_at
+}
+"i18n_namespaces" {
+  TEXT namespace PK
+  TEXT plugin_id
+  TEXT manifest_hash
+  TEXT default_locale
+  INTEGER created_at
+}
+"i18n_revision" {
+  INTEGER id
+  INTEGER revision
+}

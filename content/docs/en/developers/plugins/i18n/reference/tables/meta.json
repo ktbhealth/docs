@@ -1,0 +1,10 @@
+{
+	"title": "Tables",
+	"pages": [
+		"i18n_crdt_updates",
+		"i18n_locales",
+		"i18n_messages",
+		"i18n_namespaces",
+		"i18n_revision"
+	]
+}

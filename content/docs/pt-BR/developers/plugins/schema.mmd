@@ -30,6 +30,7 @@ erDiagram
 "portal_keys" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "eval_instance" }o--o| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "eval_instance" }o--o| "ai_endpoint" : "FOREIGN KEY (endpoint_id) REFERENCES ai_endpoint (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"ai_agent_link" }o--|| "ai_endpoint" : "FOREIGN KEY (endpoint_id) REFERENCES ai_endpoint (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
 "account" {
   TEXT id PK
@@ -356,23 +357,6 @@ erDiagram
   INTEGER claimed_at
   INTEGER created_at
 }
-"ai_endpoint" {
-  INTEGER id
-  TEXT name
-  TEXT kind
-  TEXT base_url
-  TEXT model
-  TEXT session_id
-  TEXT secret_ref
-  TEXT transport
-  INTEGER timeout_ms
-  INTEGER enabled
-  INTEGER created_at
-  TEXT scope
-  INTEGER is_default
-  TEXT agent_cmd
-  TEXT ssh_host
-}
 "eval_persona_def" {
   INTEGER id
   TEXT name
@@ -462,4 +446,76 @@ erDiagram
   INTEGER batch_id FK
   TEXT created_by
   INTEGER created_at
+}
+"ai_agent_link" {
+  INTEGER id
+  INTEGER endpoint_id FK
+  TEXT token_hash
+  TEXT created_by
+  INTEGER expires_at
+  INTEGER used_at
+  INTEGER created_at
+  INTEGER revoked_at
+}
+"ai_endpoint" {
+  INTEGER id
+  TEXT name
+  TEXT kind
+  TEXT base_url
+  TEXT model
+  TEXT session_id
+  TEXT secret_ref
+  TEXT transport
+  TEXT agent_cmd
+  TEXT ssh_host
+  TEXT scope
+  INTEGER is_default
+  INTEGER timeout_ms
+  INTEGER enabled
+  INTEGER last_seen_at
+  INTEGER created_at
+}
+"i18n_crdt_updates" {
+  INTEGER id
+  TEXT namespace
+  TEXT key
+  TEXT locale
+  TEXT scope
+  TEXT scope_id
+  BLOB update
+  TEXT actor_id
+  INTEGER created_at
+}
+"i18n_locales" {
+  TEXT code PK
+  TEXT endonym
+  TEXT fallbacks
+  INTEGER enabled
+  INTEGER created_at
+}
+"i18n_messages" {
+  TEXT namespace PK
+  TEXT key PK
+  TEXT locale PK
+  TEXT scope PK
+  TEXT scope_id PK
+  TEXT kind
+  TEXT value
+  TEXT draft_value
+  TEXT status
+  TEXT params
+  INTEGER version
+  INTEGER created_at
+  INTEGER updated_at
+}
+"i18n_namespaces" {
+  TEXT namespace PK
+  TEXT plugin_id
+  TEXT manifest_hash
+  TEXT default_locale
+  INTEGER created_at
+}
+"i18n_revision" {
+  INTEGER id
+  INTEGER revision
 }

@@ -1,5 +1,8 @@
 {
 	"title": "Internationalization",
-	"icon": "Languages",
-	"pages": ["index", "how-to", "reference"]
+	"pages": [
+		"index",
+		"how-to",
+		"reference"
+	]
 }

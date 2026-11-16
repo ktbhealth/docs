@@ -1,5 +1,6 @@
 {
 	"title": "How-to guides",
-	"icon": "Wrench",
-	"pages": ["edit-translations"]
+	"pages": [
+		"edit-translations"
+	]
 }
