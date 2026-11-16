@@ -1,7 +1,10 @@
 {
 	"title": "Notifications",
 	"pages": [
+		"index",
+		"tutorials",
 		"how-to",
+		"explanation",
 		"reference"
 	]
 }

@@ -1,7 +1,10 @@
 {
 	"title": "Audit log",
 	"pages": [
+		"index",
+		"tutorials",
 		"how-to",
+		"explanation",
 		"reference"
 	]
 }

@@ -1,7 +1,10 @@
 {
 	"title": "Custom pages",
 	"pages": [
+		"index",
+		"tutorials",
 		"how-to",
+		"explanation",
 		"reference"
 	]
 }

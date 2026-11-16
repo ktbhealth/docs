@@ -1,7 +1,10 @@
 {
 	"title": "RBAC",
 	"pages": [
+		"index",
+		"tutorials",
 		"how-to",
+		"explanation",
 		"reference"
 	]
 }

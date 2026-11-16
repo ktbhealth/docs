@@ -1,7 +1,10 @@
 {
 	"title": "Platform",
 	"pages": [
+		"index",
+		"tutorials",
 		"how-to",
+		"explanation",
 		"reference"
 	]
 }

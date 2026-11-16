@@ -1,7 +1,10 @@
 {
 	"title": "Consultations",
 	"pages": [
+		"index",
+		"tutorials",
 		"how-to",
+		"explanation",
 		"reference"
 	]
 }

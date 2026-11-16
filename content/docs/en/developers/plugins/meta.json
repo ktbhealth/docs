@@ -15,6 +15,7 @@
 		"auth",
 		"rbac",
 		"platform",
+		"jobs",
 		"eval-validator",
 		"eval-persona"
 	]
