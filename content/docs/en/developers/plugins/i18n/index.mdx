@@ -1,0 +1,39 @@
+---
+title: Internationalization
+description: UI copy as runtime data — DB-canonical messages, typed t(), the /platform/i18n editor, and locale/scope resolution.
+icon: Languages
+---
+
+The i18n plugin owns the `i18n_*` tables: every user-facing string in
+the product is a row, not a code constant. Baseline catalogs compiled
+from plugin sources are imported once; afterwards the database is the
+single source of truth and `/platform/i18n` is where copy is edited.
+
+## Key concepts
+
+- **Copy = data** — messages live in `i18n_messages` keyed by
+  `(namespace, key, locale, scope, scopeId)`; the published `value`
+  column is the read model `t()` resolves against.
+- **Draft → publish** — edits land in `draft_value` first; `publish`
+  swaps it into `value`, bumps `version`, and invalidates the isolate
+  cache. Drafts never leak to runtime.
+- **CRDT editing** — concurrent edits merge through a Loro op log
+  (`i18n_crdt_updates`); the row's `value` stays the materialized
+  read model so `t()` never touches CRDT state.
+- **Scope chain** — resolution walks `portal instance → tenant →
+  global`, then locale → default locale → key literal. Platform-admin
+  edits default to `global`; portals and tenants can override per
+  scope.
+- **Locale chain** — request locale comes from the `ktb-locale`
+  cookie, constrained by `i18n_locales.enabled`; a portal instance can
+  pin a locale that overrides the cookie. `qps` is a pseudo-locale
+  for layout QA.
+- **Typed developer API** — `t()` is generated-typed per key with
+  ICU-subset params (`{name}`, `{count, plural, …}`, `{when, date}`);
+  unknown keys are compile errors, missing rows degrade to the
+  English baseline then the key literal.
+
+## Where to go next
+
+- [Edit translations](/en/docs/developers/plugins/i18n/how-to/edit-translations) — the `/platform/i18n` panel workflow
+- [Table & resolution reference](/en/docs/developers/plugins/i18n/reference) — schema, scopes, message kinds

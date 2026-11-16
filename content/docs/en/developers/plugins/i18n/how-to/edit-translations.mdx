@@ -1,0 +1,51 @@
+---
+title: Edit translations
+description: Use the /platform/i18n panel — matrix editing, draft/publish, scopes, import/export, and the pseudo-locale.
+icon: Languages
+---
+
+All copy edits happen at `/platform/i18n` (platform-admin gated).
+Runtime reads only published values, so nothing you type is visible
+to users until you publish.
+
+## The editing loop
+
+1. Pick a **namespace** (one per plugin domain — `app`, `patients`,
+   `consultations`, …) and a **locale**.
+2. Edit a cell. `text` messages are plain ICU templates; `rich`
+   messages open the rich-text editor (sanitized HTML).
+3. **Save draft** — validates the template (params, plural/select
+   coverage) and stores it in `draft_value`. Invalid templates are
+   rejected before they reach the database.
+4. **Publish** — promotes the draft to `value`, bumps `version`,
+   invalidates the runtime cache, and writes an `admin_audit` entry.
+5. **Discard** — drops the draft; never-published rows are deleted.
+
+Missing translations are badged in the matrix — a key with no row for
+the selected locale falls back through the locale chain at runtime.
+
+## Scopes
+
+The scope picker targets where an override applies:
+
+- `global` — everyone (the default; what baseline imports write).
+- `tenant:<id>` — one clinic/organization.
+- `portal:<instance>` — one portal instance (can also pin its own
+  locale, which overrides the visitor's `ktb-locale` cookie).
+
+Resolution order is portal → tenant → global, so a portal override
+wins over a tenant override wins over global.
+
+## Import / export
+
+- **Export** downloads a namespace (or all) as JSON per locale —
+  use it for review, translation hand-off, or backups.
+- **Import** upserts draft values from the same JSON shape; review
+  and publish afterwards. Imports are audited.
+
+## QA with the pseudo-locale
+
+Enable `qps` in `i18n_locales` (seeded by default) and switch to it —
+templates render accented and padded (`[!!! …]`), so truncated text,
+layout overflow, and hard-coded strings that bypass `t()` become
+visible immediately.

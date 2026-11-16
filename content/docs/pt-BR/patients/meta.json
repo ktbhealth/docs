@@ -1,1 +1,1 @@
-{ "title": "Pacientes", "root": true, "pages": ["what-to-expect", "your-data-and-privacy", "getting-your-records", "your-rights"] }
+{ "title": "Pacientes", "icon": "Users", "root": true, "pages": ["what-to-expect", "your-data-and-privacy", "getting-your-records", "your-rights"] }

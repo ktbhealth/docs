@@ -1,0 +1,90 @@
+---
+title: Get access to the KTB vault
+description: Onboard a new teammate to the cuora `ktb` vault — tardigrada identity, scoped tokens, and re-sealing.
+icon: Vault
+---
+
+The `ktb` vault is a self-hosted cuora `cf` backend (Cloudflare Worker +
+D1) declared in the product repo's `cuora.toml`. Access has two halves:
+your **age identity** (per person/machine, via `tardigrada`) and a
+**scoped token** per env (issued by an operator). This guide walks both
+sides.
+
+## 1. Member — install tardigrada and create your identity
+
+```bash
+tamias install 9aia:tardigrada@0.4.0
+tardigrada init     # generates an age identity in your session keyring
+tardigrada show     # prints your PUBLIC age1… recipient
+```
+
+`init` stores the private key in the platform keyring (or a `0600`
+keyfile when `TARDIGRADA_IDENTITY_BACKEND=file`). `show` prints only the
+public `age1…` recipient — safe to share; the private key never leaves
+your machine. Send the recipient to an operator (step 2).
+
+## 2. Operator — add the recipient and issue tokens
+
+In `repos/product/cuora.toml`, add the member's recipient to the vault
+(extra recipients encrypt *to* them, beyond your own identity key):
+
+```toml
+[vaults.ktb]
+kind = "cf"
+url = "https://cuora.ktbhealth.workers.dev"
+token_env = "CUORA_CF_TOKEN"
+recipients = ["age1…"]   # one entry per team member
+cache = ["dev", "preview"]
+```
+
+Commit and push. Then create scoped credentials in the vault worker's
+`CUORA_VAULT_TOKENS` secret (a JSON map of `token_id → {token, scopes}`
+— see the [cuora docs](https://9aia.com/cuora/) for the exact shape) and
+send the member each **token value once**, via DM or a password manager —
+never in the repo, chat history, or a shared doc.
+
+The token ids are the ref paths declared under `[vaults.ktb.tokens]`:
+`ktb/cf-token-dev` (dev + preview) and `ktb/cf-token-prod` (prod).
+
+## 3. Member — store the tokens in your local vault
+
+Token refs resolve against your **local** age vault, not the remote
+`ktb` vault — so `cuora put` must run under a config that routes envs to
+`local`. `~/.config/cuora/cuora.toml` with no `[envs]` routing does
+exactly that (a comment-only file is enough):
+
+```bash
+printf '%s' 'DEV_TOKEN'  | cuora put --env dev     cuora://ktb/cf-token-dev
+printf '%s' 'DEV_TOKEN'  | cuora put --env preview cuora://ktb/cf-token-dev
+printf '%s' 'PROD_TOKEN' | cuora put --env prod    cuora://ktb/cf-token-prod
+```
+
+Do **not** run these inside `repos/product` — there `[envs]` routes
+everything to the remote `ktb` vault.
+
+## 4. Operator — re-seal the vault
+
+Existing ciphertext was sealed to the *previous* recipient set — the new
+member can't decrypt it yet. After pushing the `recipients` change,
+re-put every secret in every env so fresh ciphertext includes the new
+recipient (there is no bulk reseal verb; `get` → `put` re-seals):
+
+```bash
+cd ~/GitHub/ktbhealth/repos/product
+for env in dev preview prod; do
+  cuora list --env "$env" | while read -r ref; do
+    cuora get --env "$env" "$ref" | cuora put --env "$env" "$ref"
+  done
+done
+```
+
+## 5. Member — verify
+
+```bash
+cd ~/GitHub/ktbhealth/repos/product
+cuora check
+```
+
+`cuora check` validates config, decrypts each vault, and resolves every
+declared `[secrets]` ref — a clean run means your identity and tokens
+work end to end.

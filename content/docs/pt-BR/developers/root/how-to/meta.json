@@ -1,1 +1,1 @@
-{"title": "Guias práticos", "pages": ["testing", "debugging", "environment-variables", "ci", "browse-the-database"]}
+{"title": "Guias práticos", "icon": "Wrench", "pages": ["testing", "debugging", "environment-variables", "vault-access", "ci", "browse-the-database"]}

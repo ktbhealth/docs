@@ -27,6 +27,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ktbhealth/ui/components/tabs';
 import { CircleCheck, CircleX, Info, Lightbulb, TriangleAlert } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { LocLangChart, LocRepoChart } from '@/components/loc-charts';
 import { productUrl, storybookUrl } from '@/lib/site-links';
 
 /* ------------------------------------------------------------------ */
@@ -209,6 +210,8 @@ export function getMDXComponents(components?: MDXComponents) {
     AccordionContent,
     ProductLink,
     StorybookLink,
+    LocRepoChart,
+    LocLangChart,
     ...components,
   } satisfies MDXComponents;
 }

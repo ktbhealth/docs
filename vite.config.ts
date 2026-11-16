@@ -40,6 +40,9 @@ export default defineConfig({
     tanstackStart({
       prerender: {
         enabled: true,
+        // low concurrency: the prerender preview server + crawler is
+        // memory-hungry and gets OOM-killed on smaller machines
+        concurrency: 4,
       },
       // seed the pt-BR home page so the crawler discovers the localized
       // docs tree (the language switcher is client-side only)
