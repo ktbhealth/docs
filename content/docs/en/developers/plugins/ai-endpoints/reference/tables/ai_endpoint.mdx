@@ -25,7 +25,7 @@ CREATE TABLE "ai_endpoint" (
 	`timeout_ms` integer DEFAULT 60000 NOT NULL,
 	`enabled` integer DEFAULT true NOT NULL,
 	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL
-, `scope` text DEFAULT 'eval' NOT NULL, `is_default` integer DEFAULT false NOT NULL)
+, `scope` text DEFAULT 'eval' NOT NULL, `is_default` integer DEFAULT false NOT NULL, `agent_cmd` text, `ssh_host` text)
 ```
 
 </details>
@@ -47,6 +47,8 @@ CREATE TABLE "ai_endpoint" (
 | created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
 | scope | TEXT | 'eval' | false |  |  |  |
 | is_default | INTEGER | false | false |  |  |  |
+| agent_cmd | TEXT |  | true |  |  |  |
+| ssh_host | TEXT |  | true |  |  |  |
 
 ## Constraints
 
