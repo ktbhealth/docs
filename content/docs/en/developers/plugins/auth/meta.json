@@ -1,5 +1,5 @@
 {
-	"title": "Auth", "icon": "KeyRound",
+	"title": "Auth",
 	"pages": [
 		"index",
 		"tutorials",

@@ -1,5 +1,5 @@
 {
-	"title": "Platform", "icon": "LayoutDashboard",
+	"title": "Platform",
 	"pages": [
 		"index",
 		"tutorials",

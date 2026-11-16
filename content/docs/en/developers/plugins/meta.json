@@ -1,11 +1,12 @@
 {
-	"title": "Plugins", "icon": "Puzzle",
+	"title": "Plugins",
 	"pages": [
 		"index",
 		"patients",
 		"consultations",
 		"groups",
 		"integrity",
+		"vault",
 		"notifications",
 		"audit",
 		"pages",
@@ -19,7 +20,6 @@
 		"jobs",
 		"eval-validator",
 		"eval-persona",
-		"theme",
-		"i18n"
+		"theme"
 	]
 }
