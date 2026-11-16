@@ -15,6 +15,7 @@ erDiagram
 "patient_access" }o--o| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "patient_access" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "patient_documents" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"theme_assets" }o--o| "theme_definitions" : "FOREIGN KEY (theme_id) REFERENCES theme_definitions (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 
 "account" {
   TEXT id PK
@@ -246,4 +247,37 @@ erDiagram
   TEXT country
   TEXT number
   INTEGER created_at
+}
+"job_runs" {
+  TEXT id PK
+  TEXT kind
+  TEXT status
+  TEXT payload_ref
+  TEXT error
+  INTEGER tenant_id
+  INTEGER created_at
+  INTEGER updated_at
+}
+"theme_assets" {
+  INTEGER id
+  INTEGER theme_id FK
+  TEXT kind
+  TEXT r2_key
+  TEXT status
+  TEXT variants
+  INTEGER created_at
+}
+"theme_definitions" {
+  INTEGER id
+  TEXT scope
+  TEXT scope_id
+  TEXT app_name
+  TEXT seeds
+  TEXT tokens
+  TEXT fonts
+  TEXT brand
+  INTEGER enabled
+  INTEGER version
+  INTEGER created_at
+  INTEGER updated_at
 }

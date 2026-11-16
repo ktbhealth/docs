@@ -14,6 +14,8 @@
 		"invites",
 		"auth",
 		"rbac",
-		"platform"
+		"platform",
+		"jobs",
+		"theme"
 	]
 }
