@@ -21,8 +21,6 @@ erDiagram
 "eval_run" }o--|| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "eval_run_sample" }o--|| "eval_persona" : "FOREIGN KEY (persona_id) REFERENCES eval_persona (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "eval_run_sample" }o--|| "eval_run" : "FOREIGN KEY (run_id) REFERENCES eval_run (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"eval_instance" }o--o| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
-"eval_instance" }o--o| "eval_llm_endpoint" : "FOREIGN KEY (endpoint_id) REFERENCES eval_llm_endpoint (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "eval_instance_item" }o--o| "eval_persona" : "FOREIGN KEY (eval_persona_id) REFERENCES eval_persona (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "eval_instance_item" }o--o| "eval_persona_def" : "FOREIGN KEY (persona_def_id) REFERENCES eval_persona_def (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "eval_instance_item" }o--|| "eval_instance" : "FOREIGN KEY (instance_id) REFERENCES eval_instance (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
@@ -30,6 +28,8 @@ erDiagram
 "clinic_keys" }o--|| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "entity_deks" }o--|| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "portal_keys" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"eval_instance" }o--o| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"eval_instance" }o--o| "ai_endpoint" : "FOREIGN KEY (endpoint_id) REFERENCES ai_endpoint (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 
 "account" {
   TEXT id PK
@@ -345,19 +345,6 @@ erDiagram
   TEXT permissions
   TEXT metadata
 }
-"eval_instance" {
-  INTEGER id
-  TEXT name
-  TEXT mode
-  INTEGER endpoint_id FK
-  TEXT params
-  TEXT status
-  INTEGER total
-  INTEGER done
-  INTEGER batch_id FK
-  TEXT created_by
-  INTEGER created_at
-}
 "eval_instance_item" {
   INTEGER id
   INTEGER instance_id FK
@@ -369,7 +356,7 @@ erDiagram
   INTEGER claimed_at
   INTEGER created_at
 }
-"eval_llm_endpoint" {
+"ai_endpoint" {
   INTEGER id
   TEXT name
   TEXT kind
@@ -381,6 +368,8 @@ erDiagram
   INTEGER timeout_ms
   INTEGER enabled
   INTEGER created_at
+  TEXT scope
+  INTEGER is_default
 }
 "eval_persona_def" {
   INTEGER id
@@ -457,5 +446,18 @@ erDiagram
   TEXT user_id FK
   TEXT wrap_public_key
   TEXT sign_public_key
+  INTEGER created_at
+}
+"eval_instance" {
+  INTEGER id
+  TEXT name
+  TEXT mode
+  INTEGER endpoint_id FK
+  TEXT params
+  TEXT status
+  INTEGER total
+  INTEGER done
+  INTEGER batch_id FK
+  TEXT created_by
   INTEGER created_at
 }

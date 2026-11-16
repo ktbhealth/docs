@@ -13,7 +13,7 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `eval_instance` (
+CREATE TABLE "eval_instance" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`mode` text NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE `eval_instance` (
 	`batch_id` integer,
 	`created_by` text,
 	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
-	FOREIGN KEY (`endpoint_id`) REFERENCES `eval_llm_endpoint`(`id`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`endpoint_id`) REFERENCES `ai_endpoint`(`id`) ON UPDATE no action ON DELETE set null,
 	FOREIGN KEY (`batch_id`) REFERENCES `eval_persona_batch`(`id`) ON UPDATE no action ON DELETE set null
 )
 ```
@@ -39,7 +39,7 @@ CREATE TABLE `eval_instance` (
 | id | INTEGER |  | false | [eval_instance_item](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance_item) |  |  |
 | name | TEXT |  | false |  |  |  |
 | mode | TEXT |  | false |  |  |  |
-| endpoint_id | INTEGER |  | true |  | [eval_llm_endpoint](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_llm_endpoint) |  |
+| endpoint_id | INTEGER |  | true |  | [ai_endpoint](/pt-BR/docs/developers/plugins/ai-endpoints/reference/tables/ai_endpoint) |  |
 | params | TEXT |  | false |  |  |  |
 | status | TEXT | 'draft' | false |  |  |  |
 | total | INTEGER | 0 | false |  |  |  |
@@ -54,7 +54,7 @@ CREATE TABLE `eval_instance` (
 | ---- | ---- | ---------- |
 | id | PRIMARY KEY | PRIMARY KEY (id) |
 | - (Foreign key ID: 0) | FOREIGN KEY | FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE |
-| - (Foreign key ID: 1) | FOREIGN KEY | FOREIGN KEY (endpoint_id) REFERENCES eval_llm_endpoint (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE |
+| - (Foreign key ID: 1) | FOREIGN KEY | FOREIGN KEY (endpoint_id) REFERENCES ai_endpoint (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE |
 
 ## Indexes
 

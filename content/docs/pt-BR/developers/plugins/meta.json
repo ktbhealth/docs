@@ -19,6 +19,7 @@
 		"platform",
 		"jobs",
 		"eval-validator",
+		"ai-endpoints",
 		"eval-persona",
 		"theme"
 	]
