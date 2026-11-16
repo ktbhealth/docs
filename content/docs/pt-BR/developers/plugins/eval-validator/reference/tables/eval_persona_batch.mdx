@@ -27,7 +27,7 @@ CREATE TABLE `eval_persona_batch` (
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | INTEGER |  | false | [eval_persona](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_persona) [eval_run](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_run) |  |  |
+| id | INTEGER |  | false | [eval_persona](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_persona) [eval_run](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_run) [eval_instance](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance) |  |  |
 | params | TEXT |  | false |  |  |  |
 | created_by | TEXT |  | true |  |  |  |
 | created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |

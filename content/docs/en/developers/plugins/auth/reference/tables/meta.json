@@ -2,6 +2,7 @@
 	"title": "Tables",
 	"pages": [
 		"account",
+		"apikey",
 		"session",
 		"user",
 		"verification"
