@@ -55,6 +55,7 @@ CREATE TABLE `admin_audit` (
 
 | Name | Definition |
 | ---- | ---------- |
+| admin_audit_dedupe_idx | CREATE INDEX `admin_audit_dedupe_idx` ON `admin_audit` (`actor_user_id`,`action`,`target_type`,`target_id`,`created_at`) |
 | admin_audit_tenant_created_idx | CREATE INDEX `admin_audit_tenant_created_idx` ON `admin_audit` (`tenant_id`,`created_at`) |
 | admin_audit_actor_idx | CREATE INDEX `admin_audit_actor_idx` ON `admin_audit` (`actor_user_id`) |
 | admin_audit_action_idx | CREATE INDEX `admin_audit_action_idx` ON `admin_audit` (`action`) |
