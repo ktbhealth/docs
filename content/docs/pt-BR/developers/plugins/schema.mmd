@@ -27,6 +27,9 @@ erDiagram
 "eval_instance_item" }o--o| "eval_persona_def" : "FOREIGN KEY (persona_def_id) REFERENCES eval_persona_def (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "eval_instance_item" }o--|| "eval_instance" : "FOREIGN KEY (instance_id) REFERENCES eval_instance (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "theme_assets" }o--o| "theme_definitions" : "FOREIGN KEY (theme_id) REFERENCES theme_definitions (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"clinic_keys" }o--|| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"entity_deks" }o--|| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"portal_keys" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
 "account" {
   TEXT id PK
@@ -144,6 +147,7 @@ erDiagram
   TEXT meta
   INTEGER created_at
   INTEGER updated_at
+  INTEGER zk
 }
 "notifications" {
   INTEGER id
@@ -422,5 +426,36 @@ erDiagram
   TEXT blob_hash
   TEXT actor_user_id
   TEXT engine
+  INTEGER created_at
+}
+"clinic_keys" {
+  INTEGER id
+  INTEGER tenant_id FK
+  TEXT user_id
+  TEXT wrap_public_key
+  TEXT sign_public_key
+  TEXT wrapped_master_key
+  TEXT status
+  TEXT approved_by_user_id
+  INTEGER approved_at
+  INTEGER created_at
+}
+"entity_deks" {
+  INTEGER id
+  INTEGER tenant_id FK
+  TEXT entity_type
+  TEXT entity_id
+  TEXT reader_kind
+  TEXT reader_pubkey
+  TEXT reader_id
+  TEXT wrapped_dek
+  TEXT granted_by_user_id
+  INTEGER created_at
+}
+"portal_keys" {
+  INTEGER id
+  TEXT user_id FK
+  TEXT wrap_public_key
+  TEXT sign_public_key
   INTEGER created_at
 }
