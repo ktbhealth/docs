@@ -21,7 +21,7 @@ CREATE TABLE `eval_instance_item` (
 	`persona` text,
 	`status` text DEFAULT 'pending' NOT NULL,
 	`error` text,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL, `claimed_at` integer,
 	FOREIGN KEY (`instance_id`) REFERENCES `eval_instance`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`persona_def_id`) REFERENCES `eval_persona_def`(`id`) ON UPDATE no action ON DELETE set null,
 	FOREIGN KEY (`eval_persona_id`) REFERENCES `eval_persona`(`id`) ON UPDATE no action ON DELETE set null
@@ -42,6 +42,7 @@ CREATE TABLE `eval_instance_item` (
 | status | TEXT | 'pending' | false |  |  |  |
 | error | TEXT |  | true |  |  |  |
 | created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| claimed_at | INTEGER |  | true |  |  |  |
 
 ## Constraints
 
