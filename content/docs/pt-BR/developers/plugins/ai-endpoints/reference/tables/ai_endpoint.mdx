@@ -17,15 +17,20 @@ CREATE TABLE "ai_endpoint" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`kind` text NOT NULL,
-	`base_url` text NOT NULL,
+	`base_url` text,
 	`model` text,
 	`session_id` text,
 	`secret_ref` text,
 	`transport` text,
+	`agent_cmd` text,
+	`ssh_host` text,
+	`scope` text DEFAULT 'eval' NOT NULL,
+	`is_default` integer DEFAULT false NOT NULL,
 	`timeout_ms` integer DEFAULT 60000 NOT NULL,
 	`enabled` integer DEFAULT true NOT NULL,
+	`last_seen_at` integer,
 	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL
-, `scope` text DEFAULT 'eval' NOT NULL, `is_default` integer DEFAULT false NOT NULL, `agent_cmd` text, `ssh_host` text)
+)
 ```
 
 </details>
@@ -34,21 +39,22 @@ CREATE TABLE "ai_endpoint" (
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | INTEGER |  | false | [eval_instance](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance) |  |  |
+| id | INTEGER |  | false | [eval_instance](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance) [ai_agent_link](/pt-BR/docs/developers/plugins/ai-endpoints/reference/tables/ai_agent_link) |  |  |
 | name | TEXT |  | false |  |  |  |
 | kind | TEXT |  | false |  |  |  |
-| base_url | TEXT |  | false |  |  |  |
+| base_url | TEXT |  | true |  |  |  |
 | model | TEXT |  | true |  |  |  |
 | session_id | TEXT |  | true |  |  |  |
 | secret_ref | TEXT |  | true |  |  |  |
 | transport | TEXT |  | true |  |  |  |
-| timeout_ms | INTEGER | 60000 | false |  |  |  |
-| enabled | INTEGER | true | false |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
-| scope | TEXT | 'eval' | false |  |  |  |
-| is_default | INTEGER | false | false |  |  |  |
 | agent_cmd | TEXT |  | true |  |  |  |
 | ssh_host | TEXT |  | true |  |  |  |
+| scope | TEXT | 'eval' | false |  |  |  |
+| is_default | INTEGER | false | false |  |  |  |
+| timeout_ms | INTEGER | 60000 | false |  |  |  |
+| enabled | INTEGER | true | false |  |  |  |
+| last_seen_at | INTEGER |  | true |  |  |  |
+| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
 
 ## Constraints
 
