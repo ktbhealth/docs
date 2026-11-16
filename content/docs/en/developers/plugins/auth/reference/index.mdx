@@ -59,6 +59,30 @@ erDiagram
   INTEGER created_at
   INTEGER updated_at
 }
+"apikey" {
+  TEXT id PK
+  TEXT config_id
+  TEXT name
+  TEXT start
+  TEXT reference_id
+  TEXT prefix
+  TEXT key
+  INTEGER refill_interval
+  INTEGER refill_amount
+  INTEGER last_refill_at
+  INTEGER enabled
+  INTEGER rate_limit_enabled
+  INTEGER rate_limit_time_window
+  INTEGER rate_limit_max
+  INTEGER request_count
+  INTEGER remaining
+  INTEGER last_request
+  INTEGER expires_at
+  INTEGER created_at
+  INTEGER updated_at
+  TEXT permissions
+  TEXT metadata
+}
 ```
 
 Mermaid source: [`schema.mmd`](./schema.mmd)
@@ -66,6 +90,7 @@ Mermaid source: [`schema.mmd`](./schema.mmd)
 ## Tables
 
 - [`account`](/en/docs/developers/plugins/auth/reference/tables/account)
+- [`apikey`](/en/docs/developers/plugins/auth/reference/tables/apikey)
 - [`session`](/en/docs/developers/plugins/auth/reference/tables/session)
 - [`user`](/en/docs/developers/plugins/auth/reference/tables/user)
 - [`verification`](/en/docs/developers/plugins/auth/reference/tables/verification)

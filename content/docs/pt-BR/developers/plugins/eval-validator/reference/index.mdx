@@ -30,6 +30,9 @@ erDiagram
   TEXT reviewed_by
   INTEGER reviewed_at
   INTEGER created_at
+  INTEGER patient_id FK
+  INTEGER doctor_id FK
+  TEXT script_mode
 }
 "eval_persona_batch" {
   INTEGER id
