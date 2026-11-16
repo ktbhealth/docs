@@ -22,7 +22,7 @@ CREATE TABLE `admin_audit` (
 	`target_id` text,
 	`detail` text,
 	`tenant_id` integer,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL, `prev_hash` text,
 	FOREIGN KEY (`tenant_id`) REFERENCES `groups`(`id`) ON UPDATE no action ON DELETE set null
 )
 ```
@@ -42,6 +42,7 @@ CREATE TABLE `admin_audit` (
 | detail | TEXT |  | true |  |  |  |
 | tenant_id | INTEGER |  | true |  | [groups](/pt-BR/docs/developers/plugins/groups/reference/tables/groups) |  |
 | created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| prev_hash | TEXT |  | true |  |  |  |
 
 ## Constraints
 
