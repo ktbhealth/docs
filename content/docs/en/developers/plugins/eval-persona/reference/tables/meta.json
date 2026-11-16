@@ -1,0 +1,9 @@
+{
+	"title": "Tables",
+	"pages": [
+		"eval_instance",
+		"eval_instance_item",
+		"eval_llm_endpoint",
+		"eval_persona_def"
+	]
+}

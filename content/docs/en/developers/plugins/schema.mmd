@@ -16,9 +16,17 @@ erDiagram
 "patient_access" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "patient_documents" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "eval_persona" }o--|| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"eval_persona" }o--o| "doctors" : "FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
+"eval_persona" }o--o| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
 "eval_run" }o--|| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "eval_run_sample" }o--|| "eval_persona" : "FOREIGN KEY (persona_id) REFERENCES eval_persona (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "eval_run_sample" }o--|| "eval_run" : "FOREIGN KEY (run_id) REFERENCES eval_run (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"eval_instance" }o--o| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"eval_instance" }o--o| "eval_llm_endpoint" : "FOREIGN KEY (endpoint_id) REFERENCES eval_llm_endpoint (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"eval_instance_item" }o--o| "eval_persona" : "FOREIGN KEY (eval_persona_id) REFERENCES eval_persona (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"eval_instance_item" }o--o| "eval_persona_def" : "FOREIGN KEY (persona_def_id) REFERENCES eval_persona_def (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"eval_instance_item" }o--|| "eval_instance" : "FOREIGN KEY (instance_id) REFERENCES eval_instance (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"theme_assets" }o--o| "theme_definitions" : "FOREIGN KEY (theme_id) REFERENCES theme_definitions (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 
 "account" {
   TEXT id PK
@@ -92,6 +100,7 @@ erDiagram
   TEXT emergency_contact_phone
   INTEGER updated_at
   INTEGER tenant_id FK
+  INTEGER synthetic
 }
 "consultations" {
   INTEGER id
@@ -209,6 +218,7 @@ erDiagram
   TEXT specialty
   INTEGER created_at
   INTEGER updated_at
+  INTEGER synthetic
 }
 "doctor_access" {
   INTEGER id
@@ -273,6 +283,9 @@ erDiagram
   TEXT reviewed_by
   INTEGER reviewed_at
   INTEGER created_at
+  INTEGER patient_id FK
+  INTEGER doctor_id FK
+  TEXT script_mode
 }
 "eval_persona_batch" {
   INTEGER id
@@ -299,4 +312,97 @@ erDiagram
   TEXT result
   TEXT error
   INTEGER created_at
+}
+"apikey" {
+  TEXT id PK
+  TEXT config_id
+  TEXT name
+  TEXT start
+  TEXT reference_id
+  TEXT prefix
+  TEXT key
+  INTEGER refill_interval
+  INTEGER refill_amount
+  INTEGER last_refill_at
+  INTEGER enabled
+  INTEGER rate_limit_enabled
+  INTEGER rate_limit_time_window
+  INTEGER rate_limit_max
+  INTEGER request_count
+  INTEGER remaining
+  INTEGER last_request
+  INTEGER expires_at
+  INTEGER created_at
+  INTEGER updated_at
+  TEXT permissions
+  TEXT metadata
+}
+"eval_instance" {
+  INTEGER id
+  TEXT name
+  TEXT mode
+  INTEGER endpoint_id FK
+  TEXT params
+  TEXT status
+  INTEGER total
+  INTEGER done
+  INTEGER batch_id FK
+  TEXT created_by
+  INTEGER created_at
+}
+"eval_instance_item" {
+  INTEGER id
+  INTEGER instance_id FK
+  INTEGER persona_def_id FK
+  INTEGER eval_persona_id FK
+  TEXT persona
+  TEXT status
+  TEXT error
+  INTEGER claimed_at
+  INTEGER created_at
+}
+"eval_llm_endpoint" {
+  INTEGER id
+  TEXT name
+  TEXT kind
+  TEXT base_url
+  TEXT model
+  TEXT session_id
+  TEXT secret_ref
+  TEXT transport
+  INTEGER timeout_ms
+  INTEGER enabled
+  INTEGER created_at
+}
+"eval_persona_def" {
+  INTEGER id
+  TEXT name
+  TEXT persona
+  TEXT notes
+  TEXT created_by
+  INTEGER created_at
+  INTEGER updated_at
+}
+"theme_assets" {
+  INTEGER id
+  INTEGER theme_id FK
+  TEXT kind
+  TEXT r2_key
+  TEXT status
+  TEXT variants
+  INTEGER created_at
+}
+"theme_definitions" {
+  INTEGER id
+  TEXT scope
+  TEXT scope_id
+  TEXT app_name
+  TEXT seeds
+  TEXT tokens
+  TEXT fonts
+  TEXT brand
+  INTEGER enabled
+  INTEGER version
+  INTEGER created_at
+  INTEGER updated_at
 }
