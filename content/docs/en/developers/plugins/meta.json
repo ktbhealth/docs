@@ -19,6 +19,7 @@
 		"jobs",
 		"eval-validator",
 		"eval-persona",
-		"theme"
+		"theme",
+		"i18n"
 	]
 }
