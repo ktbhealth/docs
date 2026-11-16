@@ -5,6 +5,7 @@
 		"patients",
 		"consultations",
 		"groups",
+		"integrity",
 		"notifications",
 		"audit",
 		"pages",

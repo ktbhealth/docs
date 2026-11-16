@@ -124,6 +124,9 @@ erDiagram
   TEXT enhancement_engine
   INTEGER created_at
   INTEGER tenant_id FK
+  TEXT anamnesis_hash
+  INTEGER anamnesis_version
+  TEXT blob_hash
 }
 "group_members" {
   INTEGER id
@@ -405,4 +408,18 @@ erDiagram
   INTEGER version
   INTEGER created_at
   INTEGER updated_at
+}
+"record_versions" {
+  INTEGER id
+  TEXT entity_type
+  TEXT entity_id
+  INTEGER version
+  TEXT content_hash
+  TEXT signature
+  TEXT prev_hash
+  TEXT payload
+  TEXT blob_hash
+  TEXT actor_user_id
+  TEXT engine
+  INTEGER created_at
 }
