@@ -1,0 +1,44 @@
+---
+title: "Métricas do código"
+description: "Linhas de código por repositório, contadas pelo tokei no CI."
+icon: ChartColumn
+---
+
+## Por repositório
+
+| Repositório | Arquivos | Linhas | Código |
+|---|---:|---:|---:|
+| `.github` | 1 | 18 | 0 |
+| `docs` | 480 | 15,040 | 2,134 |
+| **product** | 1,178 | 168,464 | 132,741 |
+| `project` | 3 | 72 | 2 |
+| `slidev-theme-ktb` | 13 | 727 | 383 |
+| `storybook` | 164 | 10,734 | 10,074 |
+| `ui` | 519 | 32,975 | 28,952 |
+| `workspace` | 3 | 105 | 14 |
+| **Total da org** | **2,361** | **228,135** | **174,300** |
+
+## Org-wide por linguagem
+
+| Linguagem | Arquivos | Linhas | Código | Comentários | Em branco |
+|---|---:|---:|---:|---:|---:|
+| TypeScript | 827 | 130,404 | 100,381 | 21,258 | 8,765 |
+| TSX | 447 | 59,949 | 53,328 | 1,849 | 4,772 |
+| JSON | 375 | 7,935 | 7,930 | 0 | 5 |
+| JavaScript | 17 | 2,790 | 2,153 | 432 | 205 |
+| Vue | 344 | 1,815 | 1,443 | 0 | 372 |
+| YAML | 10 | 784 | 525 | 213 | 46 |
+| CSS | 7 | 617 | 510 | 52 | 55 |
+| SQL | 24 | 506 | 466 | 40 | 0 |
+| Python | 3 | 199 | 167 | 10 | 22 |
+| Shell | 2 | 168 | 106 | 42 | 20 |
+| SVG | 8 | 97 | 94 | 0 | 3 |
+| TOML | 7 | 167 | 60 | 93 | 14 |
+| HTML | 1 | 14 | 14 | 0 | 0 |
+| Markdown | 30 | 2,113 | 0 | 1,706 | 407 |
+| MDX | 254 | 12,703 | 0 | 9,772 | 2,931 |
+| Plain Text | 5 | 5 | 0 | 5 | 0 |
+
+_Gerado em: 2026-11-16 03:34 UTC. Código = linhas que o tokei atribui a código de fato (exclui comentários e linhas em branco). Os números são informativos — não são um gate de qualidade._
+
+_Estes números são gerados pelos workflows `loc` da caixa de ferramentas cypera, executados contra esta organização semanalmente (além de disparo manual). Cada repositório é clonado com depth 1 e contado com tokei usando uma lista de exclusões compartilhada (dependências, saída de build, arquivos gerados e lockfiles)._
