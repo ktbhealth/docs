@@ -21,6 +21,7 @@
 		"eval-validator",
 		"ai-endpoints",
 		"eval-persona",
-		"theme"
+		"theme",
+		"i18n"
 	]
 }

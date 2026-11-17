@@ -1,5 +1,7 @@
 {
 	"title": "Reference",
-	"icon": "BookOpen",
-	"pages": ["index"]
+	"pages": [
+		"index",
+		"tables"
+	]
 }
