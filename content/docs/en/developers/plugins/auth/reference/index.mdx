@@ -31,34 +31,6 @@ erDiagram
   INTEGER created_at
   INTEGER updated_at
 }
-"session" {
-  TEXT id PK
-  INTEGER expires_at
-  TEXT token
-  INTEGER created_at
-  INTEGER updated_at
-  TEXT ip_address
-  TEXT user_agent
-  TEXT user_id FK
-}
-"user" {
-  TEXT id PK
-  TEXT name
-  TEXT email
-  INTEGER email_verified
-  TEXT image
-  INTEGER created_at
-  INTEGER updated_at
-  INTEGER banned
-}
-"verification" {
-  TEXT id PK
-  TEXT identifier
-  TEXT value
-  INTEGER expires_at
-  INTEGER created_at
-  INTEGER updated_at
-}
 "apikey" {
   TEXT id PK
   TEXT config_id
@@ -82,6 +54,34 @@ erDiagram
   INTEGER updated_at
   TEXT permissions
   TEXT metadata
+}
+"session" {
+  TEXT id PK
+  INTEGER expires_at
+  TEXT token
+  INTEGER created_at
+  INTEGER updated_at
+  TEXT ip_address
+  TEXT user_agent
+  TEXT user_id FK
+}
+"user" {
+  TEXT id PK
+  TEXT name
+  TEXT email
+  INTEGER email_verified
+  TEXT image
+  INTEGER banned
+  INTEGER created_at
+  INTEGER updated_at
+}
+"verification" {
+  TEXT id PK
+  TEXT identifier
+  TEXT value
+  INTEGER expires_at
+  INTEGER created_at
+  INTEGER updated_at
 }
 ```
 

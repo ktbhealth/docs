@@ -3,6 +3,19 @@ erDiagram
 "eval_instance_item" }o--o| "eval_persona_def" : "FOREIGN KEY (persona_def_id) REFERENCES eval_persona_def (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "eval_instance_item" }o--|| "eval_instance" : "FOREIGN KEY (instance_id) REFERENCES eval_instance (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
+"eval_instance" {
+  INTEGER id
+  TEXT name
+  TEXT mode
+  INTEGER endpoint_id FK
+  TEXT params
+  TEXT status
+  INTEGER total
+  INTEGER done
+  INTEGER batch_id FK
+  TEXT created_by
+  INTEGER created_at
+}
 "eval_instance_item" {
   INTEGER id
   INTEGER instance_id FK
@@ -22,17 +35,4 @@ erDiagram
   TEXT created_by
   INTEGER created_at
   INTEGER updated_at
-}
-"eval_instance" {
-  INTEGER id
-  TEXT name
-  TEXT mode
-  INTEGER endpoint_id FK
-  TEXT params
-  TEXT status
-  INTEGER total
-  INTEGER done
-  INTEGER batch_id FK
-  TEXT created_by
-  INTEGER created_at
 }

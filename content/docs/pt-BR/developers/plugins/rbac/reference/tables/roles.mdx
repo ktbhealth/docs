@@ -13,13 +13,13 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `roles` (
+CREATE TABLE "roles" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`description` text,
 	`meta` text,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
-	`updated_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL
 )
 ```
 
@@ -33,8 +33,8 @@ CREATE TABLE `roles` (
 | name | TEXT |  | false |  |  |  |
 | description | TEXT |  | true |  |  |  |
 | meta | TEXT |  | true |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
-| updated_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
+| updated_at | INTEGER |  | false |  |  |  |
 
 ## Constraints
 

@@ -24,7 +24,7 @@ CREATE TABLE "eval_instance" (
 	`done` integer DEFAULT 0 NOT NULL,
 	`batch_id` integer,
 	`created_by` text,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`created_at` integer NOT NULL,
 	FOREIGN KEY (`endpoint_id`) REFERENCES `ai_endpoint`(`id`) ON UPDATE no action ON DELETE set null,
 	FOREIGN KEY (`batch_id`) REFERENCES `eval_persona_batch`(`id`) ON UPDATE no action ON DELETE set null
 )
@@ -46,7 +46,7 @@ CREATE TABLE "eval_instance" (
 | done | INTEGER | 0 | false |  |  |  |
 | batch_id | INTEGER |  | true |  | [eval_persona_batch](/en/docs/developers/plugins/eval-validator/reference/tables/eval_persona_batch) |  |
 | created_by | TEXT |  | true |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
 
 ## Constraints
 

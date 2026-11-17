@@ -13,15 +13,16 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `groups` (
+CREATE TABLE "groups" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`slug` text NOT NULL,
 	`kind` text NOT NULL,
 	`meta` text,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
-	`updated_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL
-, `zk` integer DEFAULT false NOT NULL)
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	`zk` integer DEFAULT false NOT NULL
+)
 ```
 
 </details>
@@ -30,13 +31,13 @@ CREATE TABLE `groups` (
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | INTEGER |  | false | [patients](/en/docs/developers/plugins/patients/reference/tables/patients) [consultations](/en/docs/developers/plugins/consultations/reference/tables/consultations) [group_members](/en/docs/developers/plugins/groups/reference/tables/group_members) [admin_audit](/en/docs/developers/plugins/audit/reference/tables/admin_audit) [clinic_keys](/en/docs/developers/plugins/vault/reference/tables/clinic_keys) [entity_deks](/en/docs/developers/plugins/vault/reference/tables/entity_deks) |  |  |
+| id | INTEGER |  | false | [patients](/en/docs/developers/plugins/patients/reference/tables/patients) [consultations](/en/docs/developers/plugins/consultations/reference/tables/consultations) [admin_audit](/en/docs/developers/plugins/audit/reference/tables/admin_audit) [group_members](/en/docs/developers/plugins/groups/reference/tables/group_members) [clinic_keys](/en/docs/developers/plugins/vault/reference/tables/clinic_keys) [entity_deks](/en/docs/developers/plugins/vault/reference/tables/entity_deks) |  |  |
 | name | TEXT |  | false |  |  |  |
 | slug | TEXT |  | false |  |  |  |
 | kind | TEXT |  | false |  |  |  |
 | meta | TEXT |  | true |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
-| updated_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
+| updated_at | INTEGER |  | false |  |  |  |
 | zk | INTEGER | false | false |  |  |  |
 
 ## Constraints

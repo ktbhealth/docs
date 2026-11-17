@@ -13,19 +13,24 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `eval_persona` (
+CREATE TABLE "eval_persona" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`batch_id` integer NOT NULL,
 	`persona` text NOT NULL,
 	`script` text NOT NULL,
 	`turns` text NOT NULL,
 	`voices` text NOT NULL,
+	`patient_id` integer,
+	`doctor_id` integer,
+	`script_mode` text,
 	`state` text DEFAULT 'under_review' NOT NULL,
 	`feedback` text,
 	`reviewed_by` text,
 	`reviewed_at` integer,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL, `patient_id` integer REFERENCES patients(id), `doctor_id` integer REFERENCES doctors(id), `script_mode` text,
-	FOREIGN KEY (`batch_id`) REFERENCES `eval_persona_batch`(`id`) ON UPDATE no action ON DELETE cascade
+	`created_at` integer NOT NULL,
+	FOREIGN KEY (`batch_id`) REFERENCES `eval_persona_batch`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`doctor_id`) REFERENCES `doctors`(`id`) ON UPDATE no action ON DELETE set null
 )
 ```
 
@@ -35,29 +40,29 @@ CREATE TABLE `eval_persona` (
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | INTEGER |  | false | [eval_run_sample](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_run_sample) [eval_instance_item](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance_item) |  |  |
+| id | INTEGER |  | false | [eval_instance_item](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance_item) [eval_run_sample](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_run_sample) |  |  |
 | batch_id | INTEGER |  | false |  | [eval_persona_batch](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_persona_batch) |  |
 | persona | TEXT |  | false |  |  |  |
 | script | TEXT |  | false |  |  |  |
 | turns | TEXT |  | false |  |  |  |
 | voices | TEXT |  | false |  |  |  |
+| patient_id | INTEGER |  | true |  | [patients](/pt-BR/docs/developers/plugins/patients/reference/tables/patients) |  |
+| doctor_id | INTEGER |  | true |  | [doctors](/pt-BR/docs/developers/plugins/doctors/reference/tables/doctors) |  |
+| script_mode | TEXT |  | true |  |  |  |
 | state | TEXT | 'under_review' | false |  |  |  |
 | feedback | TEXT |  | true |  |  |  |
 | reviewed_by | TEXT |  | true |  |  |  |
 | reviewed_at | INTEGER |  | true |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
-| patient_id | INTEGER |  | true |  | [patients](/pt-BR/docs/developers/plugins/patients/reference/tables/patients) |  |
-| doctor_id | INTEGER |  | true |  | [doctors](/pt-BR/docs/developers/plugins/doctors/reference/tables/doctors) |  |
-| script_mode | TEXT |  | true |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
 
 ## Constraints
 
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | id | PRIMARY KEY | PRIMARY KEY (id) |
-| - (Foreign key ID: 0) | FOREIGN KEY | FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE |
-| - (Foreign key ID: 1) | FOREIGN KEY | FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE |
-| - (Foreign key ID: 2) | FOREIGN KEY | FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE |
+| - (Foreign key ID: 0) | FOREIGN KEY | FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE |
+| - (Foreign key ID: 1) | FOREIGN KEY | FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE |
+| - (Foreign key ID: 2) | FOREIGN KEY | FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE |
 
 ## Indexes
 

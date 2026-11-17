@@ -1,80 +1,37 @@
 erDiagram
 
-"account" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"session" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "patients" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "consultations" }o--o| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
 "consultations" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
-"group_members" }o--|| "groups" : "FOREIGN KEY (group_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"role_permissions" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"subject_roles" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"theme_assets" }o--o| "theme_definitions" : "FOREIGN KEY (theme_id) REFERENCES theme_definitions (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"account" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"session" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"ai_agent_link" }o--|| "ai_endpoint" : "FOREIGN KEY (endpoint_id) REFERENCES ai_endpoint (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "admin_audit" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "doctors" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"doctor_access" }o--o| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"doctor_access" }o--|| "doctors" : "FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"patient_access" }o--o| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"patient_access" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"patient_documents" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"eval_persona" }o--|| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"eval_persona" }o--o| "doctors" : "FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
-"eval_persona" }o--o| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
-"eval_run" }o--|| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"eval_run_sample" }o--|| "eval_persona" : "FOREIGN KEY (persona_id) REFERENCES eval_persona (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"eval_run_sample" }o--|| "eval_run" : "FOREIGN KEY (run_id) REFERENCES eval_run (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"eval_instance" }o--o| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"eval_instance" }o--o| "ai_endpoint" : "FOREIGN KEY (endpoint_id) REFERENCES ai_endpoint (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "eval_instance_item" }o--o| "eval_persona" : "FOREIGN KEY (eval_persona_id) REFERENCES eval_persona (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "eval_instance_item" }o--o| "eval_persona_def" : "FOREIGN KEY (persona_def_id) REFERENCES eval_persona_def (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "eval_instance_item" }o--|| "eval_instance" : "FOREIGN KEY (instance_id) REFERENCES eval_instance (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"theme_assets" }o--o| "theme_definitions" : "FOREIGN KEY (theme_id) REFERENCES theme_definitions (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"eval_persona" }o--o| "doctors" : "FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"eval_persona" }o--o| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"eval_persona" }o--|| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"eval_run" }o--|| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"eval_run_sample" }o--|| "eval_persona" : "FOREIGN KEY (persona_id) REFERENCES eval_persona (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"eval_run_sample" }o--|| "eval_run" : "FOREIGN KEY (run_id) REFERENCES eval_run (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"group_members" }o--|| "groups" : "FOREIGN KEY (group_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"patient_access" }o--o| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"patient_access" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"patient_documents" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"role_permissions" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"subject_roles" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"doctor_access" }o--o| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"doctor_access" }o--|| "doctors" : "FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "clinic_keys" }o--|| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "entity_deks" }o--|| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "portal_keys" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"eval_instance" }o--o| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
-"eval_instance" }o--o| "ai_endpoint" : "FOREIGN KEY (endpoint_id) REFERENCES ai_endpoint (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
-"ai_agent_link" }o--|| "ai_endpoint" : "FOREIGN KEY (endpoint_id) REFERENCES ai_endpoint (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
-"account" {
-  TEXT id PK
-  TEXT account_id
-  TEXT provider_id
-  TEXT user_id FK
-  TEXT access_token
-  TEXT refresh_token
-  TEXT id_token
-  INTEGER access_token_expires_at
-  INTEGER refresh_token_expires_at
-  TEXT scope
-  TEXT password
-  INTEGER created_at
-  INTEGER updated_at
-}
-"session" {
-  TEXT id PK
-  INTEGER expires_at
-  TEXT token
-  INTEGER created_at
-  INTEGER updated_at
-  TEXT ip_address
-  TEXT user_agent
-  TEXT user_id FK
-}
-"user" {
-  TEXT id PK
-  TEXT name
-  TEXT email
-  INTEGER email_verified
-  TEXT image
-  INTEGER created_at
-  INTEGER updated_at
-  INTEGER banned
-}
-"verification" {
-  TEXT id PK
-  TEXT identifier
-  TEXT value
-  INTEGER expires_at
-  INTEGER created_at
-  INTEGER updated_at
-}
 "patients" {
   INTEGER id
   TEXT owner_id
@@ -132,24 +89,6 @@ erDiagram
   INTEGER anamnesis_version
   TEXT blob_hash
 }
-"group_members" {
-  INTEGER id
-  INTEGER group_id FK
-  TEXT member_kind
-  TEXT member_id
-  TEXT role
-  INTEGER created_at
-}
-"groups" {
-  INTEGER id
-  TEXT name
-  TEXT slug
-  TEXT kind
-  TEXT meta
-  INTEGER created_at
-  INTEGER updated_at
-  INTEGER zk
-}
 "notifications" {
   INTEGER id
   TEXT user_id
@@ -164,111 +103,11 @@ erDiagram
   INTEGER id
   INTEGER epoch
 }
-"role_permissions" {
-  INTEGER id
-  INTEGER role_id FK
-  TEXT resource
-  TEXT action
-  TEXT effect
-  INTEGER created_at
-}
-"roles" {
-  INTEGER id
-  TEXT name
-  TEXT description
-  TEXT meta
-  INTEGER created_at
-  INTEGER updated_at
-}
-"subject_roles" {
-  INTEGER id
-  TEXT subject_kind
-  TEXT subject_id
-  INTEGER role_id FK
-  TEXT tenant_id
-  TEXT granted_by
-  INTEGER expires_at
-  INTEGER created_at
-}
-"admin_audit" {
-  INTEGER id
-  TEXT actor_user_id
-  TEXT actor_email
-  TEXT action
-  TEXT target_type
-  TEXT target_id
-  TEXT detail
-  INTEGER tenant_id FK
-  INTEGER created_at
-  TEXT prev_hash
-}
 "plugin_state" {
   TEXT plugin_id PK
   INTEGER enabled
   TEXT config
   INTEGER updated_at
-}
-"custom_pages" {
-  INTEGER id
-  TEXT path
-  TEXT title
-  TEXT content
-  INTEGER published
-  INTEGER show_in_nav
-  INTEGER sort_order
-  INTEGER created_at
-  INTEGER updated_at
-}
-"doctors" {
-  INTEGER id
-  TEXT user_id FK
-  TEXT display_name
-  TEXT crm
-  TEXT specialty
-  INTEGER created_at
-  INTEGER updated_at
-  INTEGER synthetic
-}
-"doctor_access" {
-  INTEGER id
-  INTEGER doctor_id FK
-  TEXT user_id FK
-  TEXT email
-  TEXT role
-  TEXT status
-  TEXT invited_by
-  INTEGER created_at
-  INTEGER updated_at
-}
-"patient_access" {
-  INTEGER id
-  INTEGER patient_id FK
-  TEXT user_id FK
-  TEXT email
-  TEXT relation
-  TEXT status
-  TEXT source
-  TEXT granted_by
-  INTEGER created_at
-  INTEGER updated_at
-}
-"invite_tokens" {
-  INTEGER id
-  TEXT token_hash
-  TEXT email
-  TEXT kind
-  TEXT inviter_name
-  INTEGER expires_at
-  INTEGER consumed_at
-  INTEGER created_at
-}
-"patient_documents" {
-  INTEGER id
-  INTEGER patient_id FK
-  TEXT type
-  TEXT country
-  TEXT number
-  INTEGER created_at
 }
 "job_runs" {
   TEXT id PK
@@ -277,92 +116,6 @@ erDiagram
   TEXT payload_ref
   TEXT error
   INTEGER tenant_id
-  INTEGER created_at
-  INTEGER updated_at
-}
-"eval_persona" {
-  INTEGER id
-  INTEGER batch_id FK
-  TEXT persona
-  TEXT script
-  TEXT turns
-  TEXT voices
-  TEXT state
-  TEXT feedback
-  TEXT reviewed_by
-  INTEGER reviewed_at
-  INTEGER created_at
-  INTEGER patient_id FK
-  INTEGER doctor_id FK
-  TEXT script_mode
-}
-"eval_persona_batch" {
-  INTEGER id
-  TEXT params
-  TEXT created_by
-  INTEGER created_at
-}
-"eval_run" {
-  INTEGER id
-  INTEGER batch_id FK
-  TEXT status
-  INTEGER total
-  INTEGER done
-  TEXT summary
-  INTEGER started_at
-  INTEGER finished_at
-  INTEGER created_at
-}
-"eval_run_sample" {
-  INTEGER id
-  INTEGER run_id FK
-  INTEGER persona_id FK
-  TEXT status
-  TEXT result
-  TEXT error
-  INTEGER created_at
-}
-"apikey" {
-  TEXT id PK
-  TEXT config_id
-  TEXT name
-  TEXT start
-  TEXT reference_id
-  TEXT prefix
-  TEXT key
-  INTEGER refill_interval
-  INTEGER refill_amount
-  INTEGER last_refill_at
-  INTEGER enabled
-  INTEGER rate_limit_enabled
-  INTEGER rate_limit_time_window
-  INTEGER rate_limit_max
-  INTEGER request_count
-  INTEGER remaining
-  INTEGER last_request
-  INTEGER expires_at
-  INTEGER created_at
-  INTEGER updated_at
-  TEXT permissions
-  TEXT metadata
-}
-"eval_instance_item" {
-  INTEGER id
-  INTEGER instance_id FK
-  INTEGER persona_def_id FK
-  INTEGER eval_persona_id FK
-  TEXT persona
-  TEXT status
-  TEXT error
-  INTEGER claimed_at
-  INTEGER created_at
-}
-"eval_persona_def" {
-  INTEGER id
-  TEXT name
-  TEXT persona
-  TEXT notes
-  TEXT created_by
   INTEGER created_at
   INTEGER updated_at
 }
@@ -388,92 +141,6 @@ erDiagram
   INTEGER version
   INTEGER created_at
   INTEGER updated_at
-}
-"record_versions" {
-  INTEGER id
-  TEXT entity_type
-  TEXT entity_id
-  INTEGER version
-  TEXT content_hash
-  TEXT signature
-  TEXT prev_hash
-  TEXT payload
-  TEXT blob_hash
-  TEXT actor_user_id
-  TEXT engine
-  INTEGER created_at
-}
-"clinic_keys" {
-  INTEGER id
-  INTEGER tenant_id FK
-  TEXT user_id
-  TEXT wrap_public_key
-  TEXT sign_public_key
-  TEXT wrapped_master_key
-  TEXT status
-  TEXT approved_by_user_id
-  INTEGER approved_at
-  INTEGER created_at
-}
-"entity_deks" {
-  INTEGER id
-  INTEGER tenant_id FK
-  TEXT entity_type
-  TEXT entity_id
-  TEXT reader_kind
-  TEXT reader_pubkey
-  TEXT reader_id
-  TEXT wrapped_dek
-  TEXT granted_by_user_id
-  INTEGER created_at
-}
-"portal_keys" {
-  INTEGER id
-  TEXT user_id FK
-  TEXT wrap_public_key
-  TEXT sign_public_key
-  INTEGER created_at
-}
-"eval_instance" {
-  INTEGER id
-  TEXT name
-  TEXT mode
-  INTEGER endpoint_id FK
-  TEXT params
-  TEXT status
-  INTEGER total
-  INTEGER done
-  INTEGER batch_id FK
-  TEXT created_by
-  INTEGER created_at
-}
-"ai_agent_link" {
-  INTEGER id
-  INTEGER endpoint_id FK
-  TEXT token_hash
-  TEXT created_by
-  INTEGER expires_at
-  INTEGER used_at
-  INTEGER created_at
-  INTEGER revoked_at
-}
-"ai_endpoint" {
-  INTEGER id
-  TEXT name
-  TEXT kind
-  TEXT base_url
-  TEXT model
-  TEXT session_id
-  TEXT secret_ref
-  TEXT transport
-  TEXT agent_cmd
-  TEXT ssh_host
-  TEXT scope
-  INTEGER is_default
-  INTEGER timeout_ms
-  INTEGER enabled
-  INTEGER last_seen_at
-  INTEGER created_at
 }
 "i18n_crdt_updates" {
   INTEGER id
@@ -518,4 +185,337 @@ erDiagram
 "i18n_revision" {
   INTEGER id
   INTEGER revision
+}
+"account" {
+  TEXT id PK
+  TEXT account_id
+  TEXT provider_id
+  TEXT user_id FK
+  TEXT access_token
+  TEXT refresh_token
+  TEXT id_token
+  INTEGER access_token_expires_at
+  INTEGER refresh_token_expires_at
+  TEXT scope
+  TEXT password
+  INTEGER created_at
+  INTEGER updated_at
+}
+"apikey" {
+  TEXT id PK
+  TEXT config_id
+  TEXT name
+  TEXT start
+  TEXT reference_id
+  TEXT prefix
+  TEXT key
+  INTEGER refill_interval
+  INTEGER refill_amount
+  INTEGER last_refill_at
+  INTEGER enabled
+  INTEGER rate_limit_enabled
+  INTEGER rate_limit_time_window
+  INTEGER rate_limit_max
+  INTEGER request_count
+  INTEGER remaining
+  INTEGER last_request
+  INTEGER expires_at
+  INTEGER created_at
+  INTEGER updated_at
+  TEXT permissions
+  TEXT metadata
+}
+"session" {
+  TEXT id PK
+  INTEGER expires_at
+  TEXT token
+  INTEGER created_at
+  INTEGER updated_at
+  TEXT ip_address
+  TEXT user_agent
+  TEXT user_id FK
+}
+"user" {
+  TEXT id PK
+  TEXT name
+  TEXT email
+  INTEGER email_verified
+  TEXT image
+  INTEGER banned
+  INTEGER created_at
+  INTEGER updated_at
+}
+"verification" {
+  TEXT id PK
+  TEXT identifier
+  TEXT value
+  INTEGER expires_at
+  INTEGER created_at
+  INTEGER updated_at
+}
+"ai_agent_link" {
+  INTEGER id
+  INTEGER endpoint_id FK
+  TEXT token_hash
+  TEXT created_by
+  INTEGER expires_at
+  INTEGER used_at
+  INTEGER revoked_at
+  INTEGER created_at
+}
+"ai_endpoint" {
+  INTEGER id
+  TEXT name
+  TEXT kind
+  TEXT base_url
+  TEXT model
+  TEXT session_id
+  TEXT secret_ref
+  TEXT transport
+  TEXT agent_cmd
+  TEXT ssh_host
+  TEXT scope
+  INTEGER is_default
+  INTEGER timeout_ms
+  INTEGER enabled
+  INTEGER last_seen_at
+  INTEGER created_at
+}
+"admin_audit" {
+  INTEGER id
+  TEXT actor_user_id
+  TEXT actor_email
+  TEXT action
+  TEXT target_type
+  TEXT target_id
+  TEXT detail
+  INTEGER tenant_id FK
+  TEXT prev_hash
+  INTEGER created_at
+}
+"doctors" {
+  INTEGER id
+  TEXT user_id FK
+  TEXT display_name
+  TEXT crm
+  TEXT specialty
+  INTEGER synthetic
+  INTEGER created_at
+  INTEGER updated_at
+}
+"eval_instance" {
+  INTEGER id
+  TEXT name
+  TEXT mode
+  INTEGER endpoint_id FK
+  TEXT params
+  TEXT status
+  INTEGER total
+  INTEGER done
+  INTEGER batch_id FK
+  TEXT created_by
+  INTEGER created_at
+}
+"eval_instance_item" {
+  INTEGER id
+  INTEGER instance_id FK
+  INTEGER persona_def_id FK
+  INTEGER eval_persona_id FK
+  TEXT persona
+  TEXT status
+  TEXT error
+  INTEGER claimed_at
+  INTEGER created_at
+}
+"eval_persona_def" {
+  INTEGER id
+  TEXT name
+  TEXT persona
+  TEXT notes
+  TEXT created_by
+  INTEGER created_at
+  INTEGER updated_at
+}
+"eval_persona" {
+  INTEGER id
+  INTEGER batch_id FK
+  TEXT persona
+  TEXT script
+  TEXT turns
+  TEXT voices
+  INTEGER patient_id FK
+  INTEGER doctor_id FK
+  TEXT script_mode
+  TEXT state
+  TEXT feedback
+  TEXT reviewed_by
+  INTEGER reviewed_at
+  INTEGER created_at
+}
+"eval_persona_batch" {
+  INTEGER id
+  TEXT params
+  TEXT created_by
+  INTEGER created_at
+}
+"eval_run" {
+  INTEGER id
+  INTEGER batch_id FK
+  TEXT status
+  INTEGER total
+  INTEGER done
+  TEXT summary
+  INTEGER started_at
+  INTEGER finished_at
+  INTEGER created_at
+}
+"eval_run_sample" {
+  INTEGER id
+  INTEGER run_id FK
+  INTEGER persona_id FK
+  TEXT status
+  TEXT result
+  TEXT error
+  INTEGER created_at
+}
+"group_members" {
+  INTEGER id
+  INTEGER group_id FK
+  TEXT member_kind
+  TEXT member_id
+  TEXT role
+  INTEGER created_at
+}
+"groups" {
+  INTEGER id
+  TEXT name
+  TEXT slug
+  TEXT kind
+  TEXT meta
+  INTEGER created_at
+  INTEGER updated_at
+  INTEGER zk
+}
+"record_versions" {
+  INTEGER id
+  TEXT entity_type
+  TEXT entity_id
+  INTEGER version
+  TEXT content_hash
+  TEXT signature
+  TEXT prev_hash
+  TEXT payload
+  TEXT blob_hash
+  TEXT actor_user_id
+  TEXT engine
+  INTEGER created_at
+}
+"invite_tokens" {
+  INTEGER id
+  TEXT token_hash
+  TEXT email
+  TEXT kind
+  TEXT inviter_name
+  INTEGER expires_at
+  INTEGER consumed_at
+  INTEGER created_at
+}
+"custom_pages" {
+  INTEGER id
+  TEXT path
+  TEXT title
+  TEXT content
+  INTEGER published
+  INTEGER show_in_nav
+  INTEGER sort_order
+  INTEGER created_at
+  INTEGER updated_at
+}
+"patient_access" {
+  INTEGER id
+  INTEGER patient_id FK
+  TEXT user_id FK
+  TEXT email
+  TEXT relation
+  TEXT status
+  TEXT source
+  TEXT granted_by
+  INTEGER created_at
+  INTEGER updated_at
+}
+"patient_documents" {
+  INTEGER id
+  INTEGER patient_id FK
+  TEXT type
+  TEXT country
+  TEXT number
+  INTEGER created_at
+}
+"role_permissions" {
+  INTEGER id
+  INTEGER role_id FK
+  TEXT resource
+  TEXT action
+  TEXT effect
+  INTEGER created_at
+}
+"roles" {
+  INTEGER id
+  TEXT name
+  TEXT description
+  TEXT meta
+  INTEGER created_at
+  INTEGER updated_at
+}
+"subject_roles" {
+  INTEGER id
+  TEXT subject_kind
+  TEXT subject_id
+  INTEGER role_id FK
+  TEXT tenant_id
+  TEXT granted_by
+  INTEGER expires_at
+  INTEGER created_at
+}
+"doctor_access" {
+  INTEGER id
+  INTEGER doctor_id FK
+  TEXT user_id FK
+  TEXT email
+  TEXT role
+  TEXT status
+  TEXT invited_by
+  INTEGER created_at
+  INTEGER updated_at
+}
+"clinic_keys" {
+  INTEGER id
+  INTEGER tenant_id FK
+  TEXT user_id
+  TEXT wrap_public_key
+  TEXT sign_public_key
+  TEXT wrapped_master_key
+  TEXT status
+  TEXT approved_by_user_id
+  INTEGER approved_at
+  INTEGER created_at
+}
+"entity_deks" {
+  INTEGER id
+  INTEGER tenant_id FK
+  TEXT entity_type
+  TEXT entity_id
+  TEXT reader_kind
+  TEXT reader_pubkey
+  TEXT reader_id
+  TEXT wrapped_dek
+  TEXT granted_by_user_id
+  INTEGER created_at
+}
+"portal_keys" {
+  INTEGER id
+  TEXT user_id FK
+  TEXT wrap_public_key
+  TEXT sign_public_key
+  INTEGER created_at
 }
