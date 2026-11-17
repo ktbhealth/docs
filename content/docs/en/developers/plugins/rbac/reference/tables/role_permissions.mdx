@@ -13,13 +13,13 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `role_permissions` (
+CREATE TABLE "role_permissions" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`role_id` integer NOT NULL,
 	`resource` text NOT NULL,
 	`action` text NOT NULL,
 	`effect` text NOT NULL,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`created_at` integer NOT NULL,
 	FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`) ON UPDATE no action ON DELETE cascade
 )
 ```
@@ -35,7 +35,7 @@ CREATE TABLE `role_permissions` (
 | resource | TEXT |  | false |  |  |  |
 | action | TEXT |  | false |  |  |  |
 | effect | TEXT |  | false |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
 
 ## Constraints
 

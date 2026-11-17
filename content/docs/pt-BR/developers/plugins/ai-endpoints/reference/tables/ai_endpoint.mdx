@@ -29,7 +29,7 @@ CREATE TABLE "ai_endpoint" (
 	`timeout_ms` integer DEFAULT 60000 NOT NULL,
 	`enabled` integer DEFAULT true NOT NULL,
 	`last_seen_at` integer,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL
+	`created_at` integer NOT NULL
 )
 ```
 
@@ -39,7 +39,7 @@ CREATE TABLE "ai_endpoint" (
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | INTEGER |  | false | [eval_instance](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance) [ai_agent_link](/pt-BR/docs/developers/plugins/ai-endpoints/reference/tables/ai_agent_link) |  |  |
+| id | INTEGER |  | false | [ai_agent_link](/pt-BR/docs/developers/plugins/ai-endpoints/reference/tables/ai_agent_link) [eval_instance](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance) |  |  |
 | name | TEXT |  | false |  |  |  |
 | kind | TEXT |  | false |  |  |  |
 | base_url | TEXT |  | true |  |  |  |
@@ -54,7 +54,7 @@ CREATE TABLE "ai_endpoint" (
 | timeout_ms | INTEGER | 60000 | false |  |  |  |
 | enabled | INTEGER | true | false |  |  |  |
 | last_seen_at | INTEGER |  | true |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
 
 ## Constraints
 

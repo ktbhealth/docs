@@ -13,14 +13,15 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `ai_agent_link` (
+CREATE TABLE "ai_agent_link" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`endpoint_id` integer NOT NULL,
 	`token_hash` text NOT NULL,
 	`created_by` text NOT NULL,
 	`expires_at` integer NOT NULL,
 	`used_at` integer,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL, `revoked_at` integer,
+	`revoked_at` integer,
+	`created_at` integer NOT NULL,
 	FOREIGN KEY (`endpoint_id`) REFERENCES `ai_endpoint`(`id`) ON UPDATE no action ON DELETE cascade
 )
 ```
@@ -37,8 +38,8 @@ CREATE TABLE `ai_agent_link` (
 | created_by | TEXT |  | false |  |  |  |
 | expires_at | INTEGER |  | false |  |  |  |
 | used_at | INTEGER |  | true |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
 | revoked_at | INTEGER |  | true |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
 
 ## Constraints
 

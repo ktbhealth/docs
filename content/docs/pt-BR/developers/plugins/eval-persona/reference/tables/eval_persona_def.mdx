@@ -13,13 +13,13 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `eval_persona_def` (
+CREATE TABLE "eval_persona_def" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`persona` text NOT NULL,
 	`notes` text,
 	`created_by` text,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`created_at` integer NOT NULL,
 	`updated_at` integer
 )
 ```
@@ -35,7 +35,7 @@ CREATE TABLE `eval_persona_def` (
 | persona | TEXT |  | false |  |  |  |
 | notes | TEXT |  | true |  |  |  |
 | created_by | TEXT |  | true |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
 | updated_at | INTEGER |  | true |  |  |  |
 
 ## Constraints

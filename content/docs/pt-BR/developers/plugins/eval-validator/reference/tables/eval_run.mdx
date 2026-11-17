@@ -13,7 +13,7 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `eval_run` (
+CREATE TABLE "eval_run" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`batch_id` integer NOT NULL,
 	`status` text DEFAULT 'queued' NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE `eval_run` (
 	`summary` text,
 	`started_at` integer,
 	`finished_at` integer,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`created_at` integer NOT NULL,
 	FOREIGN KEY (`batch_id`) REFERENCES `eval_persona_batch`(`id`) ON UPDATE no action ON DELETE cascade
 )
 ```
@@ -41,7 +41,7 @@ CREATE TABLE `eval_run` (
 | summary | TEXT |  | true |  |  |  |
 | started_at | INTEGER |  | true |  |  |  |
 | finished_at | INTEGER |  | true |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
 
 ## Constraints
 

@@ -13,12 +13,12 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `portal_keys` (
+CREATE TABLE "portal_keys" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`user_id` text NOT NULL,
 	`wrap_public_key` text NOT NULL,
 	`sign_public_key` text NOT NULL,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`created_at` integer NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 )
 ```
@@ -33,7 +33,7 @@ CREATE TABLE `portal_keys` (
 | user_id | TEXT |  | false |  | [user](/en/docs/developers/plugins/auth/reference/tables/user) |  |
 | wrap_public_key | TEXT |  | false |  |  |  |
 | sign_public_key | TEXT |  | false |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
 
 ## Constraints
 

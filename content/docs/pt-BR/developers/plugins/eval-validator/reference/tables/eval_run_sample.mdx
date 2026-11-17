@@ -13,14 +13,14 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `eval_run_sample` (
+CREATE TABLE "eval_run_sample" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`run_id` integer NOT NULL,
 	`persona_id` integer NOT NULL,
 	`status` text DEFAULT 'pending' NOT NULL,
 	`result` text,
 	`error` text,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`created_at` integer NOT NULL,
 	FOREIGN KEY (`run_id`) REFERENCES `eval_run`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`persona_id`) REFERENCES `eval_persona`(`id`) ON UPDATE no action ON DELETE cascade
 )
@@ -38,7 +38,7 @@ CREATE TABLE `eval_run_sample` (
 | status | TEXT | 'pending' | false |  |  |  |
 | result | TEXT |  | true |  |  |  |
 | error | TEXT |  | true |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
 
 ## Constraints
 

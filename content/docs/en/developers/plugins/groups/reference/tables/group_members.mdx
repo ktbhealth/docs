@@ -13,13 +13,13 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `group_members` (
+CREATE TABLE "group_members" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`group_id` integer NOT NULL,
 	`member_kind` text NOT NULL,
 	`member_id` text NOT NULL,
 	`role` text,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`created_at` integer NOT NULL,
 	FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON UPDATE no action ON DELETE cascade
 )
 ```
@@ -35,7 +35,7 @@ CREATE TABLE `group_members` (
 | member_kind | TEXT |  | false |  |  |  |
 | member_id | TEXT |  | false |  |  |  |
 | role | TEXT |  | true |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
 
 ## Constraints
 

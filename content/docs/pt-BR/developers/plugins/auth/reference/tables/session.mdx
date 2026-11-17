@@ -13,11 +13,11 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE `session` (
+CREATE TABLE "session" (
 	`id` text PRIMARY KEY NOT NULL,
 	`expires_at` integer NOT NULL,
 	`token` text NOT NULL,
-	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
 	`ip_address` text,
 	`user_agent` text,
@@ -35,7 +35,7 @@ CREATE TABLE `session` (
 | id | TEXT |  | false |  |  |  |
 | expires_at | INTEGER |  | false |  |  |  |
 | token | TEXT |  | false |  |  |  |
-| created_at | INTEGER | cast(unixepoch('subsecond') * 1000 as integer) | false |  |  |  |
+| created_at | INTEGER |  | false |  |  |  |
 | updated_at | INTEGER |  | false |  |  |  |
 | ip_address | TEXT |  | true |  |  |  |
 | user_agent | TEXT |  | true |  |  |  |
