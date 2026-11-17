@@ -22,6 +22,8 @@
 		"ai-endpoints",
 		"eval-persona",
 		"theme",
-		"i18n"
+		"i18n",
+		"kv",
+		"document-store"
 	]
 }
