@@ -2,6 +2,7 @@
 	"title": "Tables",
 	"pages": [
 		"eval_run",
-		"eval_run_sample"
+		"eval_run_sample",
+		"eval_run_record"
 	]
 }

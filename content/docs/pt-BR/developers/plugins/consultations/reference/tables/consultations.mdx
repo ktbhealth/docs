@@ -33,7 +33,7 @@ CREATE TABLE "consultations" (
 	`server_transcript` text,
 	`corrected_transcript` text,
 	`enhancement_engine` text,
-	`created_at` integer NOT NULL, `tenant_id` integer REFERENCES groups(id) ON DELETE SET NULL, `anamnesis_hash` text, `anamnesis_version` integer, `blob_hash` text,
+	`created_at` integer NOT NULL, `tenant_id` integer REFERENCES groups(id) ON DELETE SET NULL, `anamnesis_hash` text, `anamnesis_version` integer, `blob_hash` text, `synthetic` integer DEFAULT false NOT NULL, `eval_item_id` integer,
 	FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON UPDATE no action ON DELETE no action
 )
 ```
@@ -68,6 +68,8 @@ CREATE TABLE "consultations" (
 | anamnesis_hash | TEXT |  | true |  |  |  |
 | anamnesis_version | INTEGER |  | true |  |  |  |
 | blob_hash | TEXT |  | true |  |  |  |
+| synthetic | INTEGER | false | false |  |  |  |
+| eval_item_id | INTEGER |  | true |  |  |  |
 
 ## Constraints
 
