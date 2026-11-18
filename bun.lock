@@ -23,7 +23,7 @@
         "@effect/platform-bun": "^4.1.3",
         "@effect/platform-node": "^4.1.3",
         "@inlang/paraglide-js": "2.29.3",
-        "@ktbhealth/workspace": "github:ktbhealth/workspace#v0.1.2@eslint-config-arch",
+        "@ktbhealth/workspace": "github:ktbhealth/workspace#v0.1.4@eslint-config-arch",
         "@tailwindcss/vite": "^4.3.5",
         "@types/mdx": "^2.0.14",
         "@types/node": "^26.6.6",
@@ -353,7 +353,7 @@
 
     "@ktbhealth/ui": ["@ktbhealth/ui@github:ktbhealth/ui#fb49ba6", { "dependencies": { "@base-ui/react": "^1.9.0", "@radix-ui/react-use-controllable-state": "^1.3.0", "@rive-app/react-webgl2": "^4.38.1", "@shadcn/react": "^0.3.1", "@streamdown/cjk": "^1.0.4", "@streamdown/code": "^2.0.0", "@streamdown/math": "^1.0.3", "@streamdown/mermaid": "^1.0.3", "@vueuse/core": "^15.0.0", "@xyflow/react": "^12.12.1", "ai": "^7.0.163", "ansi-to-react": "^6.2.6", "class-variance-authority": "^0.7.1", "clsx": "^2.1.1", "cmdk": "^1.1.1", "cn": "^0.5.2", "date-fns": "^4.4.0", "embla-carousel-react": "^8.6.0", "embla-carousel-vue": "^8.6.0", "input-otp": "^1.5.0", "lucide-react": "^0.544.0", "lucide-vue-next": "^1.0.0", "media-chrome": "^4.19.4", "motion": "^14.9.1", "nanoid": "^6.0.2", "react-day-picker": "^10.0.2", "react-jsx-parser": "^2.4.1", "react-resizable-panels": "^4.18.1", "recharts": "3.8.0", "reka-ui": "^2.11.0", "shadcn": "^4.23.0", "shiki": "^4.6.0", "streamdown": "^2.7.1", "tailwind-merge": "^3.7.0", "tailwindcss": "^4.3.5", "tokenlens": "^1.3.1", "tw-animate-css": "^1.4.0", "use-stick-to-bottom": "^1.1.6", "vue": "^3.5.0", "vue-sonner": "^2.0.9" }, "peerDependencies": { "react": ">=18", "react-dom": ">=18" }, "optionalPeers": ["react", "react-dom"] }, "ktbhealth-ui-fb49ba6", "sha512-TWtzS0QYaenZlYo4n1yl0NXdyXXLQE7PBWVg5ttj19p+QrktmMkm1vlILlWmzia3nmuEM6e7Km7HtY5c5Bg/Hw=="],
 
-    "@ktbhealth/workspace": ["@ktbhealth/workspace@github:ktbhealth/workspace#a6704ed", {}, "ktbhealth-workspace-a6704ed", "sha512-VI2PqDDhFuAJF4IC/EiuBd15PNakmT0U9ceS6OD0mBbUgszN7DJ7QkzzTVc3ncDp6FZE9dIe+gs0wGEkVsVvwg=="],
+    "@ktbhealth/workspace": ["@ktbhealth/workspace@github:ktbhealth/workspace#229eaa3", {}, "ktbhealth-workspace-229eaa3", "sha512-e9dPLAL79PYWOkMeIiMp8IQgNlDg70TwGwgy+/rZwhYNqfi5Y3FiXPFAV0znkRcc4ecjQMAvGtqINMWPpi/uEg=="],
 
     "@lix-js/sdk": ["@lix-js/sdk@0.20.1", "", { "dependencies": { "@bytecodealliance/jco-transpile": "0.13.0", "binaryen": "130.0.0", "fflate": "^0.8.3" } }, "sha512-oscOFP8Cr1My6Wh2KVYC9+aJ1mHs+d7vnD+7PPJaA4L+Y1FR37Sm99SrFGfvUizaj/XtRi2GlDF2IOFt9iXMNQ=="],
 
