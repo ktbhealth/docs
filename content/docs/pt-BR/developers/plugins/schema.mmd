@@ -35,6 +35,9 @@ erDiagram
 "ai_model" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "ai_prompt" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "eval_run_record" }o--|| "eval_run" : "FOREIGN KEY (run_id) REFERENCES eval_run (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"appointments" }o--o| "consultations" : "FOREIGN KEY (consultation_id) REFERENCES consultations (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
+"appointments" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"appointments" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
 
 "patients" {
   INTEGER id
@@ -649,4 +652,23 @@ erDiagram
   TEXT model
   INTEGER started_at
   TEXT payload
+}
+"appointments" {
+  INTEGER id
+  TEXT owner_id
+  INTEGER patient_id FK
+  INTEGER tenant_id FK
+  TEXT status
+  INTEGER starts_at
+  INTEGER duration_min
+  INTEGER consultation_id FK
+  TEXT note
+  INTEGER reminder_sent_at
+  TEXT external_provider
+  TEXT external_calendar_id
+  TEXT external_event_id
+  TEXT external_etag
+  TEXT sync_state
+  INTEGER created_at
+  INTEGER updated_at
 }

@@ -1,0 +1,22 @@
+erDiagram
+
+
+"appointments" {
+  INTEGER id
+  TEXT owner_id
+  INTEGER patient_id FK
+  INTEGER tenant_id FK
+  TEXT status
+  INTEGER starts_at
+  INTEGER duration_min
+  INTEGER consultation_id FK
+  TEXT note
+  INTEGER reminder_sent_at
+  TEXT external_provider
+  TEXT external_calendar_id
+  TEXT external_event_id
+  TEXT external_etag
+  TEXT sync_state
+  INTEGER created_at
+  INTEGER updated_at
+}
