@@ -17,15 +17,25 @@ CREATE TABLE "eval_instance_item" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`instance_id` integer NOT NULL,
 	`persona_def_id` integer,
-	`eval_persona_id` integer,
 	`persona` text,
+	`script` text,
+	`turns` text,
+	`voices` text,
+	`patient_id` integer,
+	`doctor_id` integer,
+	`script_mode` text,
 	`status` text DEFAULT 'pending' NOT NULL,
 	`error` text,
+	`state` text DEFAULT 'under_review' NOT NULL,
+	`feedback` text,
+	`reviewed_by` text,
+	`reviewed_at` integer,
 	`claimed_at` integer,
 	`created_at` integer NOT NULL,
 	FOREIGN KEY (`instance_id`) REFERENCES `eval_instance`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`persona_def_id`) REFERENCES `eval_persona_def`(`id`) ON UPDATE no action ON DELETE set null,
-	FOREIGN KEY (`eval_persona_id`) REFERENCES `eval_persona`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`doctor_id`) REFERENCES `doctors`(`id`) ON UPDATE no action ON DELETE set null
 )
 ```
 
@@ -35,13 +45,22 @@ CREATE TABLE "eval_instance_item" (
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | INTEGER |  | false |  |  |  |
+| id | INTEGER |  | false | [eval_run_sample](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_run_sample) |  |  |
 | instance_id | INTEGER |  | false |  | [eval_instance](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance) |  |
 | persona_def_id | INTEGER |  | true |  | [eval_persona_def](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_persona_def) |  |
-| eval_persona_id | INTEGER |  | true |  | [eval_persona](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_persona) |  |
 | persona | TEXT |  | true |  |  |  |
+| script | TEXT |  | true |  |  |  |
+| turns | TEXT |  | true |  |  |  |
+| voices | TEXT |  | true |  |  |  |
+| patient_id | INTEGER |  | true |  | [patients](/pt-BR/docs/developers/plugins/patients/reference/tables/patients) |  |
+| doctor_id | INTEGER |  | true |  | [doctors](/pt-BR/docs/developers/plugins/doctors/reference/tables/doctors) |  |
+| script_mode | TEXT |  | true |  |  |  |
 | status | TEXT | 'pending' | false |  |  |  |
 | error | TEXT |  | true |  |  |  |
+| state | TEXT | 'under_review' | false |  |  |  |
+| feedback | TEXT |  | true |  |  |  |
+| reviewed_by | TEXT |  | true |  |  |  |
+| reviewed_at | INTEGER |  | true |  |  |  |
 | claimed_at | INTEGER |  | true |  |  |  |
 | created_at | INTEGER |  | false |  |  |  |
 
@@ -50,9 +69,10 @@ CREATE TABLE "eval_instance_item" (
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | id | PRIMARY KEY | PRIMARY KEY (id) |
-| - (Foreign key ID: 0) | FOREIGN KEY | FOREIGN KEY (eval_persona_id) REFERENCES eval_persona (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE |
-| - (Foreign key ID: 1) | FOREIGN KEY | FOREIGN KEY (persona_def_id) REFERENCES eval_persona_def (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE |
-| - (Foreign key ID: 2) | FOREIGN KEY | FOREIGN KEY (instance_id) REFERENCES eval_instance (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE |
+| - (Foreign key ID: 0) | FOREIGN KEY | FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE |
+| - (Foreign key ID: 1) | FOREIGN KEY | FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE |
+| - (Foreign key ID: 2) | FOREIGN KEY | FOREIGN KEY (persona_def_id) REFERENCES eval_persona_def (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE |
+| - (Foreign key ID: 3) | FOREIGN KEY | FOREIGN KEY (instance_id) REFERENCES eval_instance (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE |
 
 ## Indexes
 
