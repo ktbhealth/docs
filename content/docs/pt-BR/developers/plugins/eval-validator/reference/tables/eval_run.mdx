@@ -15,15 +15,17 @@ icon: Table2
 ```sql
 CREATE TABLE "eval_run" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`batch_id` integer NOT NULL,
+	`instance_id` integer,
+	`params` text DEFAULT '{}' NOT NULL,
 	`status` text DEFAULT 'queued' NOT NULL,
 	`total` integer DEFAULT 0 NOT NULL,
 	`done` integer DEFAULT 0 NOT NULL,
 	`summary` text,
 	`started_at` integer,
 	`finished_at` integer,
+	`created_by` text,
 	`created_at` integer NOT NULL,
-	FOREIGN KEY (`batch_id`) REFERENCES `eval_persona_batch`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`instance_id`) REFERENCES `eval_instance`(`id`) ON UPDATE no action ON DELETE set null
 )
 ```
 
@@ -34,13 +36,15 @@ CREATE TABLE "eval_run" (
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | id | INTEGER |  | false | [eval_run_sample](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_run_sample) |  |  |
-| batch_id | INTEGER |  | false |  | [eval_persona_batch](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_persona_batch) |  |
+| instance_id | INTEGER |  | true |  | [eval_instance](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance) |  |
+| params | TEXT | '{}' | false |  |  |  |
 | status | TEXT | 'queued' | false |  |  |  |
 | total | INTEGER | 0 | false |  |  |  |
 | done | INTEGER | 0 | false |  |  |  |
 | summary | TEXT |  | true |  |  |  |
 | started_at | INTEGER |  | true |  |  |  |
 | finished_at | INTEGER |  | true |  |  |  |
+| created_by | TEXT |  | true |  |  |  |
 | created_at | INTEGER |  | false |  |  |  |
 
 ## Constraints
@@ -48,13 +52,13 @@ CREATE TABLE "eval_run" (
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | id | PRIMARY KEY | PRIMARY KEY (id) |
-| - (Foreign key ID: 0) | FOREIGN KEY | FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE |
+| - (Foreign key ID: 0) | FOREIGN KEY | FOREIGN KEY (instance_id) REFERENCES eval_instance (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE |
 
 ## Indexes
 
 | Name | Definition |
 | ---- | ---------- |
-| eval_run_batch_idx | CREATE INDEX `eval_run_batch_idx` ON `eval_run` (`batch_id`) |
+| eval_run_instance_idx | CREATE INDEX `eval_run_instance_idx` ON `eval_run` (`instance_id`) |
 
 ## Relations
 

@@ -32,7 +32,7 @@ CREATE TABLE "doctors" (
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | INTEGER |  | false | [eval_persona](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_persona) [doctor_access](/pt-BR/docs/developers/plugins/secretaries/reference/tables/doctor_access) |  |  |
+| id | INTEGER |  | false | [doctor_access](/pt-BR/docs/developers/plugins/secretaries/reference/tables/doctor_access) [eval_instance_item](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance_item) |  |  |
 | user_id | TEXT |  | false |  | [user](/pt-BR/docs/developers/plugins/auth/reference/tables/user) |  |
 | display_name | TEXT |  | false |  |  |  |
 | crm | TEXT |  | true |  |  |  |

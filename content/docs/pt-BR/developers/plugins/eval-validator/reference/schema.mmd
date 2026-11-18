@@ -1,49 +1,26 @@
 erDiagram
 
-"eval_persona" }o--|| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"eval_run" }o--|| "eval_persona_batch" : "FOREIGN KEY (batch_id) REFERENCES eval_persona_batch (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"eval_run_sample" }o--|| "eval_persona" : "FOREIGN KEY (persona_id) REFERENCES eval_persona (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "eval_run_sample" }o--|| "eval_run" : "FOREIGN KEY (run_id) REFERENCES eval_run (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
-"eval_persona" {
+"eval_run_sample" {
   INTEGER id
-  INTEGER batch_id FK
-  TEXT persona
-  TEXT script
-  TEXT turns
-  TEXT voices
-  INTEGER patient_id FK
-  INTEGER doctor_id FK
-  TEXT script_mode
-  TEXT state
-  TEXT feedback
-  TEXT reviewed_by
-  INTEGER reviewed_at
-  INTEGER created_at
-}
-"eval_persona_batch" {
-  INTEGER id
-  TEXT params
-  TEXT created_by
+  INTEGER run_id FK
+  INTEGER item_id FK
+  TEXT status
+  TEXT result
+  TEXT error
   INTEGER created_at
 }
 "eval_run" {
   INTEGER id
-  INTEGER batch_id FK
+  INTEGER instance_id FK
+  TEXT params
   TEXT status
   INTEGER total
   INTEGER done
   TEXT summary
   INTEGER started_at
   INTEGER finished_at
-  INTEGER created_at
-}
-"eval_run_sample" {
-  INTEGER id
-  INTEGER run_id FK
-  INTEGER persona_id FK
-  TEXT status
-  TEXT result
-  TEXT error
+  TEXT created_by
   INTEGER created_at
 }
