@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "paraglide:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide --strategy cookie baseLocale --emit-ts-declarations --silent",
     "types:check": "bun run paraglide:compile && tsc --noEmit",
+    "lint": "oxlint",
     "deploy": "bun run build:cf && alchemy deploy",
     "deploy:wrangler": "bun run build:cf && wrangler deploy --config .output/server/wrangler.json"
   },
@@ -33,6 +34,7 @@
     "@effect/platform-bun": "^4.1.3",
     "@effect/platform-node": "^4.1.3",
     "@inlang/paraglide-js": "2.29.3",
+    "@ktbhealth/workspace": "github:ktbhealth/workspace#v0.1.4@eslint-config-arch",
     "@tailwindcss/vite": "^4.3.5",
     "@types/mdx": "^2.0.14",
     "@types/node": "^26.6.6",
@@ -43,6 +45,7 @@
     "effect": "4.1.2",
     "miniflare": "^4",
     "nitro": "3.0.261103-rc",
+    "oxlint": "^1.94.0",
     "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2",
     "vite": "^8.3.6",
