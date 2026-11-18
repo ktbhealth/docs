@@ -539,3 +539,25 @@ erDiagram
   TEXT created_by
   INTEGER created_at
 }
+"wizard_defs" {
+  INTEGER id
+  TEXT key
+  TEXT title
+  TEXT description
+  TEXT definition_json
+  INTEGER published
+  INTEGER created_at
+  INTEGER updated_at
+}
+"wizard_runs" {
+  INTEGER id
+  TEXT key
+  TEXT definition_json
+  TEXT status
+  INTEGER step_index
+  TEXT answers_json
+  TEXT owner_id
+  INTEGER created_at
+  INTEGER updated_at
+  INTEGER completed_at
+}

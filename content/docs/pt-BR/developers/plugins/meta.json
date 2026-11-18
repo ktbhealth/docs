@@ -24,6 +24,7 @@
 		"theme",
 		"i18n",
 		"kv",
-		"document-store"
+		"document-store",
+		"wizards"
 	]
 }
