@@ -34,6 +34,7 @@ erDiagram
 "machine" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "ai_model" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "ai_prompt" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"eval_run_record" }o--|| "eval_run" : "FOREIGN KEY (run_id) REFERENCES eval_run (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
 "patients" {
   INTEGER id
@@ -91,6 +92,8 @@ erDiagram
   TEXT anamnesis_hash
   INTEGER anamnesis_version
   TEXT blob_hash
+  INTEGER synthetic
+  INTEGER eval_item_id
 }
 "notifications" {
   INTEGER id
@@ -510,6 +513,7 @@ erDiagram
   INTEGER done
   TEXT created_by
   INTEGER created_at
+  TEXT manifest
 }
 "eval_instance_item" {
   INTEGER id
@@ -543,6 +547,7 @@ erDiagram
   INTEGER finished_at
   TEXT created_by
   INTEGER created_at
+  TEXT experiment
 }
 "wizard_defs" {
   INTEGER id
@@ -634,4 +639,14 @@ erDiagram
   INTEGER enabled
   INTEGER created_at
   INTEGER updated_at
+}
+"eval_run_record" {
+  INTEGER id
+  INTEGER run_id FK
+  INTEGER item_id
+  TEXT stage
+  TEXT engine
+  TEXT model
+  INTEGER started_at
+  TEXT payload
 }

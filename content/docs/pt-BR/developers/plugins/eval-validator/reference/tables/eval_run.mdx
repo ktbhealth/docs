@@ -24,7 +24,7 @@ CREATE TABLE "eval_run" (
 	`started_at` integer,
 	`finished_at` integer,
 	`created_by` text,
-	`created_at` integer NOT NULL,
+	`created_at` integer NOT NULL, `experiment` text,
 	FOREIGN KEY (`instance_id`) REFERENCES `eval_instance`(`id`) ON UPDATE no action ON DELETE set null
 )
 ```
@@ -35,7 +35,7 @@ CREATE TABLE "eval_run" (
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | INTEGER |  | false | [eval_run_sample](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_run_sample) |  |  |
+| id | INTEGER |  | false | [eval_run_sample](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_run_sample) [eval_run_record](/pt-BR/docs/developers/plugins/eval-validator/reference/tables/eval_run_record) |  |  |
 | instance_id | INTEGER |  | true |  | [eval_instance](/pt-BR/docs/developers/plugins/eval-persona/reference/tables/eval_instance) |  |
 | params | TEXT | '{}' | false |  |  |  |
 | status | TEXT | 'queued' | false |  |  |  |
@@ -46,6 +46,7 @@ CREATE TABLE "eval_run" (
 | finished_at | INTEGER |  | true |  |  |  |
 | created_by | TEXT |  | true |  |  |  |
 | created_at | INTEGER |  | false |  |  |  |
+| experiment | TEXT |  | true |  |  |  |
 
 ## Constraints
 

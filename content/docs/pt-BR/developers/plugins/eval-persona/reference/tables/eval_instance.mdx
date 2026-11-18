@@ -23,7 +23,7 @@ CREATE TABLE "eval_instance" (
 	`total` integer DEFAULT 0 NOT NULL,
 	`done` integer DEFAULT 0 NOT NULL,
 	`created_by` text,
-	`created_at` integer NOT NULL,
+	`created_at` integer NOT NULL, `manifest` text,
 	FOREIGN KEY (`endpoint_id`) REFERENCES `ai_endpoint`(`id`) ON UPDATE no action ON DELETE set null
 )
 ```
@@ -44,6 +44,7 @@ CREATE TABLE "eval_instance" (
 | done | INTEGER | 0 | false |  |  |  |
 | created_by | TEXT |  | true |  |  |  |
 | created_at | INTEGER |  | false |  |  |  |
+| manifest | TEXT |  | true |  |  |  |
 
 ## Constraints
 

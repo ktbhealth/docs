@@ -1,6 +1,7 @@
 erDiagram
 
 "eval_run_sample" }o--|| "eval_run" : "FOREIGN KEY (run_id) REFERENCES eval_run (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"eval_run_record" }o--|| "eval_run" : "FOREIGN KEY (run_id) REFERENCES eval_run (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
 "eval_run_sample" {
   INTEGER id
@@ -23,4 +24,15 @@ erDiagram
   INTEGER finished_at
   TEXT created_by
   INTEGER created_at
+  TEXT experiment
+}
+"eval_run_record" {
+  INTEGER id
+  INTEGER run_id FK
+  INTEGER item_id
+  TEXT stage
+  TEXT engine
+  TEXT model
+  INTEGER started_at
+  TEXT payload
 }
