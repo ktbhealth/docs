@@ -27,6 +27,7 @@
 		"theme",
 		"i18n",
 		"kv",
+		"agenda",
 		"document-store",
 		"wizards"
 	]
