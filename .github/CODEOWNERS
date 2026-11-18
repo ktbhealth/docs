@@ -1,0 +1,9 @@
+# Code owners — changes to these paths require owner review before merge.
+#
+# NOTE: CODEOWNERS only takes effect when a ruleset/branch-protection rule
+# requires code-owner review (see T-057). Direct pushes bypass it entirely —
+# pair this file with a ruleset that enforces review on these paths.
+
+# CI definition — workflow changes can weaken or bypass gates; they must be
+# reviewed by the org code owners before merge.
+/.github/workflows/  @ktbhealth/code-owners
