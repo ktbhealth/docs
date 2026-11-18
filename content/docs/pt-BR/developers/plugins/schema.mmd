@@ -30,6 +30,10 @@ erDiagram
 "eval_instance_item" }o--o| "eval_persona_def" : "FOREIGN KEY (persona_def_id) REFERENCES eval_persona_def (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "eval_instance_item" }o--|| "eval_instance" : "FOREIGN KEY (instance_id) REFERENCES eval_instance (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "eval_run" }o--o| "eval_instance" : "FOREIGN KEY (instance_id) REFERENCES eval_instance (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
+"vault_secret" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"machine" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"ai_model" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"ai_prompt" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
 "patients" {
   INTEGER id
@@ -279,6 +283,7 @@ erDiagram
   INTEGER enabled
   INTEGER last_seen_at
   INTEGER created_at
+  INTEGER machine_id
 }
 "admin_audit" {
   INTEGER id
@@ -560,4 +565,73 @@ erDiagram
   INTEGER created_at
   INTEGER updated_at
   INTEGER completed_at
+}
+"vault_secret" {
+  INTEGER id
+  TEXT scope
+  INTEGER tenant_id FK
+  TEXT name
+  TEXT provider
+  TEXT kind
+  TEXT wrapped_dek
+  TEXT ciphertext
+  TEXT kek_version
+  INTEGER version
+  TEXT status
+  TEXT created_by
+  INTEGER created_at
+  INTEGER updated_at
+  INTEGER rotated_at
+  TEXT hint
+}
+"machine" {
+  INTEGER id
+  TEXT scope
+  INTEGER tenant_id FK
+  TEXT name
+  TEXT kind
+  TEXT host
+  INTEGER port
+  TEXT capabilities
+  TEXT secret_ref
+  TEXT health_url
+  TEXT status
+  INTEGER last_seen_at
+  INTEGER last_check_at
+  TEXT check_error
+  INTEGER enabled
+  INTEGER created_at
+  INTEGER updated_at
+}
+"ai_model" {
+  INTEGER id
+  TEXT scope
+  INTEGER tenant_id FK
+  INTEGER endpoint_id
+  TEXT name
+  TEXT model_id
+  TEXT kind
+  TEXT capabilities
+  INTEGER context_tokens
+  TEXT cost_tier
+  INTEGER is_default
+  INTEGER enabled
+  INTEGER created_at
+  INTEGER updated_at
+}
+"ai_prompt" {
+  INTEGER id
+  TEXT scope
+  INTEGER tenant_id FK
+  TEXT name
+  INTEGER version
+  TEXT locale
+  TEXT template
+  TEXT variables
+  TEXT model_hint
+  INTEGER is_system
+  INTEGER is_default
+  INTEGER enabled
+  INTEGER created_at
+  INTEGER updated_at
 }

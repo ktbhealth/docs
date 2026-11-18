@@ -32,3 +32,21 @@ erDiagram
   TEXT sign_public_key
   INTEGER created_at
 }
+"vault_secret" {
+  INTEGER id
+  TEXT scope
+  INTEGER tenant_id FK
+  TEXT name
+  TEXT provider
+  TEXT kind
+  TEXT wrapped_dek
+  TEXT ciphertext
+  TEXT kek_version
+  INTEGER version
+  TEXT status
+  TEXT created_by
+  INTEGER created_at
+  INTEGER updated_at
+  INTEGER rotated_at
+  TEXT hint
+}
