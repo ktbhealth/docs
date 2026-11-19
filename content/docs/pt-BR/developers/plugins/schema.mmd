@@ -10,6 +10,8 @@ erDiagram
 "admin_audit" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "doctors" }o--|| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "group_members" }o--|| "groups" : "FOREIGN KEY (group_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+"custom_pages" }o--o| "schemas" : "FOREIGN KEY (search_schema_id) REFERENCES schemas (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
+"custom_pages" }o--o| "rich_text" : "FOREIGN KEY (rich_text_id) REFERENCES rich_text (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
 "patient_access" }o--o| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "patient_access" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "patient_documents" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
@@ -38,6 +40,7 @@ erDiagram
 "appointments" }o--o| "consultations" : "FOREIGN KEY (consultation_id) REFERENCES consultations (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
 "appointments" }o--o| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET NULL MATCH NONE"
 "appointments" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE"
+"font_families" }o--|| "font_providers" : "FOREIGN KEY (provider_id) REFERENCES font_providers (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
 "patients" {
   INTEGER id
@@ -150,6 +153,7 @@ erDiagram
   INTEGER version
   INTEGER created_at
   INTEGER updated_at
+  INTEGER is_main
 }
 "i18n_crdt_updates" {
   INTEGER id
@@ -368,12 +372,13 @@ erDiagram
   INTEGER id
   TEXT path
   TEXT title
-  TEXT content
   INTEGER published
   INTEGER show_in_nav
   INTEGER sort_order
   INTEGER created_at
   INTEGER updated_at
+  INTEGER rich_text_id FK
+  INTEGER search_schema_id FK
 }
 "patient_access" {
   INTEGER id
@@ -669,6 +674,39 @@ erDiagram
   TEXT external_event_id
   TEXT external_etag
   TEXT sync_state
+  INTEGER created_at
+  INTEGER updated_at
+}
+"rich_text" {
+  INTEGER id
+  TEXT title
+  TEXT value
+  INTEGER created_at
+  INTEGER updated_at
+}
+"schemas" {
+  INTEGER id
+  TEXT name
+  TEXT description
+  TEXT schema
+  INTEGER created_at
+  INTEGER updated_at
+}
+"font_families" {
+  INTEGER id
+  INTEGER provider_id FK
+  TEXT family
+  TEXT weights
+  TEXT status
+  TEXT meta
+  INTEGER created_at
+}
+"font_providers" {
+  INTEGER id
+  TEXT kind
+  TEXT name
+  TEXT config
+  INTEGER enabled
   INTEGER created_at
   INTEGER updated_at
 }
