@@ -35,10 +35,16 @@ validator, applied both to admin input and to incoming request paths:
 
 ## Create and publish
 
-Pages are managed through the plugin's admin surface (platform page +
-server fns in `fns.ts`) — admin fns call the service, which enforces
-publication state. Visitors only ever see `published = true` rows through
-the wildcard descriptor; drafts are invisible, not forbidden.
+Pages are managed through the plugin's admin surface at `/platform/pages`
+(`panel.pages` contribution, server fns in `fns.ts`) — admin fns call
+the service, which enforces publication state. Visitors only ever see
+`published = true` rows through the wildcard descriptor; drafts are
+invisible, not forbidden.
+
+The console lists **both** sources: `custom_pages` rows (editable here)
+and pages plugins contribute via `pages`/`panel.pages` descriptors —
+those render read-only with a **Provided by** badge naming the owning
+plugin id, filtered by the plugin's package-granular enable state.
 
 ## Ordering and nav
 

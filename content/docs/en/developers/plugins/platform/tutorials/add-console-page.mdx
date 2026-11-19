@@ -45,7 +45,9 @@ visible only to platform admins.
    service's queries inside `Effect.gen`.
 
 4. **Register the plugin** in your package's `plugins` export so host
-   discovery picks it up, then `bun run gen:route-types`.
+   discovery picks it up, then `bun run gen:route-types`. The page
+   appears in `/platform/pages` read-only with a "Provided by" badge
+   naming your plugin id.
 
 ## Verify
 
