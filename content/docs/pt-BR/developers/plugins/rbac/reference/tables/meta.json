@@ -2,6 +2,7 @@
 	"title": "Tabelas",
 	"pages": [
 		"permission_epoch",
+		"relation_tuples",
 		"role_permissions",
 		"roles",
 		"subject_roles"
