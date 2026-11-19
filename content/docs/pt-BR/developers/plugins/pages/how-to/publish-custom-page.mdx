@@ -35,10 +35,17 @@ aplicado tanto ao input admin quanto aos paths de request recebidos:
 
 ## Criar e publicar
 
-Páginas são gerenciadas pela superfície admin do plugin (platform page +
-server fns em `fns.ts`) — as admin fns chamam o service, que aplica o
-estado de publicação. Visitantes só veem linhas `published = true` através
-do wildcard descriptor; rascunhos são invisíveis, não proibidos.
+Páginas são gerenciadas pela superfície admin do plugin em
+`/platform/pages` (contribuição `panel.pages`, server fns em `fns.ts`) —
+as admin fns chamam o service, que aplica o estado de publicação.
+Visitantes só veem linhas `published = true` através do wildcard
+descriptor; rascunhos são invisíveis, não proibidos.
+
+O console lista **as duas** fontes: linhas de `custom_pages` (editáveis
+aqui) e páginas que plugins contribuem via descriptors `pages`/
+`panel.pages` — essas renderizam somente-leitura com um badge
+**Provided by** nomeando o id do plugin dono, filtradas pelo estado de
+enable package-granular do plugin.
 
 ## Ordenação e nav
 
