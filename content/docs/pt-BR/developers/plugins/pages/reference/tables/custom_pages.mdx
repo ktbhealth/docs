@@ -22,7 +22,7 @@ CREATE TABLE "custom_pages" (
 	`sort_order` integer DEFAULT 0 NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
-, `rich_text_id` integer REFERENCES rich_text(id), `search_schema_id` integer REFERENCES schemas(id))
+, `rich_text_id` integer REFERENCES rich_text(id), `search_schema_id` integer REFERENCES schemas(id), `layout_id` integer REFERENCES layouts(id))
 ```
 
 </details>
@@ -41,14 +41,16 @@ CREATE TABLE "custom_pages" (
 | updated_at | INTEGER |  | false |  |  |  |
 | rich_text_id | INTEGER |  | true |  | [rich_text](/pt-BR/docs/developers/plugins/rich-text/reference/tables/rich_text) |  |
 | search_schema_id | INTEGER |  | true |  | [schemas](/pt-BR/docs/developers/plugins/schemas/reference/tables/schemas) |  |
+| layout_id | INTEGER |  | true |  | [layouts](/pt-BR/docs/developers/plugins/layouts/reference/tables/layouts) |  |
 
 ## Constraints
 
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | id | PRIMARY KEY | PRIMARY KEY (id) |
-| - (Foreign key ID: 0) | FOREIGN KEY | FOREIGN KEY (search_schema_id) REFERENCES schemas (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE |
-| - (Foreign key ID: 1) | FOREIGN KEY | FOREIGN KEY (rich_text_id) REFERENCES rich_text (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE |
+| - (Foreign key ID: 0) | FOREIGN KEY | FOREIGN KEY (layout_id) REFERENCES layouts (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE |
+| - (Foreign key ID: 1) | FOREIGN KEY | FOREIGN KEY (search_schema_id) REFERENCES schemas (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE |
+| - (Foreign key ID: 2) | FOREIGN KEY | FOREIGN KEY (rich_text_id) REFERENCES rich_text (id) ON UPDATE NO ACTION ON DELETE NO ACTION MATCH NONE |
 
 ## Indexes
 

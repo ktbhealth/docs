@@ -28,6 +28,7 @@
 		"fonts",
 		"rich-text",
 		"schemas",
+		"layouts",
 		"i18n",
 		"kv",
 		"agenda",
