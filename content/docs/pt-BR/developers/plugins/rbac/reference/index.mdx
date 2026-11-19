@@ -46,6 +46,19 @@ erDiagram
   INTEGER expires_at
   INTEGER created_at
 }
+"relation_tuples" {
+  INTEGER id
+  TEXT object_type
+  TEXT object_id
+  TEXT relation
+  TEXT subject_kind
+  TEXT subject_id
+  TEXT effect
+  TEXT tenant_id
+  INTEGER expires_at
+  TEXT granted_by
+  INTEGER created_at
+}
 ```
 
 Mermaid source: [`schema.mmd`](./schema.mmd)
@@ -53,6 +66,7 @@ Mermaid source: [`schema.mmd`](./schema.mmd)
 ## Tables
 
 - [`permission_epoch`](/pt-BR/docs/developers/plugins/rbac/reference/tables/permission_epoch)
+- [`relation_tuples`](/pt-BR/docs/developers/plugins/rbac/reference/tables/relation_tuples)
 - [`role_permissions`](/pt-BR/docs/developers/plugins/rbac/reference/tables/role_permissions)
 - [`roles`](/pt-BR/docs/developers/plugins/rbac/reference/tables/roles)
 - [`subject_roles`](/pt-BR/docs/developers/plugins/rbac/reference/tables/subject_roles)
