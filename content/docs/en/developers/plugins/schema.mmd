@@ -16,8 +16,6 @@ erDiagram
 "patient_access" }o--o| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "patient_access" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "patient_documents" }o--|| "patients" : "FOREIGN KEY (patient_id) REFERENCES patients (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"role_permissions" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"subject_roles" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "doctor_access" }o--o| "user" : "FOREIGN KEY (user_id) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "doctor_access" }o--|| "doctors" : "FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 "clinic_keys" }o--|| "groups" : "FOREIGN KEY (tenant_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
@@ -402,14 +400,6 @@ erDiagram
   TEXT number
   INTEGER created_at
 }
-"role_permissions" {
-  INTEGER id
-  INTEGER role_id FK
-  TEXT resource
-  TEXT action
-  TEXT effect
-  INTEGER created_at
-}
 "roles" {
   INTEGER id
   TEXT name
@@ -417,16 +407,6 @@ erDiagram
   TEXT meta
   INTEGER created_at
   INTEGER updated_at
-}
-"subject_roles" {
-  INTEGER id
-  TEXT subject_kind
-  TEXT subject_id
-  INTEGER role_id FK
-  TEXT tenant_id
-  TEXT granted_by
-  INTEGER expires_at
-  INTEGER created_at
 }
 "doctor_access" {
   INTEGER id

@@ -13,20 +13,10 @@ Owned by `packages/rbac` + `plugins/rbac`.
 ```mermaid
 erDiagram
 
-"role_permissions" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
-"subject_roles" }o--|| "roles" : "FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
 
 "permission_epoch" {
   INTEGER id
   INTEGER epoch
-}
-"role_permissions" {
-  INTEGER id
-  INTEGER role_id FK
-  TEXT resource
-  TEXT action
-  TEXT effect
-  INTEGER created_at
 }
 "roles" {
   INTEGER id
@@ -35,16 +25,6 @@ erDiagram
   TEXT meta
   INTEGER created_at
   INTEGER updated_at
-}
-"subject_roles" {
-  INTEGER id
-  TEXT subject_kind
-  TEXT subject_id
-  INTEGER role_id FK
-  TEXT tenant_id
-  TEXT granted_by
-  INTEGER expires_at
-  INTEGER created_at
 }
 "relation_tuples" {
   INTEGER id
@@ -67,6 +47,4 @@ Mermaid source: [`schema.mmd`](./schema.mmd)
 
 - [`permission_epoch`](/pt-BR/docs/developers/plugins/rbac/reference/tables/permission_epoch)
 - [`relation_tuples`](/pt-BR/docs/developers/plugins/rbac/reference/tables/relation_tuples)
-- [`role_permissions`](/pt-BR/docs/developers/plugins/rbac/reference/tables/role_permissions)
 - [`roles`](/pt-BR/docs/developers/plugins/rbac/reference/tables/roles)
-- [`subject_roles`](/pt-BR/docs/developers/plugins/rbac/reference/tables/subject_roles)
