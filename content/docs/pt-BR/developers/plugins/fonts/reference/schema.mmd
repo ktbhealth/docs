@@ -1,0 +1,22 @@
+erDiagram
+
+"font_families" }o--|| "font_providers" : "FOREIGN KEY (provider_id) REFERENCES font_providers (id) ON UPDATE NO ACTION ON DELETE CASCADE MATCH NONE"
+
+"font_families" {
+  INTEGER id
+  INTEGER provider_id FK
+  TEXT family
+  TEXT weights
+  TEXT status
+  TEXT meta
+  INTEGER created_at
+}
+"font_providers" {
+  INTEGER id
+  TEXT kind
+  TEXT name
+  TEXT config
+  INTEGER enabled
+  INTEGER created_at
+  INTEGER updated_at
+}

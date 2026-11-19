@@ -26,7 +26,7 @@ CREATE TABLE `theme_definitions` (
 	`version` integer DEFAULT 1 NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer
-)
+, `is_main` integer DEFAULT false NOT NULL)
 ```
 
 </details>
@@ -47,6 +47,7 @@ CREATE TABLE `theme_definitions` (
 | version | INTEGER | 1 | false |  |  |  |
 | created_at | INTEGER |  | false |  |  |  |
 | updated_at | INTEGER |  | true |  |  |  |
+| is_main | INTEGER | false | false |  |  |  |
 
 ## Constraints
 
