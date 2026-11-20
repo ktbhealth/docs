@@ -24,7 +24,7 @@ CREATE TABLE "pages" (
 	`show_in_nav` integer DEFAULT false NOT NULL,
 	`sort_order` integer DEFAULT 0 NOT NULL,
 	`created_at` integer NOT NULL,
-	`updated_at` integer NOT NULL,
+	`updated_at` integer NOT NULL, `builder_json` text,
 	FOREIGN KEY (`rich_text_id`) REFERENCES `rich_text`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`search_schema_id`) REFERENCES `schemas`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`layout_id`) REFERENCES `layouts`(`id`) ON UPDATE no action ON DELETE no action
@@ -48,6 +48,7 @@ CREATE TABLE "pages" (
 | sort_order | INTEGER | 0 | false |  |  |  |
 | created_at | INTEGER |  | false |  |  |  |
 | updated_at | INTEGER |  | false |  |  |  |
+| builder_json | TEXT |  | true |  |  |  |
 
 ## Constraints
 
