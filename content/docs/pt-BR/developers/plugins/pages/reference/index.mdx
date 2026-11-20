@@ -1,6 +1,6 @@
 ---
 title: "Banco de dados"
-description: "Custom pages database schema — ER diagram and per-table reference."
+description: "Pages database schema — ER diagram and per-table reference."
 icon: Network
 ---
 
@@ -14,18 +14,18 @@ Owned by `plugins/pages`.
 erDiagram
 
 
-"custom_pages" {
+"pages" {
   INTEGER id
   TEXT path
   TEXT title
+  INTEGER rich_text_id FK
+  INTEGER search_schema_id FK
+  INTEGER layout_id FK
   INTEGER published
   INTEGER show_in_nav
   INTEGER sort_order
   INTEGER created_at
   INTEGER updated_at
-  INTEGER rich_text_id FK
-  INTEGER search_schema_id FK
-  INTEGER layout_id FK
 }
 ```
 
@@ -33,4 +33,4 @@ Mermaid source: [`schema.mmd`](./schema.mmd)
 
 ## Tables
 
-- [`custom_pages`](/pt-BR/docs/developers/plugins/pages/reference/tables/custom_pages)
+- [`pages`](/pt-BR/docs/developers/plugins/pages/reference/tables/pages)

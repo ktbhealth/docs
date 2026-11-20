@@ -1,6 +1,6 @@
 ---
-title: "custom_pages"
-description: "Database table `custom_pages` — columns, indexes and relations."
+title: "pages"
+description: "Database table `pages` — columns, indexes and relations."
 icon: Table2
 ---
 
@@ -13,16 +13,22 @@ icon: Table2
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE TABLE "custom_pages" (
+CREATE TABLE "pages" (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`path` text NOT NULL,
 	`title` text NOT NULL,
+	`rich_text_id` integer,
+	`search_schema_id` integer,
+	`layout_id` integer,
 	`published` integer DEFAULT false NOT NULL,
 	`show_in_nav` integer DEFAULT false NOT NULL,
 	`sort_order` integer DEFAULT 0 NOT NULL,
 	`created_at` integer NOT NULL,
-	`updated_at` integer NOT NULL
-, `rich_text_id` integer REFERENCES rich_text(id), `search_schema_id` integer REFERENCES schemas(id), `layout_id` integer REFERENCES layouts(id))
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`rich_text_id`) REFERENCES `rich_text`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`search_schema_id`) REFERENCES `schemas`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`layout_id`) REFERENCES `layouts`(`id`) ON UPDATE no action ON DELETE no action
+)
 ```
 
 </details>
@@ -34,14 +40,14 @@ CREATE TABLE "custom_pages" (
 | id | INTEGER |  | false |  |  |  |
 | path | TEXT |  | false |  |  |  |
 | title | TEXT |  | false |  |  |  |
+| rich_text_id | INTEGER |  | true |  | [rich_text](/en/docs/developers/plugins/rich-text/reference/tables/rich_text) |  |
+| search_schema_id | INTEGER |  | true |  | [schemas](/en/docs/developers/plugins/schemas/reference/tables/schemas) |  |
+| layout_id | INTEGER |  | true |  | [layouts](/en/docs/developers/plugins/layouts/reference/tables/layouts) |  |
 | published | INTEGER | false | false |  |  |  |
 | show_in_nav | INTEGER | false | false |  |  |  |
 | sort_order | INTEGER | 0 | false |  |  |  |
 | created_at | INTEGER |  | false |  |  |  |
 | updated_at | INTEGER |  | false |  |  |  |
-| rich_text_id | INTEGER |  | true |  | [rich_text](/pt-BR/docs/developers/plugins/rich-text/reference/tables/rich_text) |  |
-| search_schema_id | INTEGER |  | true |  | [schemas](/pt-BR/docs/developers/plugins/schemas/reference/tables/schemas) |  |
-| layout_id | INTEGER |  | true |  | [layouts](/pt-BR/docs/developers/plugins/layouts/reference/tables/layouts) |  |
 
 ## Constraints
 
@@ -56,8 +62,8 @@ CREATE TABLE "custom_pages" (
 
 | Name | Definition |
 | ---- | ---------- |
-| custom_pages_nav_idx | CREATE INDEX `custom_pages_nav_idx` ON `custom_pages` (`published`,`show_in_nav`) |
-| custom_pages_path_idx | CREATE UNIQUE INDEX `custom_pages_path_idx` ON `custom_pages` (`path`) |
+| pages_nav_idx | CREATE INDEX `pages_nav_idx` ON `pages` (`published`,`show_in_nav`) |
+| pages_path_idx | CREATE UNIQUE INDEX `pages_path_idx` ON `pages` (`path`) |
 
 ## Relations
 
