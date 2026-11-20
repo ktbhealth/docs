@@ -1,16 +1,16 @@
 erDiagram
 
 
-"custom_pages" {
+"pages" {
   INTEGER id
   TEXT path
   TEXT title
+  INTEGER rich_text_id FK
+  INTEGER search_schema_id FK
+  INTEGER layout_id FK
   INTEGER published
   INTEGER show_in_nav
   INTEGER sort_order
   INTEGER created_at
   INTEGER updated_at
-  INTEGER rich_text_id FK
-  INTEGER search_schema_id FK
-  INTEGER layout_id FK
 }
