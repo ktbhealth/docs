@@ -20,7 +20,7 @@ CREATE TABLE `layouts` (
 	`config` text NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
-)
+, `builder_json` text)
 ```
 
 </details>
@@ -35,6 +35,7 @@ CREATE TABLE `layouts` (
 | config | TEXT |  | false |  |  |  |
 | created_at | INTEGER |  | false |  |  |  |
 | updated_at | INTEGER |  | false |  |  |  |
+| builder_json | TEXT |  | true |  |  |  |
 
 ## Constraints
 
