@@ -725,3 +725,29 @@ erDiagram
   INTEGER created_at
   INTEGER updated_at
 }
+"relation_tuples" {
+  INTEGER id
+  TEXT object_type
+  TEXT object_id
+  TEXT relation
+  TEXT subject_kind
+  TEXT subject_id
+  TEXT effect
+  TEXT tenant_id
+  INTEGER expires_at
+  TEXT granted_by
+  INTEGER created_at
+}
+"pages" {
+  INTEGER id
+  TEXT path
+  TEXT title
+  INTEGER rich_text_id FK
+  INTEGER search_schema_id FK
+  INTEGER layout_id FK
+  INTEGER published
+  INTEGER show_in_nav
+  INTEGER sort_order
+  INTEGER created_at
+  INTEGER updated_at
+}
