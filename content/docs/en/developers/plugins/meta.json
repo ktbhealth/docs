@@ -29,6 +29,7 @@
 		"rich-text",
 		"schemas",
 		"layouts",
+		"templates",
 		"i18n",
 		"kv",
 		"agenda",
