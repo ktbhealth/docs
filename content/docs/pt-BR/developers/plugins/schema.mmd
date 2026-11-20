@@ -686,7 +686,6 @@ erDiagram
   TEXT config
   INTEGER created_at
   INTEGER updated_at
-  TEXT builder_json
 }
 "relation_tuples" {
   INTEGER id
@@ -713,7 +712,6 @@ erDiagram
   INTEGER sort_order
   INTEGER created_at
   INTEGER updated_at
-  TEXT builder_json
 }
 "templates" {
   INTEGER id
@@ -724,4 +722,15 @@ erDiagram
   TEXT created_by
   INTEGER created_at
   INTEGER updated_at
+}
+"images" {
+  INTEGER id
+  TEXT title
+  TEXT alt
+  TEXT mime
+  INTEGER size
+  TEXT storage_key
+  INTEGER width
+  INTEGER height
+  INTEGER created_at
 }
