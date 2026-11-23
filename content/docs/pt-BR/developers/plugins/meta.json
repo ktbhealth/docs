@@ -19,6 +19,7 @@
 		"rbac",
 		"platform",
 		"jobs",
+		"scheduler",
 		"eval-validator",
 		"ai-endpoints",
 		"ai-model",

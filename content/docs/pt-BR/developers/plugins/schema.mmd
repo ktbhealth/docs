@@ -736,3 +736,18 @@ erDiagram
   INTEGER height
   INTEGER created_at
 }
+"scheduled_jobs" {
+  TEXT id PK
+  TEXT kind
+  TEXT params
+  TEXT cron_expr
+  INTEGER run_at
+  INTEGER next_run_at
+  INTEGER claimed_until
+  INTEGER last_run_at
+  TEXT status
+  INTEGER tenant_id
+  TEXT created_by
+  INTEGER created_at
+  INTEGER updated_at
+}
