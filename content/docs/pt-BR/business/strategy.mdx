@@ -1,0 +1,109 @@
+---
+title: Estratégia de produto
+description: Assistente de documentação clínica com IA — specialty-first, locale-native; telemedicina primeiro, com caminho para clínicas e hospitais.
+icon: Target
+---
+
+O KTB Health é um **assistente de documentação clínica com IA**, não uma
+ferramenta de transcrição. O produto automatiza o fluxo de documentação em
+torno da consulta para que o médico dedique seu tempo ao paciente, não aos
+prontuários.
+
+> Que o médico foque no paciente, enquanto a IA cuida da documentação clínica.
+
+A regra de posicionamento de [Posicionamento](/pt-BR/docs/business/positioning)
+continua valendo e é aplicada no produto: **o médico decide, o KTB Health
+registra**.
+
+## O wedge
+
+**Scribe clínico specialty-first, locale-native.**
+
+O Brasil é o locale nº 1, não a identidade do produto. Vocabulário médico em
+português brasileiro, codificação CID-10/TUSS, contexto de SUS e convênios, e
+o jeito real como as consultas acontecem no Brasil são o wedge de
+go-to-market — a arquitetura trata locale e especialidade como parâmetros, não
+como hardcodes.
+
+- **Locale** é um parâmetro: transcrição, estrutura da anamnese e textos são
+  movidos por pacotes de locale, não por condicionais espalhadas.
+- **Especialidade** é um parâmetro: os templates de documentação se adaptam
+  por especialidade (psiquiatria é o beachhead — ver abaixo).
+
+## Beachhead
+
+**Psiquiatria.** Consultas longas, carga pesada de documentação, anamnese
+rica em templates e alta disposição para pagar por economia de tempo. O wedge
+não depende dela — o template depende.
+
+## Sequência de go-to-market
+
+1. **Telemedicina primeiro.** A captura remota é mais simples: o bot de
+   transcrição entra em chamadas do Meet, Zoom, Teams e WhatsApp Web, ou o
+   médico captura o áudio da aba do navegador diretamente. A teleconsulta é o
+   foco inicial.
+2. **Presencial, consultórios particulares.** A mesma captura ambiente se
+   estende ao consultório — B2C self-serve para médicos individuais.
+3. **Clínicas e hospitais.** Clínicas multi-tenant precisam de delegação e
+   fluxos de grupo; hospitais precisam das opções de deploy abaixo. A
+   arquitetura já está preparada para isso desde o início — não é reescrita.
+
+## Caminho de deploy
+
+Hospedado na Cloudflare hoje; **on-premise e nuvem privada são compromissos de
+arquitetura, não promessas de roadmap**. A lógica de domínio fica atrás de
+ports e adapters (ver [Opções de deploy](/pt-BR/docs/business/deployment-options)),
+então trocar D1 por Postgres ou R2 por S3 é um adapter, não uma reescrita.
+Deploys hospitalares podem rodar totalmente no ambiente do cliente, incluindo
+inferência de modelo local.
+
+## Escopo do MVP
+
+Um fluxo completo, de ponta a ponta:
+
+1. O médico inicia a consulta — com consentimento explícito do paciente.
+2. O áudio é capturado e transcrito, com separação de falantes médico/paciente.
+3. Um LLM estrutura a conversa em uma nota clínica.
+4. O médico revisa, edita e aprova.
+5. A nota é exportada — PDF, Bundle FHIR R4 ou composição openEHR.
+
+A nota estruturada usa a anamnese locale-native do KTB (queixa principal,
+história da doença, antecedentes, alergias, medicamentos, exame físico,
+hipóteses, conduta) em vez de um template SOAP genérico — cada seção carrega
+**citações de evidência**: as frases literais da transcrição que a fundamentam.
+A IA nunca inventa achados; ela mostra suas fontes.
+
+## Diferenciais
+
+Contra Dragon Copilot, Abridge e Nabla:
+
+- **Precisão em português médico brasileiro** — a decodificação do Whisper é
+  enviesada por um glossário clínico (`initial_prompt`) com condições,
+  medicamentos, exames, CID-10 e TUSS.
+- **Seções com evidência citada** — cada campo liga às frases que o geraram;
+  alucinação fica estruturalmente visível, não silenciosamente confiável.
+- **Somente o médico aprova** — o posicionamento documentation-only é uma
+  restrição de produto, não um disclaimer.
+- **Interoperabilidade** — exportações FHIR R4 e openEHR, não só PDF.
+- **Flexibilidade de deploy** — nuvem ou totalmente on-premise com modelos
+  locais.
+
+## Como medimos valor
+
+- Tempo do fim da consulta à nota assinada vs. documentação manual.
+- Tempo de revisão por nota (distância de edição do rascunho ao aprovado).
+- Precisão de transcrição (WER) em áudio real de consultas em PT-BR via suite
+  de evals.
+
+O médico sempre revisa e aprova. Consentimento, criptografia e LGPD são
+arquiteturais, não aspiracionais — ver
+[Segurança e conformidade](/pt-BR/docs/business/security-and-compliance).
+
+## Notas honestas de escopo
+
+- **Diarização de falantes é pós-MVP.** Hoje a separação de falantes vem de
+  fontes de áudio distintas (microfone do clínico vs. áudio da chamada/aba/bot),
+  o que é confiável para telemedicina. Diarização em stream único para captura
+  presencial com um microfone está no backlog.
+- **Captura presencial** está projetada, mas ainda não é o caminho principal da
+  demo — telemedicina é a primeira entrega.

@@ -1,0 +1,105 @@
+---
+title: Product strategy
+description: AI clinical documentation assistant — specialty-first, locale-native; telemedicine-first with a path to clinics and hospitals.
+icon: Target
+---
+
+KTB Health is an **AI clinical documentation assistant**, not a transcription
+tool. The product automates the documentation workflow around the consultation
+so physicians spend their time with patients, not on records.
+
+> Let doctors focus on patients, while AI handles clinical documentation.
+
+The positioning rule from [Positioning](/en/docs/business/positioning) still
+holds and is enforced in the product: **the physician decides, KTB records**.
+
+## The wedge
+
+**Specialty-first, locale-native clinical scribe.**
+
+Brazil is locale #1, not the product identity. Brazilian Portuguese medical
+vocabulary, CID-10/TUSS coding, SUS and *convênio* billing context, and the
+way Brazilian consultations actually happen are the go-to-market wedge — the
+architecture treats locale and specialty as parameters, not hardcodes.
+
+- **Locale** is a parameter: transcription, anamnesis structure, and copy are
+  driven by locale packs, not scattered conditionals.
+- **Specialty** is a parameter: documentation templates adapt per specialty
+  (psychiatry is the beachhead — see below).
+
+## Beachhead
+
+**Psychiatry.** Long consults, heavy documentation burden, template-rich
+anamnesis, and high willingness to pay for time savings. The wedge does not
+depend on it — the template does.
+
+## Go-to-market sequence
+
+1. **Telemedicine first.** Remote capture is simpler: the transcription bot
+   joins Meet, Zoom, Teams and WhatsApp Web calls, or the physician captures
+   the browser tab audio directly. Teleconsultation is the initial focus.
+2. **In-person, private practices (*consultórios particulares*).** The same
+   ambient capture extends to the consultation room — self-serve B2C for
+   individual physicians.
+3. **Clinics and hospitals.** Multi-tenant clinics need delegation and group
+   workflows; hospitals need the deployment options below. The architecture
+   is prepared for this from day one — it is not a rewrite.
+
+## Deployment path
+
+Cloudflare-hosted today; **on-premise and private-cloud are architectural
+commitments, not roadmap promises**. Domain logic sits behind ports and
+adapters (see [Deployment options](/en/docs/business/deployment-options)), so
+swapping D1 for Postgres or R2 for S3 is an adapter, not a rewrite. Hospital
+deployments can run fully in the customer's environment, including local
+model inference.
+
+## MVP scope
+
+One complete workflow, end to end:
+
+1. Doctor starts a consultation — with explicit patient consent.
+2. Audio is captured and transcribed, with doctor/patient speaker separation.
+3. An LLM structures the conversation into a clinical note.
+4. The doctor reviews, edits and approves.
+5. The note is exported — PDF, FHIR R4 Bundle, or openEHR composition.
+
+The structured note uses KTB's locale-native anamnesis (chief complaint,
+history, background, allergies, medications, physical exam, hypotheses,
+conduct) rather than a generic SOAP template — each section carries
+**evidence citations**: the verbatim transcript sentences that ground it. The
+AI never invents findings; it shows its sources.
+
+## Differentiators
+
+Against Dragon Copilot, Abridge and Nabla:
+
+- **Brazilian Portuguese medical accuracy** — Whisper decoding is biased with
+  a clinical glossary (`initial_prompt`) covering conditions, drugs, exams,
+  CID-10 and TUSS.
+- **Evidence-cited sections** — every field links to the sentences that
+  produced it; hallucination is structurally visible, not silently trusted.
+- **Physician-approves-only** — documentation-only positioning is a product
+  constraint, not a disclaimer.
+- **Interoperability** — FHIR R4 and openEHR exports, not just PDF.
+- **Deployment flexibility** — cloud or fully on-premise with local models.
+
+## How we measure value
+
+- Time from consultation end to signed note vs. manual documentation.
+- Review time per note (edit distance from draft to approved).
+- Transcription accuracy (WER) on real PT-BR consult audio via the eval
+  suite.
+
+The doctor always reviews and approves. Consent, encryption and LGPD are
+architectural, not aspirational — see
+[Security and compliance](/en/docs/business/security-and-compliance).
+
+## Honest scope notes
+
+- **Speaker diarization is post-MVP.** Today speaker separation comes from
+  separate audio sources (clinician microphone vs. call/tab/bot audio), which
+  is reliable for telemedicine. Single-stream diarization for one-microphone
+  in-person capture is on the backlog.
+- **In-person capture** is designed for but not yet the primary demo path —
+  telemedicine ships first.
