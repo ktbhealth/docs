@@ -39,7 +39,7 @@ export default defineConfig({
     tailwindcss(),
     tanstackStart({
       prerender: {
-        enabled: true,
+        enabled: process.env.DOCS_PRERENDER !== '0',
         // low concurrency: the prerender preview server + crawler is
         // memory-hungry and gets OOM-killed on smaller machines
         concurrency: 4,
