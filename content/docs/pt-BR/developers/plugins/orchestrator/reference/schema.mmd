@@ -1,0 +1,40 @@
+erDiagram
+
+
+"orchestration_defs" {
+  TEXT id PK
+  TEXT version
+  TEXT def
+  INTEGER enabled
+  INTEGER created_at
+  INTEGER updated_at
+}
+"orchestration_events" {
+  TEXT run_id PK
+  INTEGER seq PK
+  TEXT event_id
+  TEXT event_type
+  TEXT payload
+  TEXT source
+  INTEGER ts
+}
+"orchestration_node_runs" {
+  TEXT run_id PK
+  INTEGER seq PK
+  TEXT node_id
+  TEXT status
+  INTEGER latency_ms
+  TEXT error
+  INTEGER fires
+}
+"orchestration_runs" {
+  TEXT id PK
+  TEXT def_id
+  TEXT def_version
+  TEXT status
+  TEXT state
+  TEXT runtime
+  TEXT error
+  INTEGER created_at
+  INTEGER updated_at
+}
