@@ -8,15 +8,15 @@ icon: GitPullRequest
 
 `.github/workflows/ci.yml` roda em todo push para `main` e todo PR:
 
-| Job / step                    | O que faz                                                   |
-| ----------------------------- | ----------------------------------------------------------- |
-| `ci:check`                    | fmt + lint + typecheck (tasks Vite+ em `vite.config.ts`)    |
-| `ci:test`                     | vitest — depende de `ci:build` (precisa do output Paraglide)|
-| `ci:build`                    | build de produção                                           |
-| `ci:route-types`              | verifica se `route-types.d.ts` gerados estão atualizados    |
-| `ci:db-schema` / `ci:db-migrations` / `ci:worker-types` | drift checks de arquivos gerados |
-| `ci:knip` / `ci:arch`         | análise de código morto + smoke test das regras de arquitetura |
-| `erd`                         | regenera docs de banco no repo docs irmão; falha em drift   |
+| Job                          | O que faz                                                        |
+| ---------------------------- | ---------------------------------------------------------------- |
+| `check`                      | `ci:check` (fmt + lint + typecheck), `ci:route-types`, `ci:db-schema`, `ci:db-migrations`, `ci:i18n`, `ci:worker-types`, `ci:knip` — tasks Vite+ em `vite.config.ts` |
+| `test` (matrix em shards)    | `bunx vitest run --shard=N/8` por shard — sem build; arquivos gerados são commitados |
+| `coverage-gate`              | faz merge dos blobs de cobertura dos shards e aplica os thresholds globais de 100% |
+| `bundle-budget`              | orçamento de tamanho de bundle                                   |
+| `eval-gate`                  | gate de métricas do eval de transcrição                          |
+| `metrics`                    | coleta de métricas LoC                                           |
+| `erd` / `erd-docs`           | regenera docs de banco no repo docs irmão; falha em drift        |
 
 Localmente, `bun run check` cobre fmt/lint/typecheck. Para reproduzir um
 step do CI: `bunx vp run ci:<nome>` na raiz do repo.

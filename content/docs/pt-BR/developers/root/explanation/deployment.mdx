@@ -10,12 +10,15 @@ declara recursos e bindings; não há setup manual no dashboard.
 
 ## Recursos
 
-| Recurso      | Propósito                                             | Definido em              |
-| ------------ | ----------------------------------------------------- | ------------------------ |
-| Banco D1     | Todos os dados do app (binding `DB`)                  | `deploySqlDatabase`      |
-| Workers AI   | Binding `AI` — features de transcrição/LLM            | `Cloudflare.Workers.AI()`|
-| Bucket R2    | Áudio de consultas (`AUDIO_BUCKET`, privado)          | `Cloudflare.R2.Bucket("audio")` |
-| Queue        | Transcrição assíncrona (`AUDIO_QUEUE` → mesmo worker) | `Cloudflare.Queues.Queue("transcription")` |
+| Recurso       | Propósito                                                              | Definido em              |
+| ------------- | ---------------------------------------------------------------------- | ------------------------ |
+| Banco D1      | Todos os dados do app (binding `DB`)                                   | `deploySqlDatabase`      |
+| Workers AI    | Binding `AI` — features de transcrição/LLM                             | `Cloudflare.Workers.AI()`|
+| Buckets R2    | Áudio de consultas (`AUDIO_BUCKET`), assets de tema (`THEME_ASSETS_BUCKET`), imagens (`IMAGES_BUCKET`) — todos privados | `Cloudflare.R2.Bucket(...)` |
+| Queues        | Trabalho assíncrono (`AUDIO_QUEUE` → mesmo worker, `THEME_ASSETS_QUEUE`) | `Cloudflare.Queues.Queue(...)` |
+| Durable Object| `SCHEDULER` (`schedulerDo`) + `ACP_BRIDGE`                             | `Cloudflare.DurableObject(...)` |
+| Email         | Binding `EMAIL` send_email + `EMAIL_FROM`                              | condicional à config     |
+| Crons         | Triggers agendados de `CRON_SCHEDULES`                                  | campo `crons:`           |
 
 As migrations do D1 são geradas pelo Drizzle (`bun run db:generate`) e
 sincronizadas para `packages/db/alchemy-migrations` no momento do deploy
@@ -31,7 +34,9 @@ build:
   veja
   [Variáveis de ambiente](/pt-BR/docs/developers/root/how-to/environment-variables).
 - Config não-secreta (`BETTER_AUTH_URL`, `PLATFORM_ADMIN_EMAILS`,
-  `VITE_DOCS_URL`) é ligada da mesma forma por paridade.
+  `AUDIO_TRANSCRIBE_MODEL`, settings OTEL, …) é ligada da mesma forma por
+  paridade. Valores `VITE_*` são diferentes — são inline no build a partir
+  de `apps/web/.env.production`.
 
 É por isso que as regras de arquitetura proíbem `process.env`/`cloudflare:*`
 fora da borda: plugins recebem capabilities via services Effect, nunca via

@@ -34,8 +34,8 @@ Drop a file in `plugins/consultations/src/api-routes/` — it is mounted at
 `/api/*` automatically. Use `createPluginApiRoute` + `getSessionUser` from
 `@ktb/server-fns`; the runtime (DB, AI, R2, queue bindings) arrives through
 the host-resolved registry, so the plugin needs no host imports. See
-`transcribe.ts` for the pattern, including the `MAX_AUDIO_BYTES` ceiling
-that must stay in sync with `apps/web/src/lib/audio-jobs.ts`.
+`transcribe.ts` for the pattern — size limits come from the shared
+`MAX_AUDIO_BYTES` constant in `audio-consumer.ts`.
 
 ## Touch the pipeline carefully
 
@@ -50,5 +50,5 @@ table joins — see how `patients.ownerOf` is used for ownership checks.
 ```bash
 bun run gen:route-types   # route-types.d.ts is generated
 bun run db:erd            # if the schema changed
-bun run check && bunx vp run ci:test -- <package>
+bun run check && cd plugins/consultations && bunx vitest run
 ```

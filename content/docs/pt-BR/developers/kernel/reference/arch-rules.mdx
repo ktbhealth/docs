@@ -5,8 +5,10 @@ icon: ShieldExclamationPoint
 ---
 
 As regras de arquitetura do repo do produto não são convenções — são aplicadas
-por `tools/arch-policy.mjs`, a fonte única para overrides do oxlint e regras
-`ktb-arch/*`.
+pelo oxlint através do conjunto de regras `arch/*` distribuído como preset
+`eslint-config-arch` do `@ktbhealth/workspace`. O `vite.config.ts` o conecta
+via o shim local `tools/arch-plugin.mjs`, e `vp check`/`vp lint` o executa em
+cada commit.
 
 ## A fronteira
 
@@ -32,5 +34,5 @@ migrações drizzle. Eles são regenerados por `vp build`/`check` e `db:generate
 
 ## Se o lint falhar
 
-O erro nomeia a regra (`ktb-arch/*`). A correção quase sempre é: mover o import
+O erro nomeia a regra (`arch/*`). A correção quase sempre é: mover o import
 para trás de um port, ou mover o arquivo para a camada de borda que o possui.

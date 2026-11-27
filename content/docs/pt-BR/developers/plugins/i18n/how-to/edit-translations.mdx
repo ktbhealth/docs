@@ -1,0 +1,54 @@
+---
+title: Editar traduções
+description: Use o painel /platform/i18n — edição em matriz, rascunho/publicação, escopos, importação/exportação e o pseudo-locale.
+icon: Languages
+---
+
+Todas as edições de copy acontecem em `/platform/i18n` (restrito a
+platform-admin). O runtime lê apenas valores publicados, então nada do
+que você digita fica visível para os usuários até você publicar.
+
+## O ciclo de edição
+
+1. Escolha um **namespace** (um por domínio de plugin — `app`,
+   `patients`, `consultations`, …) e um **locale**.
+2. Edite uma célula. Mensagens `text` são templates ICU simples;
+   mensagens `rich` abrem o editor de rich-text (HTML sanitizado).
+3. **Salvar rascunho** — valida o template (params, cobertura de
+   plural/select) e o armazena em `draft_value`. Templates inválidos
+   são rejeitados antes de chegar ao banco.
+4. **Publicar** — promove o rascunho para `value`, incrementa
+   `version`, invalida o cache de runtime e grava uma entrada em
+   `admin_audit`.
+5. **Descartar** — remove o rascunho; linhas nunca publicadas são
+   deletadas.
+
+Traduções ausentes recebem badge na matriz — uma chave sem linha para
+o locale selecionado faz fallback pela cadeia de locale em runtime.
+
+## Escopos
+
+O seletor de escopo define onde uma sobrescrita se aplica:
+
+- `global` — todos (o padrão; é o que as importações de baseline
+  escrevem).
+- `tenant:<id>` — uma clínica/organização.
+- `portal:<instância>` — uma instância de portal (também pode fixar o
+  próprio locale, que sobrescreve o cookie `ktb-locale` do visitante).
+
+A ordem de resolução é portal → tenant → global, então uma
+sobrescrita de portal vence a de tenant, que vence a global.
+
+## Importar / exportar
+
+- **Exportar** baixa um namespace (ou todos) como JSON por locale —
+  use para revisão, repasse a tradutores ou backups.
+- **Importar** faz upsert de valores de rascunho no mesmo formato JSON;
+  revise e publique depois. Importações são auditadas.
+
+## QA com o pseudo-locale
+
+Habilite `qps` em `i18n_locales` (semeado por padrão) e mude para ele —
+os templates renderizam acentuados e com padding (`[!!! …]`), então
+texto truncado, overflow de layout e strings fixas que ignoram `t()`
+ficam visíveis imediatamente.

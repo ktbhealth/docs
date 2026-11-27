@@ -4,21 +4,28 @@ description: Create DB-backed pages with controlled paths, ordering, and nav pla
 icon: FileText
 ---
 
-`plugins/pages` serves **custom pages**: markdown content stored in
-`custom_pages`, rendered on demand at clean URLs, with admin control over
-publication, navigation, and ordering. Pages are data, not code — no
-deploy needed.
+`plugins/pages` serves **custom pages**: content stored in `pages` and
+related documents, rendered on demand at clean URLs, with admin control
+over publication, navigation, and ordering. Pages are data, not code —
+no deploy needed.
 
 ## The model
 
-| Column        | Meaning                                             |
-| ------------- | --------------------------------------------------- |
-| `path`        | Unique URL path (`/welcome`, `/faq`) — normalized  |
-| `title`       | Display title                                       |
-| `content`     | Markdown body (rendered by `markdown.tsx`)          |
-| `published`   | Only published pages render for visitors           |
-| `showInNav`   | Include in site navigation                          |
-| `sortOrder`   | Ordering within nav                                 |
+| Column           | Meaning                                                        |
+| ---------------- | -------------------------------------------------------------- |
+| `path`           | Unique URL path (`/welcome`, `/faq`) — normalized             |
+| `title`          | Display title                                                  |
+| `richTextId`     | FK → `rich_text` document rendered as the page body            |
+| `layoutId`       | FK → `layouts` row composing the body from ordered sections    |
+| `builderJson`    | Versioned Puck document from the site builder (wins over layout slots) |
+| `searchSchemaId` | FK → `schemas` row validating the page's URL search params     |
+| `published`      | Only published pages render for visitors                       |
+| `showInNav`      | Include in site navigation                                     |
+| `sortOrder`      | Ordering within nav                                            |
+
+A page picks one body source: `builderJson` if present, else the
+`layoutId` composition, else the single `richTextId` document. All body
+references are optional — a page with none renders an empty body.
 
 ## Path rules
 
@@ -41,10 +48,10 @@ the service, which enforces publication state. Visitors only ever see
 `published = true` rows through the wildcard descriptor; drafts are
 invisible, not forbidden.
 
-The console lists **both** sources: `custom_pages` rows (editable here)
-and pages plugins contribute via `pages`/`panel.pages` descriptors —
-those render read-only with a **Provided by** badge naming the owning
-plugin id, filtered by the plugin's package-granular enable state.
+The console lists **both** sources: `pages` rows (editable here) and
+pages plugins contribute via `pages`/`panel.pages` descriptors — those
+render read-only with a **Provided by** badge naming the owning plugin
+id, filtered by the plugin's package-granular enable state.
 
 ## Ordering and nav
 

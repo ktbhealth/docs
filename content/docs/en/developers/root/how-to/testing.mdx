@@ -36,6 +36,10 @@ cd apps/web && bun run test:e2e
 
 ## In CI
 
-The `ci` job runs `bunx vp run ci:test`, which builds first (Paraglide
-output must exist). If tests fail only in CI, check that generated files
-are fresh — see [Environment variables](/en/docs/developers/root/how-to/environment-variables).
+In CI the suite runs as a sharded matrix — `bunx vitest run
+--shard=N/8` with no build step (generated files are committed; the
+`check` job's drift tasks fail the PR if any are stale). Per-shard
+coverage is disabled; `coverage-gate` merges the shard blobs and
+enforces the real thresholds. If tests fail only in CI, check that
+generated files are fresh — see
+[Environment variables](/en/docs/developers/root/how-to/environment-variables).

@@ -1,0 +1,42 @@
+---
+title: Internationalization
+description: Copy de UI como dados em runtime — mensagens canônicas no banco, t() tipado, o editor /platform/i18n e resolução de locale/escopo.
+icon: Languages
+---
+
+O plugin i18n é dono das tabelas `i18n_*`: toda string visível ao
+usuário no produto é uma linha, não uma constante de código. Os
+catálogos baseline compilados a partir dos plugins são importados uma
+vez; depois disso o banco é a única fonte de verdade e
+`/platform/i18n` é onde o copy é editado.
+
+## Conceitos-chave
+
+- **Copy = dados** — as mensagens vivem em `i18n_messages`, indexadas
+  por `(namespace, key, locale, scope, scopeId)`; a coluna `value`
+  publicada é o modelo de leitura que o `t()` resolve.
+- **Rascunho → publicação** — edições caem primeiro em `draft_value`;
+  `publish` troca para `value`, incrementa `version` e invalida o cache
+  do isolate. Rascunhos nunca vazam para o runtime.
+- **Edição via CRDT** — edições concorrentes são mescladas por um op
+  log Loro (`i18n_crdt_updates`); o `value` da linha continua sendo o
+  modelo de leitura materializado, então o `t()` nunca toca o estado
+  CRDT.
+- **Cadeia de escopo** — a resolução percorre `instância de portal →
+  tenant → global`, depois locale → locale padrão → literal da chave.
+  Edições de platform-admin usam `global` por padrão; portais e
+  tenants podem sobrescrever por escopo.
+- **Cadeia de locale** — o locale da requisição vem do cookie
+  `ktb-locale`, restrito por `i18n_locales.enabled`; uma instância de
+  portal pode fixar um locale que sobrescreve o cookie. `qps` é um
+  pseudo-locale para QA de layout.
+- **API tipada para desenvolvedores** — `t()` é gerado com tipagem por
+  chave e params no subconjunto ICU (`{name}`, `{count, plural, …}`,
+  `{when, date}`); chaves desconhecidas são erro de compilação, linhas
+  ausentes degradam para o baseline em inglês e depois para o literal
+  da chave.
+
+## Para onde ir em seguida
+
+- [Editar traduções](/pt-BR/docs/developers/plugins/i18n/how-to/edit-translations) — o fluxo do painel `/platform/i18n`
+- [Referência de tabelas e resolução](/pt-BR/docs/developers/plugins/i18n/reference) — schema, escopos, tipos de mensagem

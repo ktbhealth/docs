@@ -34,8 +34,8 @@ than scraping the UI.
 | `GET /api/consultations/:id/pdf` | Download the finalized note as PDF |
 | `GET /api/consultations/:id/audio` | Stream session audio (owner-only) |
 | `POST /api/transcribe` | Server-side transcription fallback |
-| `GET /api/jobs` | Job queue status |
-| `GET /api/notifications` | In-app notifications |
+| `GET /api/jobs` | SSE feed of audio-pipeline job rows (platform admin) |
+| `GET /api/notifications` | SSE stream of in-app notifications |
 
 All routes go through the plugin system's API-route convention — they are
 versioned with the app, not a separate public API with its own SLA.

@@ -4,14 +4,18 @@ description: DB-backed pages rendered at clean URLs — content as data, with ad
 icon: FileText
 ---
 
-The pages plugin serves custom pages: markdown content in `custom_pages`,
-rendered on demand at normalized URL paths, managed through the admin
-surface — no deploy needed to publish content.
+The pages plugin serves custom pages: rows in `pages` rendered on demand
+at normalized URL paths, managed through the admin surface — no deploy
+needed to publish content. The page body is not stored on the row: it
+references a `rich_text` document, a `layouts` composition, or a
+site-builder `builder_json` document.
 
 ## Key concepts
 
-- **Content as data** — `path`, `title`, markdown `content`,
-  `published`, `showInNav`, `sortOrder`.
+- **Content as data** — `path`, `title`, `published`, `showInNav`,
+  `sortOrder`, plus `richTextId`/`layoutId`/`builderJson`/
+  `searchSchemaId` references to the body, layout, builder document, and
+  URL-param schema.
 - **Path normalization** — `normalizePagePath` is the single validator for
   admin input and request paths; it rejects the `/platform` namespace so
   custom pages can never shadow the admin console.

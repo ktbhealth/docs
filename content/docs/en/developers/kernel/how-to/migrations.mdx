@@ -4,12 +4,13 @@ description: Generate, apply, and deploy Drizzle migrations for Cloudflare D1.
 icon: Database
 ---
 
-Schema lives in `packages/db` (Drizzle ORM on D1/SQLite). Migrations are
-generated files — never hand-edit them.
+Schema is plugin-owned (`plugins/*/src/schema.ts`, aggregated into the
+generated `packages/db/src/schema.gen.ts`). Migrations are generated
+files — never hand-edit them.
 
 ## Generate
 
-After changing schema in `packages/db/src`:
+After changing a plugin's schema:
 
 ```bash
 bun run db:generate    # → packages/db/drizzle/*.sql + meta
