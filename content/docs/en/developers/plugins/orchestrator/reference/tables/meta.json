@@ -1,0 +1,9 @@
+{
+	"title": "Tables",
+	"pages": [
+		"orchestration_defs",
+		"orchestration_events",
+		"orchestration_node_runs",
+		"orchestration_runs"
+	]
+}

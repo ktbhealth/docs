@@ -33,7 +33,7 @@ CREATE TABLE "consultations" (
 	`server_transcript` text,
 	`corrected_transcript` text,
 	`enhancement_engine` text,
-	`created_at` integer NOT NULL, `tenant_id` integer REFERENCES groups(id) ON DELETE SET NULL, `anamnesis_hash` text, `anamnesis_version` integer, `blob_hash` text, `synthetic` integer DEFAULT false NOT NULL, `eval_item_id` integer, `transcript_reviewed_at` integer, `transcript_reviewed_by` text, `anamnesis_reviewed_at` integer, `anamnesis_reviewed_by` text, `anamnesis_reviewed_version` integer, `deferred_until` integer, `transcript_segments` text, `transcript_edits` text, `transcript_edits_base` text, `transcript_reviewed_edits` integer,
+	`created_at` integer NOT NULL, `tenant_id` integer REFERENCES groups(id) ON DELETE SET NULL, `anamnesis_hash` text, `anamnesis_version` integer, `blob_hash` text, `synthetic` integer DEFAULT false NOT NULL, `eval_item_id` integer,
 	FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON UPDATE no action ON DELETE no action
 )
 ```
@@ -70,16 +70,6 @@ CREATE TABLE "consultations" (
 | blob_hash | TEXT |  | true |  |  |  |
 | synthetic | INTEGER | false | false |  |  |  |
 | eval_item_id | INTEGER |  | true |  |  |  |
-| transcript_reviewed_at | INTEGER |  | true |  |  |  |
-| transcript_reviewed_by | TEXT |  | true |  |  |  |
-| anamnesis_reviewed_at | INTEGER |  | true |  |  |  |
-| anamnesis_reviewed_by | TEXT |  | true |  |  |  |
-| anamnesis_reviewed_version | INTEGER |  | true |  |  |  |
-| deferred_until | INTEGER |  | true |  |  |  |
-| transcript_segments | TEXT |  | true |  |  |  |
-| transcript_edits | TEXT |  | true |  |  |  |
-| transcript_edits_base | TEXT |  | true |  |  |  |
-| transcript_reviewed_edits | INTEGER |  | true |  |  |  |
 
 ## Constraints
 
