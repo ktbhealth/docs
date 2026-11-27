@@ -1,28 +1,46 @@
 ---
 title: Como grants são avaliados
-description: O caminho de resolução de subject_roles até a resposta de can() — role_permissions, semântica de deny e invalidação por epoch.
+description: O caminho de resolução das relation tuples até a resposta de can() — codificações de tupla, semântica de deny e invalidação por epoch.
 icon: Scale
 ---
 
 O RBAC dinâmico resolve "esse subject pode fazer X?" em request time a
-partir de três tabelas. A avaliação é deliberadamente simples — a
-complexidade está em manter os inputs frescos.
+partir de `relation_tuples` — a única store de grants. A avaliação é
+deliberadamente simples — a complexidade está em manter os inputs
+frescos.
 
 ## O caminho de resolução
 
 ```
-subject_roles (quem tem qual papel)
-  → roles (o bundle)
-  → role_permissions (resource, action, effect)
-  → Permissions.can(resource, action)
+relation_tuples (grants, memberships, relações de objeto)
+  → roles (só metadados — nome, descrição, meta)
+  → Permissions.can(resource, action) / canObject(...)
 ```
 
-- `subject_roles` atribui papéis a usuários *e* grupos — membership de
-  grupo expande para seus membros.
-- `role_permissions` guarda triplas `(resource, action, effect)`;
-  `effect` é allow/deny.
-- `Permissions.can` responde contra o conjunto de grants resolvido do
-  caller.
+Duas codificações de tupla coexistem:
+
+- **Grant de papel** — `objectType` = recurso (`"patient"`,
+  `"platform"`, …), `objectId` = wildcard `"*"`, `relation` = ação,
+  `subjectKind` = `"role"`, `subjectId` = o NOME do papel (nomes são
+  únicos, então tuplas sobrevivem a mudanças de id do papel).
+- **Membership** — `objectType` = `"role"`, `objectId` = nome do papel,
+  `relation` = `"member"`, subject = o atribuído (`"user"`/`"group"`).
+  Membership de grupo expande para os membros do grupo; subjects `role`
+  podem aninhar (tuplas member apontando para outros papéis) até um
+  limite de profundidade.
+
+Checks em nível de objeto (`canObject`) casam tuplas em
+`(objectType, objectId, relation)` com `objectId = "*"` funcionando como
+wildcard sobre todos os objetos do tipo.
+
+## Escopo e expiração
+
+- `tenant_id` NULL = grant global; preenchido = com escopo de tenant.
+  Sem contexto de tenant só tuplas globais resolvem; `tenantPolicy`
+  "strict" esconde tuplas globais de checks com escopo de tenant,
+  "inherit" deixa que elas satisfaçam.
+- `expires_at` limita grants temporários — a resolução o respeita em
+  hits, então a expiração tem efeito sem escrita.
 
 ## Semântica de deny
 
@@ -34,13 +52,6 @@ billing"). A ordem de avaliação importa; leia `buildPermissions` em
 ## Invalidação por epoch
 
 `permission_epoch` é um contador de versão de linha única, incrementado a
-cada mudança de grant ou atribuição. Snapshots de permissão são cacheados
-por epoch — um bump invalida todos de uma vez, que é como revogações têm
-efeito sem reiniciar nada.
-
-## Modos estático vs dinâmico
-
-`entityAuthz` suporta um modo estático de permix `Def` (regras de
-compile-time, comportamento inalterado) e o modo dinâmico acima.
-`requireEntityAccess` escolhe o caminho certo — novos checks devem usá-lo
-para que ambos os modos continuem funcionando durante a migração.
+cada escrita em `relation_tuples` (e em tabelas que afetam membership de
+grupo). Grant sets são cacheados por epoch — um bump invalida todos de
+uma vez, que é como revogações têm efeito sem reiniciar nada.

@@ -17,10 +17,12 @@ paciente.
 ## Passos
 
 1. **Ache as queries.** `plugins/consultations/src/api.ts` expõe
-   `ConsultationsQueries` e `PatientRecordConsultationsQueries` (usada
-   para embeds no registro do paciente). Despache via
+   `ConsultationsQueries`; `PatientRecordConsultationsQueries` (usada
+   para embeds no registro do paciente) é definida do lado patients em
+   `plugins/patients/src/api.ts`. Despache via
    `Query.dispatcher(...)`, como o próprio plugin faz para
-   `patients.ownerOf` em `plugins/consultations/src/index.ts:798`.
+   `patients.ownerOf` em `plugins/consultations/src/service.ts` e
+   `cqrs.ts`.
 
 2. **Resolva ownership primeiro.** Antes de listar consultas, verifique se
    o caller pode ver o paciente — `patients.ownerOf` retorna o id do

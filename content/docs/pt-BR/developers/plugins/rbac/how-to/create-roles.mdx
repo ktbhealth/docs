@@ -14,36 +14,48 @@ config de compile-time. Dois packages dividem o trabalho:
 
 `packages/rbac/src/vocabulary.ts` guarda `PERMISSION_CATALOG` — strings
 `"resource.action"` como `patient.read`, `consultation.update`,
-`platform.admin`. As ações de entidade espelham o permix `Def` de
-`@ktb/authz`; as ações de plataforma estão em `PLATFORM_ACTIONS`. O
-catálogo hoje é sincronizado à mão (codegen adiado) — **ao adicionar uma
-nova permissão, adicione aqui primeiro**, senão grants de papel não
-conseguem referenciá-la.
+`platform.admin`. Ações de entidade vivem em `ENTITY_ACTIONS`, ações de
+plataforma em `PLATFORM_ACTIONS`. O catálogo hoje é sincronizado à mão
+(codegen adiado) — **ao adicionar uma nova permissão, adicione aqui
+primeiro**, senão grants de papel não conseguem referenciá-la.
 
 ## Criar um papel
 
-Papéis vivem em `roles` + `role_permissions` (+ `subject_roles` para
-atribuições). O caminho suportado é a UI admin em `/platform`, que passa
-por `RbacQueries`/`RbacCommands` — edições de papel validam grants contra
-o catálogo (`isKnownPermission` avisa sobre entradas desconhecidas) e
+Metadados do papel vivem em `roles`; grants e atribuições vivem
+exclusivamente em `relation_tuples`:
+
+- **Grant de papel** — `(objectType=<recurso>, objectId="*",
+  relation=<ação>, subjectKind="role", subjectId=<nome do papel>)`.
+- **Membership** — `(objectType="role", objectId=<nome do papel>,
+  relation="member", subjectKind="user"|"group", subjectId=<id>)`.
+
+O caminho suportado é a UI admin em `/platform`, que passa por
+`RbacQueries`/`RbacCommands` — edições de papel validam grants contra o
+catálogo (`isKnownPermission` avisa sobre entradas desconhecidas) e
 escritas são via CQRS, nunca SQL cru.
 
 ## Como os checks resolvem
 
-Em request time, `Permissions.can(resource, action)` (ou os helpers
-`requireCanAs`/`entityAuthz` de `packages/rbac`) resolve os grants do
-caller a partir das atribuições de papel. `permission_epoch` existe para
-invalidação de cache: mudanças de grant incrementam o epoch para que
-snapshots de permissão velhos sejam descartados. Entradas deny nunca
-satisfazem um check — a ordem de avaliação importa, veja
-`buildPermissions` em `packages/rbac/src/index.ts`.
+Em request time, o service `Permissions` responde contra o grant set
+resolvido do caller:
 
-## Modo estático vs dinâmico
+- `can(resource, action)` / `requirePermission(...)` — checks de grant
+  por papel ligados ao `Principal` da requisição; falham fechado sem
+  principal.
+- `canObject(objectType, objectId, relation)` — checks ReBAC em nível de
+  objeto; tuplas com `object_id = "*"` são grants wildcard, subjects
+  `user`/`group`/`role` expandem (subjects `role` recursam via tuplas
+  member, com limite de profundidade).
+- `permissionsFor`/`canFor`/`requirePermissionFor` — os mesmos checks
+  ligados a um user id explícito, para contextos fora de request.
 
-`entityAuthz` suporta dois modos: o caminho estático do permix `Def`
-(comportamento inalterado) e o caminho dinâmico do rbac. Novos checks de
-entidade devem passar por `requireEntityAccess` para que ambos os modos
-continuem funcionando.
+`permission_epoch` existe para invalidação de cache: mudanças de grant
+incrementam o epoch para que grant sets velhos sejam descartados.
+`tenant_id` delimita o escopo das tuplas — NULL é global, e
+`tenantPolicy` ("inherit"/"strict") seleciona se tuplas globais
+satisfazem checks com escopo de tenant. Entradas deny nunca satisfazem
+um check — a ordem de avaliação importa, veja `buildPermissions` em
+`packages/rbac/src/index.ts`.
 
 ## Schema
 

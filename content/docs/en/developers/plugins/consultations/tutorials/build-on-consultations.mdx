@@ -16,10 +16,12 @@ for a patient, visible only to users allowed to see that patient.
 ## Steps
 
 1. **Find the queries.** `plugins/consultations/src/api.ts` exposes
-   `ConsultationsQueries` and `PatientRecordConsultationsQueries` (used
-   for patient-record embeds). Dispatch them via
+   `ConsultationsQueries`; `PatientRecordConsultationsQueries` (used for
+   patient-record embeds) is defined on the patients side in
+   `plugins/patients/src/api.ts`. Dispatch them via
    `Query.dispatcher(...)`, like the plugin itself does for
-   `patients.ownerOf` at `plugins/consultations/src/index.ts:798`.
+   `patients.ownerOf` in `plugins/consultations/src/service.ts` and
+   `cqrs.ts`.
 
 2. **Resolve ownership first.** Before listing consults, check the caller
    may see the patient — `patients.ownerOf` gives the owner id; compare

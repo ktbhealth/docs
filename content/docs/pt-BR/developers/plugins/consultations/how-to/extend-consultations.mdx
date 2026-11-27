@@ -35,9 +35,8 @@ Crie um arquivo em `plugins/consultations/src/api-routes/` — ele é montado
 em `/api/*` automaticamente. Use `createPluginApiRoute` +
 `getSessionUser` de `@ktb/server-fns`; o runtime (bindings de DB, AI, R2,
 queue) chega pelo registry resolvido no host, então o plugin não precisa de
-imports do host. Veja `transcribe.ts` para o padrão, incluindo o teto
-`MAX_AUDIO_BYTES` que precisa se manter em sincronia com
-`apps/web/src/lib/audio-jobs.ts`.
+imports do host. Veja `transcribe.ts` para o padrão — limites de tamanho
+vêm da constante compartilhada `MAX_AUDIO_BYTES` em `audio-consumer.ts`.
 
 ## Mexa no pipeline com cuidado
 
@@ -53,5 +52,5 @@ veja como `patients.ownerOf` é usado para checagens de ownership.
 ```bash
 bun run gen:route-types   # route-types.d.ts é gerado
 bun run db:erd            # se o schema mudou
-bun run check && bunx vp run ci:test -- <package>
+bun run check && cd plugins/consultations && bunx vitest run
 ```

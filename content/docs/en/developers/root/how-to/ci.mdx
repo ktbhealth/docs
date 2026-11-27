@@ -8,18 +8,18 @@ icon: GitPullRequest
 
 `.github/workflows/ci.yml` runs on every push to `main` and every PR:
 
-| Job / step                    | What it does                                              |
-| ----------------------------- | --------------------------------------------------------- |
-| `ci:check`                    | fmt + lint + typecheck (Vite+ tasks in `vite.config.ts`)   |
-| `ci:test`                     | vitest — depends on `ci:build` (needs Paraglide output)   |
-| `ci:build`                    | production build                                          |
-| `ci:route-types`              | verifies generated `route-types.d.ts` are fresh           |
-| `ci:db-schema` / `ci:db-migrations` / `ci:worker-types` | generated-file drift checks |
-| `ci:knip` / `ci:arch`         | dead-code analysis + architecture boundary smoke test     |
-| `erd`                         | regenerates DB docs in the sibling docs repo; fails on drift |
+| Job                        | What it does                                                        |
+| -------------------------- | ------------------------------------------------------------------- |
+| `check`                    | `ci:check` (fmt + lint + typecheck), `ci:route-types`, `ci:db-schema`, `ci:db-migrations`, `ci:i18n`, `ci:worker-types`, `ci:knip` — Vite+ tasks in `vite.config.ts` |
+| `test` (sharded matrix)    | `bunx vitest run --shard=N/8` per shard — no build step; generated files are committed |
+| `coverage-gate`            | merges shard coverage blobs, enforces the global 100% thresholds    |
+| `bundle-budget`            | bundle size budget                                                  |
+| `eval-gate`                | transcript eval metrics gate                                        |
+| `metrics`                  | LoC/metrics collection                                              |
+| `erd` / `erd-docs`         | regenerates DB docs in the sibling docs repo; fails on drift        |
 
-Locally, `bun run check` covers fmt/lint/typecheck. To reproduce a CI step:
-`bunx vp run ci:<name>` from the repo root.
+Locally, `bun run check` covers fmt/lint/typecheck. To reproduce a CI
+step: `bunx vp run ci:<name>` from the repo root.
 
 ## Generated files
 

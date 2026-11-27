@@ -1,6 +1,6 @@
 ---
 title: Como páginas customizadas renderizam
-description: O caminho do request da URL ao markdown — wildcard descriptor, lookup só-publicados e o renderer de subset de markdown.
+description: O caminho do request da URL ao corpo renderizado — wildcard descriptor, lookup só-publicados e resolução rich-text/layout/builder.
 icon: Eye
 ---
 
@@ -10,25 +10,30 @@ render permanece monótono.
 
 ## Fluxo do request
 
-1. O wildcard descriptor do router casa qualquer path não reconhecido e o
-   entrega ao guard/loader de pages.
+1. O wildcard descriptor do router (`pages.render`, route key
+   `pages.custom`) casa qualquer path não reconhecido e o entrega ao
+   guard/loader de pages.
 2. O path do request é normalizado pelo mesmo `normalizePagePath` usado
    no input admin — já URL-decodado, trailing slashes tolerados.
 3. `publishedByPath` carrega a linha **somente se `published = true`** —
    rascunhos e paths inexistentes produzem o mesmo resultado de
    não-encontrado.
-4. `renderMarkdown` (`plugins/pages/src/markdown.tsx`) renderiza um
-   **subset de markdown**: headings, listas, links, formatação inline —
-   deliberadamente não markdown/MDX completo, para que conteúdo
-   armazenado não injete componentes ou scripts.
+4. O loader resolve as referências de corpo: `richTextId` → o documento
+   rich-text parseado, `layoutId` → slots de seção ordenados (ou o
+   documento Puck `builderJson` do layout quando o layout foi editado no
+   site builder), e `searchSchemaId` → search params de URL validados.
+   Uma página com `builderJson` renderiza esse documento; caso contrário,
+   uma página ligada a layout compõe suas seções; senão, o documento
+   rich-text único é o corpo.
 
-## Por que um renderer de subset
+## Por que conteúdo estruturado, não markdown
 
-`content` é dado fornecido pelo usuário. Renderizá-lo pelo pipeline MDX
-do site de docs executaria componentes arbitrários; o renderer de subset
-produz React nodes puros — seguro por construção, sem passo de
-sanitização. Se você precisa de conteúdo mais rico, isso indica que a
-página deveria ser uma rota real, não uma custom page.
+Corpos de página são armazenados como documentos tipados (linhas
+`rich_text`, seções de layout, `builder_json` Puck) — nunca como markup
+cru. O renderer só vê o formato do documento parseado, então conteúdo
+armazenado não pode injetar componentes ou scripts. Se você precisa de
+código arbitrário numa página, isso indica que ela deveria ser uma rota
+real, não uma custom page.
 
 ## A reserva de /platform
 
@@ -39,7 +44,6 @@ admin nem contornar a checagem `PlatformAdmin`.
 
 ## Assimetria admin vs visitante
 
-Admins gerenciam via `panel.pages` + server fns (veja
-[fns.ts](https://github.com/ktbhealth/product)); visitantes só atingem o
+Admins gerenciam via `panel.pages` + server fns; visitantes só atingem o
 caminho de leitura publicado. Não existe URL de preview de rascunho — o
 preview é a própria lista admin.

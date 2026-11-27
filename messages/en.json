@@ -9,7 +9,5 @@
 	"audience_developers_desc": "Build on KTB — plugins, ports & adapters, deploy, contribute.",
 	"audience_business_title": "Business",
 	"audience_business_desc": "Partner with KTB — positioning, security, deployment options.",
-	"badge_primary": "Primary",
-	"locale_en": "English",
-	"locale_pt_BR": "Português (Brasil)"
+	"badge_primary": "Primary"
 }

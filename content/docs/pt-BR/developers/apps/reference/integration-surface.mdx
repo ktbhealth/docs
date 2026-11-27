@@ -35,8 +35,8 @@ vez de fazer scraping da UI.
 | `GET /api/consultations/:id/pdf` | Download da nota finalizada em PDF |
 | `GET /api/consultations/:id/audio` | Stream do áudio da sessão (owner-only) |
 | `POST /api/transcribe` | Fallback de transcrição no servidor |
-| `GET /api/jobs` | Status da fila de jobs |
-| `GET /api/notifications` | Notificações in-app |
+| `GET /api/jobs` | Feed SSE das linhas de jobs do pipeline de áudio (platform admin) |
+| `GET /api/notifications` | Stream SSE de notificações in-app |
 
 Todas as rotas seguem a convenção de api-routes do sistema de plugins —
 são versionadas junto com o app, não uma API pública separada com SLA

@@ -4,14 +4,19 @@ description: Páginas baseadas em banco renderizadas em URLs limpas — conteúd
 icon: FileText
 ---
 
-O plugin pages serve páginas customizadas: conteúdo markdown em
-`custom_pages`, renderizado sob demanda em paths de URL normalizados,
-gerenciado pela superfície admin — sem deploy para publicar conteúdo.
+O plugin pages serve páginas customizadas: linhas na tabela `pages`
+renderizadas sob demanda em paths de URL normalizados, gerenciadas pela
+superfície admin — sem deploy para publicar conteúdo. O corpo da página
+não fica armazenado na linha: ele referencia um documento `rich_text`,
+uma composição de `layouts` ou um documento `builder_json` do site
+builder.
 
 ## Conceitos-chave
 
-- **Conteúdo como dado** — `path`, `title`, `content` markdown,
-  `published`, `showInNav`, `sortOrder`.
+- **Conteúdo como dado** — `path`, `title`, `published`, `showInNav`,
+  `sortOrder`, além das referências `richTextId`/`layoutId`/
+  `builderJson`/`searchSchemaId` para o corpo, o layout, o documento do
+  builder e o schema de parâmetros de URL.
 - **Normalização de path** — `normalizePagePath` é o único validador para
   input admin e paths de request; rejeita o namespace `/platform` para que
   páginas customizadas nunca sobreponham o console admin.

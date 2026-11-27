@@ -37,14 +37,17 @@ servidor nunca a sobrescreve — as duas coexistem para o médico comparar.
 
 ## Invariantes
 
-- **`MAX_AUDIO_BYTES` = 25 MB** é aplicado duas vezes de propósito: a rota
-  de upload e `apps/web/src/lib/audio-jobs.ts` (o caminho da queue).
-  Mantenha-os em sincronia.
+- **`MAX_AUDIO_BYTES` = 25 MB** é uma constante única em
+  `plugins/consultations/src/audio-consumer.ts`, aplicada pelo consumidor
+  da queue e reutilizada pelas rotas de upload (`MAX_UPLOAD_BYTES`) e
+  `transcribe` — os callers aliasam a constante compartilhada em vez de
+  duplicá-la.
 - **Formato do payload**: modelos whisper-class recebem áudio em base64,
   não `number[]` — um `number[]` de 25 MB serializaria para ~100 MB de
   JSON.
-- **`consentAt`** é a trilha de consentimento LGPD — o pipeline não pode
-  rodar sem ela.
+- **`consentAt`** é a trilha de consentimento LGPD, gravada via
+  `recordConsent` quando a consulta é salva. A captura ao vivo é gated
+  por consentimento na UI; os estágios do pipeline não revalidam.
 - **Falhas são dados**: `audioStatus = "failed"` + `audioError`,
   exibidos na UI — o médico tenta de novo, o sistema não descarta áudio
   silenciosamente.
@@ -53,5 +56,7 @@ servidor nunca a sobrescreve — as duas coexistem para o médico comparar.
 
 Endpoints de upload/stream: `plugins/consultations/src/api-routes/`
 (`consultations.$id.audio.ts`, `transcribe.ts`). Consumidor da queue e
-estado do job: `apps/web/src/lib/audio-jobs.ts`. Bindings R2/queue:
-declarados em `apps/web/alchemy.run.ts`.
+estado do job: `plugins/consultations/src/audio-consumer.ts` (o pipeline)
+conectado via `apps/web/src/lib/audio-jobs.ts` (deps do host + kinds de
+job compartilhados). Bindings R2/queue: declarados em
+`apps/web/alchemy.run.ts`.

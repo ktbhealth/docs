@@ -27,7 +27,9 @@ Each section folder has a `meta.json` that controls its title and page order:
 { "title": "How-to guides", "pages": ["dev-environment", "deploy-to-cloudflare"] }
 ```
 
-Pages not listed in `pages` are appended after the listed ones.
+When `pages` is set, only the listed items appear — use `"..."` to include
+everything else. When `pages` is omitted, all items are included in default
+order.
 
 ## Audience tabs
 

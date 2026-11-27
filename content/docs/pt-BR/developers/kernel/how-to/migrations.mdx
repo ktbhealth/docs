@@ -4,12 +4,13 @@ description: Gerar, aplicar e fazer deploy de migrações Drizzle para Cloudflar
 icon: Database
 ---
 
-O schema vive em `packages/db` (Drizzle ORM sobre D1/SQLite). Migrações são
+O schema é de propriedade dos plugins (`plugins/*/src/schema.ts`,
+agregado no `packages/db/src/schema.gen.ts` gerado). Migrações são
 arquivos gerados — nunca edite à mão.
 
 ## Gerar
 
-Após mudar o schema em `packages/db/src`:
+Após mudar o schema de um plugin:
 
 ```bash
 bun run db:generate    # → packages/db/drizzle/*.sql + meta
