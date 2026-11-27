@@ -23,7 +23,7 @@ CREATE TABLE `orchestration_runs` (
 	`error` text,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
-)
+, `tenant_id` integer)
 ```
 
 </details>
@@ -41,6 +41,7 @@ CREATE TABLE `orchestration_runs` (
 | error | TEXT |  | true |  |  |  |
 | created_at | INTEGER |  | false |  |  |  |
 | updated_at | INTEGER |  | false |  |  |  |
+| tenant_id | INTEGER |  | true |  |  |  |
 
 ## Constraints
 
@@ -53,6 +54,7 @@ CREATE TABLE `orchestration_runs` (
 
 | Name | Definition |
 | ---- | ---------- |
+| orchestration_runs_tenant_created_idx | CREATE INDEX `orchestration_runs_tenant_created_idx` ON `orchestration_runs` (`tenant_id`,`created_at`) |
 | orchestration_runs_def_status_idx | CREATE INDEX `orchestration_runs_def_status_idx` ON `orchestration_runs` (`def_id`,`status`) |
 | sqlite_autoindex_orchestration_runs_1 | PRIMARY KEY (id) |
 
