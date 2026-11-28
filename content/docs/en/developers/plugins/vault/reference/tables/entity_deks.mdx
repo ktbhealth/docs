@@ -56,9 +56,9 @@ CREATE TABLE "entity_deks" (
 
 | Name | Definition |
 | ---- | ---------- |
+| entity_deks_record_reader_idx | CREATE UNIQUE INDEX `entity_deks_record_reader_idx` ON `entity_deks` (`tenant_id`,`entity_type`,`entity_id`,`reader_pubkey`) |
 | entity_deks_reader_idx | CREATE INDEX `entity_deks_reader_idx` ON `entity_deks` (`reader_pubkey`) |
 | entity_deks_tenant_record_idx | CREATE INDEX `entity_deks_tenant_record_idx` ON `entity_deks` (`tenant_id`,`entity_type`,`entity_id`) |
-| entity_deks_record_reader_idx | CREATE UNIQUE INDEX `entity_deks_record_reader_idx` ON `entity_deks` (`entity_type`,`entity_id`,`reader_pubkey`) |
 
 ## Relations
 

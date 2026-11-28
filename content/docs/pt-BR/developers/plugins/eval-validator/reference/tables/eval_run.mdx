@@ -24,7 +24,7 @@ CREATE TABLE "eval_run" (
 	`started_at` integer,
 	`finished_at` integer,
 	`created_by` text,
-	`created_at` integer NOT NULL, `experiment` text,
+	`created_at` integer NOT NULL, `experiment` text, `lease_until` integer,
 	FOREIGN KEY (`instance_id`) REFERENCES `eval_instance`(`id`) ON UPDATE no action ON DELETE set null
 )
 ```
@@ -47,6 +47,7 @@ CREATE TABLE "eval_run" (
 | created_by | TEXT |  | true |  |  |  |
 | created_at | INTEGER |  | false |  |  |  |
 | experiment | TEXT |  | true |  |  |  |
+| lease_until | INTEGER |  | true |  |  |  |
 
 ## Constraints
 
