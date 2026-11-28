@@ -21,6 +21,7 @@
 		"jobs",
 		"orchestrator",
 		"scheduler",
+		"outbox",
 		"eval-validator",
 		"ai-endpoints",
 		"ai-model",
