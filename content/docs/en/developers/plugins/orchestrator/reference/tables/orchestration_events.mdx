@@ -20,7 +20,7 @@ CREATE TABLE `orchestration_events` (
 	`event_type` text NOT NULL,
 	`payload` text NOT NULL,
 	`source` text NOT NULL,
-	`ts` integer NOT NULL,
+	`ts` integer NOT NULL, `not_before` integer,
 	PRIMARY KEY(`run_id`, `seq`)
 )
 ```
@@ -38,6 +38,7 @@ CREATE TABLE `orchestration_events` (
 | payload | TEXT |  | false |  |  |  |
 | source | TEXT |  | false |  |  |  |
 | ts | INTEGER |  | false |  |  |  |
+| not_before | INTEGER |  | true |  |  |  |
 
 ## Constraints
 
