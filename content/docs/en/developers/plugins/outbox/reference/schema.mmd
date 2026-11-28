@@ -1,0 +1,16 @@
+erDiagram
+
+
+"outbox" {
+  TEXT id PK
+  TEXT kind
+  TEXT payload
+  TEXT status
+  INTEGER attempts
+  INTEGER next_attempt_at
+  INTEGER claimed_until
+  TEXT error
+  INTEGER tenant_id
+  INTEGER created_at
+  INTEGER updated_at
+}
